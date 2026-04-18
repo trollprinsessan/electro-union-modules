@@ -136,3 +136,4 @@ git diff HEAD~3 HEAD -- toolkit/
 ## Licens
 
 Internt, Norrsken Foundation.
+<!-- KP test push -->
