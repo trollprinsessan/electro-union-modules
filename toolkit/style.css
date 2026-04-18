@@ -1,0 +1,207 @@
+/*
+ * Electro Union — Toolkit Module
+ *
+ * Daniels favoritmodul: social media assets, stickers, messaging.
+ *
+ * Kräver: ../_shared/fonts.css + ../_shared/tokens.css
+ *
+ * Källa: golden/electro-union-module.html rader:
+ *   515-554  (sharables foldout + toggle)
+ *   556-683  (pap nav, grid, cards, msg-block, free-text)
+ *  1546-1568 (sticky toolkit link, standalone)
+ */
+
+/* ═══ SHARABLES FOLDOUT ═══ */
+.eu-sharables{
+  text-align:center;
+  margin-top:clamp(74px,8vw,98px);
+}
+.eu-sharables__toggle{
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(14px,2vw,22px);
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  color:#009246;
+  cursor:var(--eu-cursor);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:clamp(14px,2vw,20px) clamp(20px,4vw,56px);
+  border:none;
+  background:linear-gradient(180deg,#009246 0%,#009246 33%,#fff 33%,#fff 66%,#CE2B37 66%,#CE2B37 100%);
+  transition:none;
+  width:100%;
+}
+.eu-sharables__toggle:hover{
+  opacity:1;
+}
+.eu-sharables__arrow{
+  display:inline-block;
+  transition:transform .3s;
+  font-size:.5em;
+}
+.eu-sharables.is-open .eu-sharables__arrow{transform:rotate(180deg)}
+.eu-sharables__content{
+  display:none;
+}
+.eu-sharables.is-open .eu-sharables__content{
+  display:block;
+}
+.eu-sharables__inner{
+  padding:clamp(16px,2.5vw,28px) clamp(20px,4vw,56px);
+}
+
+/* ═══ PRET-A-PORTER CARDS ═══ */
+.eu-pap__nav{
+  display:flex;
+  justify-content:center;
+  gap:clamp(16px,3vw,32px);
+  margin-bottom:clamp(16px,2.5vw,28px);
+}
+.eu-pap__nav-item{
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(12px,1.4vw,16px);
+  font-weight:normal;
+  text-transform:uppercase;
+  letter-spacing:0.03em;
+  color:#000;
+  cursor:var(--eu-cursor);
+  padding:4px 0;
+  border:none;
+  border-bottom:2px solid transparent;
+  background:transparent;
+  line-height:1;
+  transition:border-color .15s;
+  border-radius:0;
+  -webkit-appearance:none;
+}
+.eu-pap__nav-item:hover{border-bottom-color:#999}
+.eu-pap__nav-item.is-active{border-bottom-color:#000}
+.eu-pap__cat{
+  font-size:clamp(9px,1vw,12px);
+  font-family:Arial,Helvetica,sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--dim);
+  margin-bottom:clamp(10px,1.5vw,16px);
+  margin-top:clamp(24px,3vw,36px);
+  text-align:left;
+}
+.eu-pap__cat:first-child{margin-top:0}
+.eu-pap__grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:clamp(12px,2vw,20px);
+}
+.eu-pap-card{
+  text-decoration:none;color:var(--ink);
+  display:flex;flex-direction:column;
+  transition:transform .2s;
+  text-align:left;
+}
+.eu-pap-card:hover{transform:translateY(-2px)}
+.eu-pap-card__img{
+  width:100%;
+  display:block;
+  background:transparent;
+}
+.eu-pap-card__name{
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(11px,1.3vw,14px);
+  font-weight:bold;
+  margin-top:clamp(5px,.7vw,8px);
+}
+.eu-pap-card__desc{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(8px,.9vw,10px);
+  color:var(--dim);
+  font-style:normal;
+  line-height:1.4;
+  margin-top:2px;
+  letter-spacing:0.02em;
+}
+.eu-pap-card__btn{
+  display:inline-block;
+  margin-top:clamp(5px,.7vw,8px);
+  padding:clamp(4px,.5vw,6px) clamp(8px,1.1vw,14px);
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(9px,1.1vw,12px);
+  font-weight:normal;
+  text-transform:lowercase;
+  letter-spacing:0.01em;
+  border:none;
+  color:#fff;
+  background:var(--blue);
+  cursor:var(--eu-cursor);
+  transition:opacity .15s;
+  text-decoration:none;
+  text-align:center;
+  align-self:flex-start;
+  line-height:1;
+}
+.eu-pap-card__btn:hover{opacity:0.8}
+.eu-pap__free{
+  text-align:center;
+  margin-top:clamp(18px,2.5vw,28px);
+  padding-top:clamp(12px,1.5vw,18px);
+  border-top:1px solid rgba(0,0,0,.06);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(9px,1.1vw,12px);
+  color:var(--dim);
+  font-style:italic;
+}
+.eu-pap__msg{
+  text-align:left;
+  margin-top:clamp(6px,1vw,12px);
+  padding:clamp(10px,1.5vw,16px);
+  background:#f9f9f9;
+  border:1px solid #eee;
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(12px,1.4vw,16px);
+  line-height:1.5;
+  color:var(--ink);
+  position:relative;
+  cursor:var(--eu-cursor);
+}
+.eu-pap__msg:hover{background:#f4f4f4}
+.eu-pap__msg-copy{
+  position:absolute;
+  top:clamp(6px,1vw,10px);
+  right:clamp(6px,1vw,10px);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(8px,.85vw,10px);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--blue);
+  background:#fff;
+  border:1px solid var(--blue);
+  padding:3px 8px;
+  cursor:var(--eu-cursor);
+}
+.eu-pap__msg-copy:hover{background:var(--blue);color:#fff}
+
+/* ═══ STICKY TOOLKIT LINK (standalone) ═══ */
+.eu-toolkit-sticky{
+  position:fixed;
+  bottom:16px;
+  right:16px;
+  z-index:99998;
+  display:none;
+  font-family:var(--mono);
+  font-size:clamp(8px,.9vw,10px);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#000;
+  background:#fff;
+  border:none;
+  padding:8px 14px;
+  cursor:pointer;
+  transition:opacity .15s;
+  line-height:1;
+}
+.eu-toolkit-sticky:hover{opacity:.6}
+.eu-toolkit-sticky.is-visible{display:block}
+
+/* Hide sticky link in embed mode */
+.is-embed .eu-toolkit-sticky{display:none!important}

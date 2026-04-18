@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electro Union — Gate</title>
+
+  <!-- Preload critical assets -->
+  <link rel="preload" href="Updated Imagery/ElectroUnion_Hero_logo.png" as="image">
+  <link rel="preload" href="Updated Imagery/animated-text-zoom.gif" as="image">
+
+  <!-- Shared base -->
+  <link rel="stylesheet" href="../_shared/fonts.css">
+  <link rel="stylesheet" href="../_shared/tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Shared JS — must load before body so is-embed class is set -->
+  <script src="../_shared/embed.js"></script>
+  <script src="../_shared/supabase.js"></script>
+</head>
+<body>
+
+<div class="eu" id="eu">
+
+  <!-- Top bar: "☐ I approve this message" button -->
+  <div class="eu-bar" id="euBtn">
+    <div class="eu-bar__initial" id="euBarInitial">
+      <div class="eu-checkbox">
+        <div class="eu-checkbox__check">
+          <img src="GIFS/4YCZ5UYFPSM2TS36QSYGFSWQDIVKJIWN.gif" alt="EU Flag" class="eu-checkbox__gif">
+        </div>
+      </div>
+      <div class="eu-bar__cta" id="euBarCta">I approve this message</div>
+    </div>
+    <div class="eu-bar__approved" id="euBarApproved">
+      <span class="eu-bar__count" id="euBarCount"></span> approves (and counting)
+    </div>
+  </div>
+
+  <!-- Fold: revealed on click -->
+  <div class="eu-fold" id="euFold" style="position:relative">
+
+    <!-- Gate scene: logo, tagline, counter, preamble, scroll-driven columns -->
+    <div class="eu-gate-scene" id="euGateScene">
+      <div class="eu-gate-scene__sticky">
+        <div class="eu-gate-scene__reveal" id="euGateReveal">
+          <img class="eu-gate-scene__logo" src="Updated Imagery/ElectroUnion_Hero_logo.png" alt="Electro Union">
+          <div class="eu-gate-scene__tagline">The good life deserves to be resilient.</div>
+          <div class="eu-gate-scene__counter" id="euCounter">
+            You and <span id="euCounterNum"></span> others agree.
+          </div>
+          <div class="eu-gate-scene__preamble" id="euGatePreamble">
+            <div class="eu-gate-scene__preamble-text">
+              Welcome to the Electro Union: a home for everyone who knows Europe&rsquo;s future runs on its own energy. In here you&rsquo;ll find sharables for your feeds and tools to make your own. All free, all yours, and for however you wish to plug it in.
+            </div>
+            <a href="https://drive.google.com/drive/folders/1shLbxGw459RM02mvDxnFzBhBHaXIJSsx" target="_blank" rel="noopener">
+              <img class="eu-gate-scene__preamble-btn" src="Updated Imagery/animated-text-zoom.gif" alt="Download the Electro-Union Sharing Package">
+            </a>
+          </div>
+        </div>
+        <div class="eu-gate-scene__scroll-hint" id="euScrollHint">
+          <span>scroll</span>
+          <svg width="20" height="18" viewBox="0 0 20 18" fill="none"><path d="M10 2 L10 12 M4 9 L10 16 L16 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="eu-gate-scene__left" id="euGateLeft">
+          <img src="Updated Imagery/magnificent-roman-columns-isolated-white-background_787273-60762-removebg-preview.png" alt="" loading="lazy">
+        </div>
+        <div class="eu-gate-scene__right" id="euGateRight">
+          <img src="Updated Imagery/magnificent-roman-columns-isolated-white-background_787273-60762-removebg-preview.png" alt="" loading="lazy">
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.eu-fold -->
+
+</div><!-- /.eu -->
+
+<script src="script.js"></script>
+</body>
+</html>

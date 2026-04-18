@@ -1,0 +1,42 @@
+/*
+ * Electro Union — Design Tokens + Base Container
+ *
+ * Inkludera från varje modul med:
+ *   <link rel="stylesheet" href="../_shared/fonts.css">
+ *   <link rel="stylesheet" href="../_shared/tokens.css">
+ *
+ * Alla moduler använder `.eu`-containern som root. Allt nedan scope:at
+ * till `.eu` för att undvika att kollidera med Webflow/Norrsken-stilar.
+ */
+
+.eu * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.eu {
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  overflow: visible;
+
+  /* Färgpalett */
+  --cream: #fff;       /* bakgrund */
+  --blue:  #003399;    /* EU-blå — primär */
+  --red:   #CC0000;    /* download-knappar */
+  --gold:  #FFD700;    /* accenter */
+  --ink:   #1a1a1a;    /* brödtext */
+  --dim:   #777;       /* sekundär text */
+
+  /* Typsnitt */
+  --mono: 'ABC Schengen Mono', 'Courier New', monospace;
+
+  /* Custom thunderbolt-cursor (inline SVG, 20×20) */
+  --eu-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23003399'/%3E%3Cpolygon points='14,2 9,11 13,11 10,22 17,11 13,11' fill='%23FFD700'/%3E%3C/svg%3E") 10 10, pointer;
+
+  color: var(--ink);
+  background: var(--cream);
+  position: relative;
+}

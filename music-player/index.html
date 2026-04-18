@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electro Union — Music Player</title>
+
+  <!-- Shared base -->
+  <link rel="stylesheet" href="../_shared/fonts.css">
+  <link rel="stylesheet" href="../_shared/tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="../_shared/embed.js"></script>
+</head>
+<body>
+
+<!-- Fixed sound controls (appear after scrolling past player in standalone mode) -->
+<div class="eu-sound-controls" id="euSoundControls">
+  <button class="eu-sound-toggle" id="euSoundToggle" title="Toggle sound">
+    <svg id="euSoundOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    <svg id="euSoundOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+  </button>
+  <button class="eu-sound-next" id="euSoundNext" title="Next track">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+  </button>
+</div>
+
+<div class="eu" id="eu">
+
+  <!--
+    Music player i sitt statement-sammanhang: .eu-player absolut-
+    positionerad ovanpå citatbilden (LARGE QUOTE.png). Identiskt med
+    Golden rader 2494-2516.
+  -->
+  <div class="eu-statement">
+    <div class="eu-statement__wrap">
+      <img class="eu-statement__img"
+           src="Updated Imagery/LARGE QUOTE.png"
+           alt="The good life deserves resilience. Make Europe the Electro-Union."
+           loading="lazy">
+      <div class="eu-player" id="euPlayer">
+        <div class="eu-player__now" id="euPlayerNow">BASELOAD</div>
+        <div class="eu-player__controls">
+          <span class="eu-player__btn" id="euPlayerPrev">&#9664;&#9664;</span>
+          <span class="eu-player__btn eu-player__btn--play" id="euPlayerPlay">&#9654;</span>
+          <span class="eu-player__btn" id="euPlayerNext">&#9654;&#9654;</span>
+        </div>
+        <div class="eu-player__bar">
+          <div class="eu-player__progress" id="euPlayerProgress"></div>
+        </div>
+        <div class="eu-player__tracklist">
+          <div class="eu-player__track is-active" data-idx="0"><span class="eu-player__track-num">01</span> Baseload</div>
+          <div class="eu-player__track" data-idx="1"><span class="eu-player__track-num">02</span> Merit Order</div>
+          <div class="eu-player__track" data-idx="2"><span class="eu-player__track-num">03</span> 50 Hertz</div>
+          <div class="eu-player__track" data-idx="3"><span class="eu-player__track-num">04</span> Peak Demand</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

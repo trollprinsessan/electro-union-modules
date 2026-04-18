@@ -1,0 +1,272 @@
+/*
+ * Electro Union — Gate Module
+ *
+ * Kräver: ../_shared/fonts.css + ../_shared/tokens.css
+ * (de ger .eu container + tokens + fonter)
+ *
+ * Källa: golden/electro-union-module.html rader:
+ *   52-123  (top bar, checkbox, CTA, approved counter)
+ *   125-180 (gate scene counter + preamble + Y2K animations)
+ *   182-184 (eu-fold wrapper)
+ *  1513-1544 (embed mode overrides)
+ *  1611-1712 (Roman Gate scroll-driven — standalone)
+ */
+
+/* ═══ TOP BAR (the button — before click) ═══ */
+.eu-bar{
+  background:#fff;
+  padding:clamp(28px,5vw,56px) 20px;
+  cursor:var(--eu-cursor);user-select:none;
+  position:relative;
+  border-bottom:none;
+  transition:background .15s;
+}
+.eu-bar:hover{background:#fafafa}
+.eu-bar__initial{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(12px,2vw,20px);
+}
+.eu-checkbox{
+  width:clamp(28px,4vw,44px);
+  height:clamp(28px,4vw,44px);
+  border:2px solid #111;
+  flex-shrink:0;
+  position:relative;
+  transition:border-color .15s;
+}
+.eu-checkbox__check{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  background:#fff;
+  opacity:0;
+  transition:opacity .15s;
+  overflow:hidden;
+  gap:0;
+}
+.eu-checkbox__gif{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+}
+.eu.is-open .eu-checkbox{border-color:#000}
+.eu.is-open .eu-checkbox__check{opacity:1}
+.eu-bar__cta{
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(24px,5vw,48px);
+  font-weight:normal;
+  color:#000;
+  letter-spacing:-0.01em;
+  line-height:1;
+  text-transform:uppercase;
+}
+/* approved counter state */
+.eu-bar__approved{
+  display:none;
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(24px,5vw,48px);
+  font-weight:normal;
+  color:#000;
+  text-align:center;
+  letter-spacing:-0.01em;
+  line-height:1;
+  text-transform:uppercase;
+}
+.eu-bar__count{
+  color:var(--blue);
+  font-weight:bold;
+}
+.eu.is-open .eu-bar__initial{display:none}
+.eu.is-open .eu-bar__approved{display:block}
+.eu.is-open .eu-bar{
+  padding:clamp(28px,5vw,56px) 20px;
+  cursor:default;
+  border-bottom:none;
+}
+.eu.is-open .eu-bar:hover{background:#fff}
+
+/* gate counter below tagline */
+.eu-gate-scene__counter{
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(11px,1.4vw,17px);
+  color:var(--blue);
+  letter-spacing:0.03em;
+  opacity:0;
+  transform:translateY(8px);
+  animation:none;
+}
+/* preamble inside gate reveal */
+.eu-gate-scene__preamble{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(12px,2vw,20px);
+  opacity:0;
+  transform:translateY(12px);
+  animation:none;
+  margin-top:clamp(8px,1.5vw,16px);
+}
+.eu-gate-scene__preamble-text{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(13px,1.6vw,18px);
+  color:#333;
+  text-align:center;
+  line-height:1.5;
+  max-width:520px;
+  margin:0 auto;
+}
+.eu-gate-scene__preamble-btn{
+  max-width:clamp(280px,40vw,420px);
+  cursor:var(--eu-cursor);
+  transition:opacity .2s;
+  margin-top:clamp(8px,1.5vw,16px);
+}
+.eu-gate-scene__preamble-btn:hover{opacity:0.8}
+
+/* ═══ EARLY 2000s STAGGERED REVEAL ═══ */
+@keyframes eu-y2k-in{
+  0%{opacity:0;transform:translateY(20px) scale(0.9)}
+  60%{opacity:1;transform:translateY(-3px) scale(1.02)}
+  80%{transform:translateY(1px) scale(0.99)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes eu-y2k-glow{
+  0%{text-shadow:0 0 0 transparent}
+  50%{text-shadow:0 0 12px rgba(1,47,165,0.3)}
+  100%{text-shadow:0 0 0 transparent}
+}
+.eu.is-open .eu-gate-scene__counter{
+  animation:eu-y2k-in 0.6s ease-out 1.2s both, eu-y2k-glow 2s ease-in-out 1.8s 1;
+}
+.eu.is-open .eu-gate-scene__preamble{
+  animation:eu-y2k-in 0.6s ease-out 1.6s both;
+}
+
+/* ═══ FOLDOUT WRAPPER ═══ */
+.eu-fold{max-height:0;overflow:hidden;transition:max-height .6s ease}
+.eu.is-open .eu-fold{max-height:none;overflow:visible}
+
+/* ═══ ROMAN GATE (scroll-driven) ═══ */
+.eu-gate-scene{
+  position:relative;
+  height:200vh;
+  overflow:clip;
+}
+.eu-gate-scene__sticky{
+  position:sticky;
+  top:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.eu-gate-scene__reveal{
+  position:absolute;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(10px,1.8vw,20px);
+  z-index:0;
+  margin-top:-20px;
+}
+.eu-gate-scene__logo{
+  width:110px;
+  display:block;
+  will-change:transform;
+  margin-top:clamp(4px,1vw,12px);
+  margin-bottom:clamp(8px,1.5vw,16px);
+}
+.eu-gate-scene__tagline{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(32px,5.5vw,70px);
+  font-weight:bold;
+  color:var(--blue);
+  text-transform:uppercase;
+  letter-spacing:-0.02em;
+  line-height:1.2;
+  text-align:center;
+  will-change:transform,opacity;
+  max-width:620px;
+}
+/* scroll hint */
+.eu-gate-scene__scroll-hint{
+  position:absolute;
+  bottom:clamp(24px,4vh,48px);
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  color:var(--blue);
+  opacity:0.4;
+  z-index:2;
+  animation:eu-hint-pulse 2s ease-in-out infinite;
+  transition:opacity .4s ease;
+}
+.eu-gate-scene__scroll-hint span{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+}
+.eu-gate-scene__scroll-hint.is-hidden{
+  opacity:0;
+  pointer-events:none;
+}
+@keyframes eu-hint-pulse{
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(6px)}
+}
+.eu-gate-scene__left,
+.eu-gate-scene__right{
+  position:absolute;
+  top:0;
+  height:100vh;
+  width:auto;
+  z-index:1;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  will-change:transform;
+}
+.eu-gate-scene__left{
+  right:50%;
+  justify-content:flex-end;
+}
+.eu-gate-scene__right{
+  left:50%;
+  justify-content:flex-start;
+}
+.eu-gate-scene__left img,
+.eu-gate-scene__right img{
+  height:90%;
+  width:auto;
+  display:block;
+}
+.eu-gate-scene__right img{
+  transform:scaleX(-1);
+}
+
+/* ═══ EMBED MODE — flatten gate scene, instant reveal ═══ */
+.is-embed .eu-gate-scene{height:auto;overflow:visible}
+.is-embed .eu-gate-scene__sticky{
+  position:relative;height:auto;display:block;
+}
+.is-embed .eu-gate-scene__reveal{
+  position:relative;margin-top:0;
+  padding:clamp(24px,4vw,48px) 0;
+}
+.is-embed .eu-gate-scene__left,
+.is-embed .eu-gate-scene__right{display:none!important}
+.is-embed .eu-gate-scene__scroll-hint{display:none}
+.is-embed .eu-fold{display:none}
+.is-embed .eu.is-open .eu-fold{display:block}
+.is-embed .eu-gate-scene__logo,
+.is-embed .eu-gate-scene__tagline{opacity:0}
+.is-embed .eu.is-open .eu-gate-scene__logo,
+.is-embed .eu.is-open .eu-gate-scene__tagline{opacity:1!important}
+.is-embed .eu.is-open .eu-gate-scene__counter,
+.is-embed .eu.is-open .eu-gate-scene__preamble{animation:none}
+.is-embed .eu{box-shadow:none}
+.is-embed .eu.is-open{box-shadow:0 4px 24px rgba(0,0,0,.12)}

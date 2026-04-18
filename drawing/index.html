@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electro Union — Drawing Tool</title>
+
+  <!-- Shared base -->
+  <link rel="stylesheet" href="../_shared/fonts.css">
+  <link rel="stylesheet" href="../_shared/tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="../_shared/embed.js"></script>
+</head>
+<body>
+
+<div class="eu" id="eu">
+
+    <div class="eu-draw">
+      <div class="eu-draw__marquee">
+        <div class="eu-draw__marquee-inner">
+          <span>Only one continent puts croissants, stroopwafels, kürtőskalács and pastel de nata in the same single market.</span>
+          <img src="Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="Croissant" loading="lazy">
+          <span>The good life, in pastry form.</span>
+          <img src="Updated Imagery/DSC_0410-a.png" alt="Stroopwafel" loading="lazy">
+          <span>Pick a pencil. Make it dance. Put your name on it.</span>
+          <img src="Updated Imagery/045.png" alt="Kanelbulle" loading="lazy">
+          <span>This is your grid.</span>
+          <img src="Updated Imagery/baklava_udate.png" alt="Baklava" loading="lazy">
+          <img src="Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette" loading="lazy">
+          <img src="Updated Imagery/kürtőskalács.png" alt="Kürtőskalács" loading="lazy">
+          <img src="Updated Imagery/danish.png" alt="Danish" loading="lazy">
+          <img src="Updated Imagery/pastelnata.webp" alt="Pastel de Nata" loading="lazy">
+          <img src="Updated Imagery/sernik.png" alt="Sernik" loading="lazy">
+          <span>Only one continent puts croissants, stroopwafels, kürtőskalács and pastel de nata in the same single market.</span>
+          <img src="Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="Croissant" loading="lazy">
+          <span>The good life, in pastry form.</span>
+          <img src="Updated Imagery/DSC_0410-a.png" alt="Stroopwafel" loading="lazy">
+          <span>Pick a pencil. Make it dance. Put your name on it.</span>
+          <img src="Updated Imagery/045.png" alt="Kanelbulle" loading="lazy">
+          <span>This is your grid.</span>
+          <img src="Updated Imagery/baklava_udate.png" alt="Baklava" loading="lazy">
+          <img src="Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette" loading="lazy">
+          <img src="Updated Imagery/kürtőskalács.png" alt="Kürtőskalács" loading="lazy">
+          <img src="Updated Imagery/danish.png" alt="Danish" loading="lazy">
+          <img src="Updated Imagery/pastelnata.webp" alt="Pastel de Nata" loading="lazy">
+          <img src="Updated Imagery/sernik.png" alt="Sernik" loading="lazy">
+        </div>
+      </div>
+      <div class="eu-draw__workspace">
+        <div class="eu-draw__area">
+          <div class="eu-draw__framed">
+            <img class="eu-draw__frame" src="Updated Imagery/FRAME2_UPDATED.png" alt="" loading="lazy">
+            <div class="eu-draw__canvas-wrap">
+              <canvas class="eu-draw__canvas" id="euDrawCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="eu-draw__panel-col">
+          <div class="eu-draw__panel">
+            <div class="eu-draw__carousel" id="euStampCarousel">
+              <span class="eu-draw__carousel-arrow" id="euStampPrev">←</span>
+              <div class="eu-draw__carousel-item" id="euStampShow"><img src="Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette"></div>
+              <span class="eu-draw__carousel-arrow" id="euStampNext">→</span>
+            </div>
+            <div class="eu-draw__stamp-row" style="display:none">
+              <div class="eu-draw__stamp is-active" data-stamp="0"><img src="Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="1"><img src="Updated Imagery/DSC_0410-a.png" alt="Stroopwafel" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="2"><img src="Updated Imagery/045.png" alt="Kanelbulle" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="3"><img src="Updated Imagery/baklava_udate.png" alt="Baklava" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="4"><img src="Updated Imagery/kürtőskalács.png" alt="Kürtőskalács" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="5"><img src="Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="Croissant" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="6"><img src="Updated Imagery/danish.png" alt="Danish" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="7"><img src="Updated Imagery/pastelnata.webp" alt="Pastel de Nata" loading="lazy"></div>
+              <div class="eu-draw__stamp" data-stamp="8"><img src="Updated Imagery/sernik.png" alt="Sernik" loading="lazy"></div>
+            </div>
+            <input type="range" class="eu-draw__size-slider" id="euDrawSize" min="0.3" max="7.5" step="0.1" value="1">
+            <div class="eu-draw__carousel" id="euStickerCarousel">
+              <span class="eu-draw__carousel-arrow" id="euStickerPrev">←</span>
+              <div class="eu-draw__carousel-item" id="euStickerShow"><img src="STICKERS/EU_Stickers_1080x1350_01.png" alt="EU Sticker 1"></div>
+              <span class="eu-draw__carousel-arrow" id="euStickerNext">→</span>
+            </div>
+            <div class="eu-draw__section-title" style="display:none">Stickers</div>
+            <div class="eu-draw__options-row" style="display:none">
+              <div class="eu-draw__bg-row">
+                <div class="eu-draw__bg-opt is-active" data-bg="STICKERS/EU_Stickers_1080x1350_01.png" data-sticker="0"><img src="STICKERS/EU_Stickers_1080x1350_01.png" alt="EU Sticker 1" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_02.png" data-sticker="1"><img src="STICKERS/EU_Stickers_1080x1350_02.png" alt="EU Sticker 2" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_03.png" data-sticker="2"><img src="STICKERS/EU_Stickers_1080x1350_03.png" alt="EU Sticker 3" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_04.png" data-sticker="3"><img src="STICKERS/EU_Stickers_1080x1350_04.png" alt="EU Sticker 4" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_08.png" data-sticker="4"><img src="STICKERS/EU_Stickers_1080x1350_08.png" alt="EU Sticker 5" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_09.png" data-sticker="5"><img src="STICKERS/EU_Stickers_1080x1350_09.png" alt="EU Sticker 6" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_12.png" data-sticker="6"><img src="STICKERS/EU_Stickers_1080x1350_12.png" alt="EU Sticker 7" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_13.png" data-sticker="7"><img src="STICKERS/EU_Stickers_1080x1350_13.png" alt="EU Sticker 8" loading="lazy"></div>
+                <div class="eu-draw__bg-opt" data-bg="STICKERS/EU_Stickers_1080x1350_14.png" data-sticker="8"><img src="STICKERS/EU_Stickers_1080x1350_14.png" alt="EU Sticker 9" loading="lazy"></div>
+                <label class="eu-draw__stamp eu-draw__stamp--upload" id="euDrawUploadSticker" title="Upload your own sticker">
+                  <span class="eu-draw__upload-icon">+</span>
+                  <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" id="euDrawUploadStickerInput" style="display:none">
+                </label>
+              </div>
+            </div>
+            <div class="eu-draw__section-title">Change background</div>
+            <div class="eu-draw__bg-picker-row">
+              <div class="eu-draw__bg-pick is-active" data-bgc="#ffffff" title="White"><div class="eu-draw__bg-pick__swatch" style="background:#ffffff"></div></div>
+              <div class="eu-draw__bg-pick" data-bgc="#003399" title="EU Blue"><div class="eu-draw__bg-pick__swatch" style="background:#003399"></div></div>
+              <div class="eu-draw__bg-pick" data-bgc="#FFD700" title="Gold"><div class="eu-draw__bg-pick__swatch" style="background:#FFD700"></div></div>
+              <div class="eu-draw__bg-pick" data-bgc="#1a1a1a" title="Black"><div class="eu-draw__bg-pick__swatch" style="background:#1a1a1a"></div></div>
+              <div class="eu-draw__bg-pick" data-bgc="#E8F0E8" title="Sage"><div class="eu-draw__bg-pick__swatch" style="background:#E8F0E8"></div></div>
+              <div class="eu-draw__bg-pick" data-bgc="#F5E6D0" title="Cream"><div class="eu-draw__bg-pick__swatch" style="background:#F5E6D0"></div></div>
+              <div class="eu-draw__bg-pick" data-bgc="#CC0000" title="Red"><div class="eu-draw__bg-pick__swatch" style="background:#CC0000"></div></div>
+              <div class="eu-draw__bg-color">
+                <div class="eu-draw__bg-color__swatch" id="euBgSwatch"></div>
+                <input type="color" id="euBgColorPicker" value="#ffffff">
+              </div>
+              <label class="eu-draw__stamp eu-draw__stamp--upload" id="euDrawUploadBg" title="Upload background image">
+                <span class="eu-draw__upload-icon">+</span>
+                <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" id="euDrawUploadBgInput" style="display:none">
+              </label>
+            </div>
+            <div class="eu-draw__section-title">Animate</div>
+            <div class="eu-draw__anim-row">
+              <div class="eu-draw__anim is-active" data-anim="none">still</div>
+              <div class="eu-draw__anim" data-anim="bounce">bounce</div>
+              <div class="eu-draw__anim" data-anim="beat">beat</div>
+              <div class="eu-draw__anim" data-anim="rotate">spin</div>
+            </div>
+            <div class="eu-draw__undo-row">
+              <span class="eu-draw__arrow" id="euDrawUndo" title="Undo">&#8592; UNDO</span>
+              <span class="eu-draw__arrow" id="euDrawClear" title="Clear">&#215; CLEAR</span>
+            </div>
+          </div>
+          <div class="eu-draw__actions">
+            <div class="eu-draw__dl-row">
+              <span class="eu-draw__dl-label">Download</span>
+              <span class="eu-draw__dl-btn eu-draw__dl-btn--primary" id="euDrawDl">GIF</span>
+              <span class="eu-draw__dl-btn" id="euDrawDlPng">PNG</span>
+            </div>
+            <span class="eu-draw__dl-btn eu-draw__dl-btn--guestbook" id="euDrawGuestbook">Add to gallery</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

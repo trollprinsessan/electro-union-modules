@@ -1,0 +1,239 @@
+/*
+ * Electro Union — Guestbook Module Styles
+ *
+ * Källa: golden/electro-union-module.html rader:
+ *   1715-1829 (.eu-guestbook* — header, grid, cards, empty)
+ *   1832-1910 (.eu-gb-modal* — modal overlay, box, inputs, submit)
+ *   2136-2147 (mobil @max-width:700px — grid, header)
+ *   2150-2155 (mobil modal)
+ *   2242 (small mobile @max-width:420px — 2-col grid)
+ */
+
+/* ═══ GUESTBOOK ═══ */
+.eu-guestbook{
+  padding:clamp(40px,6vw,80px) clamp(24px,4vw,80px);
+  max-width:1200px;
+  margin:0 auto;
+}
+.eu-guestbook__header{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-bottom:clamp(30px,4vw,50px);
+  gap:clamp(10px,1.4vw,16px);
+}
+.eu-guestbook__header-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  width:100%;
+}
+.eu-guestbook__welcome{
+  width:clamp(280px,36vw,420px);
+  height:auto;
+  display:block;
+  animation:eu-swing 3s ease-in-out infinite;
+  transform-origin:50% 0%;
+}
+@keyframes eu-swing{
+  0%,100%{transform:rotate(-4deg)}
+  50%{transform:rotate(4deg)}
+}
+.eu-guestbook__intro{
+  font-family:var(--mono);
+  font-size:clamp(9px,1vw,11px);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--ink);
+}
+.eu-guestbook__header-text{
+  text-align:right;
+  display:flex;
+  flex-direction:column;
+  gap:clamp(4px,.6vw,8px);
+}
+.eu-guestbook__title{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(18px,2.4vw,30px);
+  color:var(--ink);
+  font-weight:normal;
+}
+.eu-guestbook__subtitle{
+  font-family:var(--mono);
+  font-size:clamp(9px,1vw,11px);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--dim);
+}
+.eu-guestbook__count{
+  font-family:var(--mono);
+  font-size:clamp(9px,1vw,12px);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--dim);
+}
+.eu-guestbook__grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:clamp(16px,2.5vw,28px);
+}
+.eu-guestbook__card{
+  display:flex;
+  flex-direction:column;
+}
+.eu-guestbook__card-img{
+  width:100%;
+  aspect-ratio:1/1;
+  background:#f5f5f5;
+  overflow:hidden;
+  margin-bottom:clamp(6px,.8vw,10px);
+}
+.eu-guestbook__card-img img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.eu-guestbook__card-msg{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(12px,1.2vw,15px);
+  font-style:normal;
+  color:var(--ink);
+  line-height:1.35;
+  margin-bottom:clamp(2px,.3vw,4px);
+}
+.eu-guestbook__card-name{
+  font-family:var(--mono);
+  font-size:clamp(8px,.9vw,11px);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--ink);
+}
+.eu-guestbook__card-meta{
+  font-family:var(--mono);
+  font-size:clamp(7px,.75vw,9px);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--ink);
+}
+.eu-guestbook__empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:clamp(40px,6vw,80px) 0;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(16px,2vw,22px);
+  font-style:italic;
+  color:#bbb;
+}
+/* guestbook modal overlay */
+.eu-gb-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:rgba(0,0,0,.5);
+  align-items:center;
+  justify-content:center;
+}
+.eu-gb-modal.is-open{
+  display:flex;
+}
+.eu-gb-modal__box{
+  background:#fff;
+  width:clamp(320px,40vw,480px);
+  padding:clamp(24px,3vw,40px);
+  position:relative;
+}
+.eu-gb-modal__close{
+  position:absolute;
+  top:12px;right:16px;
+  font-family:var(--mono);
+  font-size:14px;
+  cursor:var(--eu-cursor);
+  color:var(--dim);
+  background:none;border:none;
+}
+.eu-gb-modal__close:hover{color:#000}
+.eu-gb-modal__preview{
+  width:100%;
+  aspect-ratio:1/1;
+  background:#f5f5f5;
+  margin-bottom:clamp(14px,2vw,22px);
+  overflow:hidden;
+}
+.eu-gb-modal__preview img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+}
+.eu-gb-modal__label{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(13px,1.4vw,16px);
+  color:#000;
+  margin-bottom:clamp(6px,.8vw,10px);
+  display:block;
+}
+.eu-gb-modal__input{
+  width:100%;
+  box-sizing:border-box;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(13px,1.4vw,16px);
+  font-style:italic;
+  border:none;
+  border-bottom:1px solid #ccc;
+  padding:8px 0;
+  outline:none;
+  color:var(--ink);
+  background:none;
+  margin-bottom:clamp(16px,2vw,24px);
+}
+.eu-gb-modal__input:focus{border-bottom-color:#000}
+.eu-gb-modal__input::placeholder{color:#bbb}
+.eu-gb-modal__submit{
+  display:block;
+  width:100%;
+  font-family:var(--mono);
+  font-size:clamp(9px,1vw,12px);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  padding:clamp(10px,1.2vw,14px) 0;
+  border:1px solid #000;
+  background:#000;
+  color:#fff;
+  text-align:center;
+  cursor:var(--eu-cursor);
+  transition:all .15s;
+}
+.eu-gb-modal__submit:hover{background:var(--blue);border-color:var(--blue)}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:700px){
+  .eu-guestbook{padding:clamp(24px,5vw,40px) clamp(16px,4vw,24px)}
+
+  /* Guestbook */
+  .eu-guestbook__grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:clamp(12px,3vw,18px);
+  }
+  .eu-guestbook__gif{width:clamp(140px,40vw,200px)}
+  .eu-guestbook__header{flex-direction:column;align-items:center}
+  .eu-guestbook__header-text{text-align:left}
+  .eu-guestbook__header{
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+
+  /* Modal */
+  .eu-gb-modal__box{
+    width:calc(100vw - 32px);
+    max-height:90vh;
+    overflow-y:auto;
+    padding:clamp(16px,4vw,24px);
+  }
+}
+
+/* ═══ SMALL MOBILE ═══ */
+@media(max-width:420px){
+  .eu-guestbook__grid{grid-template-columns:1fr 1fr;gap:10px}
+}

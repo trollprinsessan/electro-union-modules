@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node (om vi nånsin lägger till serve-tooling)
+node_modules/
+
+# Build (inte aktuellt för statiska sidor, men skyddsskydd)
+dist/
+build/
+
+# OS / tmp
+Thumbs.db
+desktop.ini

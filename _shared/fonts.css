@@ -1,0 +1,36 @@
+/*
+ * Electro Union — Shared Font Faces
+ *
+ * Ligger i `_shared/fonts/` (kopia av `golden/FONT/`).
+ * Inkludera från varje modul med:
+ *   <link rel="stylesheet" href="../_shared/fonts.css">
+ *
+ * Paths är relativa till denna CSS-fils plats.
+ */
+
+@font-face {
+  font-family: 'Times Eighteen';
+  src: url('fonts/Times Eighteen W01 Roman/Web Fonts/0f388f1d616c4f3853f344eb44ec4e9e.woff2') format('woff2'),
+       url('fonts/Times Eighteen W01 Roman/Web Fonts/0f388f1d616c4f3853f344eb44ec4e9e.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Times Eighteen';
+  src: url('fonts/Times Eighteen W04 Bold/Web Fonts/5e27c81a88aee13d12a6df37a940d50e.woff2') format('woff2'),
+       url('fonts/Times Eighteen W04 Bold/Web Fonts/5e27c81a88aee13d12a6df37a940d50e.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ABC Schengen Mono';
+  src: url('fonts/ABC Schengen A-Mono Variable/ABCSchengenAMonoVariable-Trial.woff2') format('woff2'),
+       url('fonts/ABC Schengen A-Mono Variable/ABCSchengenAMonoVariable-Trial.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

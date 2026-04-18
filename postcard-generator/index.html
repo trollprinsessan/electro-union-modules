@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electro Union — Postcard Generator</title>
+
+  <!-- Shared base -->
+  <link rel="stylesheet" href="../_shared/fonts.css">
+  <link rel="stylesheet" href="../_shared/tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="../_shared/embed.js"></script>
+</head>
+<body>
+
+<div class="eu" id="eu">
+
+  <div class="eu-gen">
+    <img src="Updated Imagery/mailput.gif" alt="" style="display:block;margin:0 auto clamp(8px,1.5vw,16px)">
+    <img class="eu-gen__hero" src="Updated Imagery/postcard.gif" alt="Make your own Electro Union postcard">
+
+    <div class="eu-gen__stage">
+      <!-- Light switch (shuffle trigger) -->
+      <label for="euLightSwitch" class="eu-switch-wrap">
+        <input type="checkbox" id="euLightSwitch" class="light-switch" />
+        <div class="panel">
+          <div class="screw top"><div class="screw__slot"></div></div>
+          <div class="switch__hole">
+            <div class="switch__groove">
+              <div class="switch">
+                <div class="switch__shadow-box top"><div class="switch__shadow top"></div></div>
+                <div class="switch__shadow-box bottom"><div class="switch__shadow bottom"></div></div>
+                <div class="switch__top"><div class="switch__top-outset"></div></div>
+                <div class="switch__bottom"><div class="switch__bottom-outset"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="screw bottom"><div class="screw__slot"></div></div>
+        </div>
+      </label>
+
+      <!-- Framed preview -->
+      <div class="eu-gen__framed">
+        <img class="eu-gen__frame" src="Updated Imagery/FRAME1 UPDATED.png" alt="">
+        <div class="eu-photo" id="euPv">
+          <div class="eu-photo__bg" id="euBg"></div>
+          <img class="eu-photo__st" id="euSt" src="STICKERS/EU_Stickers_1080x1350_01.png" alt="">
+          <div class="eu-photo__byline" id="euBylinePreview"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="eu-gen__controls">
+      <input type="text" class="eu-gen__byline" id="euBylineInput" placeholder="your name (optional)" maxlength="40">
+      <div class="eu-gen-dl" id="euDl">Download</div>
+    </div>
+  </div>
+
+  <canvas id="euC" width="1080" height="1350" style="display:none"></canvas>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

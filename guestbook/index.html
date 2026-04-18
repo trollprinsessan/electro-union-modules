@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electro Union — The Pastry Art Gallery</title>
+
+  <!-- Shared base -->
+  <link rel="stylesheet" href="../_shared/fonts.css">
+  <link rel="stylesheet" href="../_shared/tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="../_shared/embed.js"></script>
+</head>
+<body>
+
+<div class="eu" id="eu">
+
+    <!-- Guestbook -->
+    <div class="eu-guestbook" id="euGuestbook">
+      <div class="eu-guestbook__header">
+        <img class="eu-guestbook__welcome" src="Updated Imagery/welcome.png" alt="Welcome" loading="lazy">
+        <div class="eu-guestbook__header-bar">
+          <div class="eu-guestbook__intro">The Pastry Art Gallery</div>
+          <div class="eu-guestbook__count" id="euGbCount">0 entries</div>
+        </div>
+      </div>
+      <div class="eu-guestbook__grid" id="euGbGrid">
+        <div class="eu-guestbook__empty">The Pastry Art Gallery: make one above and add it.</div>
+      </div>
+    </div>
+
+    <!-- Guestbook modal -->
+    <div class="eu-gb-modal" id="euGbModal">
+      <div class="eu-gb-modal__box">
+        <button class="eu-gb-modal__close" id="euGbClose">&times;</button>
+        <div class="eu-gb-modal__preview" id="euGbPreview"></div>
+        <label class="eu-gb-modal__label">Message</label>
+        <input class="eu-gb-modal__input" id="euGbMsg" type="text" placeholder="The good life, in pastry form" maxlength="120">
+        <label class="eu-gb-modal__label">Name / Company</label>
+        <input class="eu-gb-modal__input" id="euGbName" type="text" placeholder="Your name or organisation" maxlength="60">
+        <label class="eu-gb-modal__label">Country</label>
+        <input class="eu-gb-modal__input" id="euGbCountry" type="text" placeholder="Sweden, France, Germany..." maxlength="40">
+        <div class="eu-gb-modal__submit" id="euGbSubmit">Add to gallery</div>
+      </div>
+    </div>
+
+</div>
+
+<script src="../_shared/supabase.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

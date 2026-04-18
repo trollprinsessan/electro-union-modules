@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Electro Union — Moduler (iframe-preview)</title>
+<link rel="stylesheet" href="_shared/fonts.css">
+<link rel="stylesheet" href="_shared/tokens.css">
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --dim:#6a6a6a;
+    --blue:#003399;
+    --cream:#faf6ef;
+    --mono:'ABC Schengen Mono',ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--mono)}
+  body{padding:clamp(24px,4vw,64px) clamp(20px,4vw,48px);line-height:1.5}
+
+  .page-head{max-width:980px;margin:0 auto clamp(32px,4vw,56px)}
+  h1{
+    font-family:'Times Eighteen',Georgia,serif;
+    font-weight:normal;
+    font-size:clamp(32px,5vw,56px);
+    line-height:1.05;
+    color:var(--blue);
+    margin:0 0 8px;
+    letter-spacing:-.01em;
+  }
+  .lead{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--dim);
+    margin:0 0 12px;
+  }
+  .intro{
+    font-family:var(--mono);
+    font-size:13px;
+    line-height:1.55;
+    color:var(--ink);
+    max-width:680px;
+    opacity:.8;
+  }
+  .intro code{
+    background:rgba(0,0,0,.05);
+    padding:1px 5px;
+    border-radius:2px;
+  }
+
+  /* — Modul-block — */
+  .modules{
+    display:flex;
+    flex-direction:column;
+    gap:clamp(40px,5vw,72px);
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .mod{
+    background:#fff;
+    border:1px solid rgba(0,0,0,.1);
+    padding:clamp(16px,2vw,24px);
+  }
+  .mod__head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:20px;
+    padding-bottom:12px;
+    margin-bottom:16px;
+    border-bottom:1px solid rgba(0,0,0,.08);
+    flex-wrap:wrap;
+  }
+  .mod__title{
+    font-family:'Times Eighteen',Georgia,serif;
+    font-size:clamp(20px,2.5vw,28px);
+    color:var(--blue);
+    line-height:1.1;
+    margin:0;
+  }
+  .mod__num{
+    font-size:10px;
+    letter-spacing:.14em;
+    color:var(--dim);
+    text-transform:uppercase;
+    margin-right:8px;
+  }
+  .mod__links{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    flex-wrap:wrap;
+  }
+  .mod__links a{color:var(--dim);text-decoration:none;border-bottom:1px solid transparent}
+  .mod__links a:hover{color:var(--blue);border-bottom-color:var(--blue)}
+  .mod__copy{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 14px;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    transition:background .15s;
+  }
+  .mod__copy:hover{background:#000}
+  .mod__copy.is-copied{background:#0a7a3a}
+  .mod__copy::before{
+    content:"📋";
+    font-size:12px;
+  }
+  .mod__desc{
+    font-size:12px;
+    color:var(--ink);
+    opacity:.75;
+    margin:0 0 14px;
+    max-width:720px;
+  }
+  .mod__frame{
+    width:100%;
+    border:1px solid rgba(0,0,0,.08);
+    display:block;
+    background:#fff;
+  }
+
+  /* — Embed-snippet — */
+  details.snippet{
+    margin-top:12px;
+    background:#f6f4ef;
+    border:1px solid rgba(0,0,0,.08);
+  }
+  details.snippet summary{
+    list-style:none;
+    cursor:pointer;
+    padding:10px 14px;
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--dim);
+    user-select:none;
+  }
+  details.snippet summary::-webkit-details-marker{display:none}
+  details.snippet summary:hover{color:var(--blue)}
+  details.snippet[open] summary{color:var(--blue);border-bottom:1px solid rgba(0,0,0,.08)}
+  details.snippet pre{
+    margin:0;
+    padding:14px;
+    font-family:var(--mono);
+    font-size:11px;
+    line-height:1.45;
+    white-space:pre-wrap;
+    word-break:break-word;
+    color:var(--ink);
+  }
+  details.snippet .copy{
+    display:inline-block;
+    margin:0 14px 14px;
+    padding:6px 12px;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    cursor:pointer;
+  }
+  details.snippet .copy:hover{opacity:.85}
+
+  .footnote{
+    max-width:980px;margin:clamp(32px,4vw,48px) auto 0;
+    font-size:11px;color:var(--dim);
+  }
+  .footnote code{background:rgba(0,0,0,.05);padding:1px 5px;border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Electro Union — moduler</h1>
+  <p class="lead">iframe-preview · copy-paste till Webflow</p>
+  <p class="intro">
+    Varje modul nedan är laddad i en <code>&lt;iframe&gt;</code> med
+    <code>?embed=1</code> — precis som det kommer se ut i Webflow CMS.
+    Modulerna postar höjd automatiskt via <code>postMessage</code>
+    (<code>_shared/embed.js</code>), så ramen justerar sig själv.
+    Klicka "Embed-kod" under varje för copy-paste-snipet.
+  </p>
+  <p class="intro" style="margin-top:14px;padding:10px 14px;background:#fff8d6;border-left:3px solid var(--blue)">
+    <strong>Just nu</strong>: snippens <code>src</code> pekar på
+    <code>http://192.168.50.3:3000/</code> (KP:s Mac på LAN) så Nina kan
+    testa live i Webflow över samma nät. När vi deployar till Vercel
+    eller annan host byter vi ut hela <code>http://192.168.50.3:3000/</code>-
+    delen till den riktiga URL:n (t.ex. <code>https://&lt;ninas-vercel-
+    projekt&gt;.vercel.app/</code>). Resten av snippen är identisk.
+  </p>
+</div>
+
+<div class="modules">
+
+  <!-- ─────────── GATE ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">01</span>Gate</h2>
+      <div class="mod__links">
+        <a href="gate/">Open standalone</a>
+        <a href="gate/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-gate">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">"I approve this message"-counter, Roman columns, scroll-driven. Behöver Supabase för att visa nummer.</p>
+    <iframe class="mod__frame" src="gate/?embed=1" loading="lazy" scrolling="no" style="height:800px" allow="clipboard-write" data-mod="gate"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-gate">&lt;iframe
+  src="http://192.168.50.3:3000/gate/?embed=1"
+  title="Electro Union — Gate"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="800"
+  loading="lazy"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/gate/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-gate">Copy</button>
+    </details>
+  </div>
+
+  <!-- ─────────── TOOLKIT ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">02</span>Toolkit</h2>
+      <div class="mod__links">
+        <a href="toolkit/">Open standalone</a>
+        <a href="toolkit/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-toolkit">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">27-länders flag-cykel, 3 tabbar (sharables / paper / social), sticky link. Daniels favorit.</p>
+    <iframe class="mod__frame" src="toolkit/?embed=1" loading="lazy" scrolling="no" style="height:800px" allow="clipboard-write" data-mod="toolkit"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-toolkit">&lt;iframe
+  src="http://192.168.50.3:3000/toolkit/?embed=1"
+  title="Electro Union — Toolkit"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="800"
+  loading="lazy"
+  allow="clipboard-write"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/toolkit/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-toolkit">Copy</button>
+    </details>
+  </div>
+
+  <!-- ─────────── POSTCARD GENERATOR ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">03</span>Postcard generator</h2>
+      <div class="mod__links">
+        <a href="postcard-generator/">Open standalone</a>
+        <a href="postcard-generator/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-postcard">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">Light-switch shuffle, byline-preview, canvas PNG-export (1080×1350).</p>
+    <iframe class="mod__frame" src="postcard-generator/?embed=1" loading="lazy" scrolling="no" style="height:900px" allow="clipboard-write" data-mod="postcard-generator"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-postcard">&lt;iframe
+  src="http://192.168.50.3:3000/postcard-generator/?embed=1"
+  title="Electro Union — Postcard"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="900"
+  loading="lazy"
+  allow="clipboard-write"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/postcard-generator/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-postcard">Copy</button>
+    </details>
+  </div>
+
+  <!-- ─────────── MUSIC PLAYER ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">04</span>Music player</h2>
+      <div class="mod__links">
+        <a href="music-player/">Open standalone</a>
+        <a href="music-player/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-music">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">4 tracks, autoplay-on-click, fixed sound controls, progress seek. Player ligger ovanpå citatbilden.</p>
+    <iframe class="mod__frame" src="music-player/?embed=1" loading="lazy" scrolling="no" style="height:700px" allow="autoplay" data-mod="music-player"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-music">&lt;iframe
+  src="http://192.168.50.3:3000/music-player/?embed=1"
+  title="Electro Union — Music"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="700"
+  loading="lazy"
+  allow="autoplay"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/music-player/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-music">Copy</button>
+    </details>
+  </div>
+
+  <!-- ─────────── MERCH ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">05</span>Merch</h2>
+      <div class="mod__links">
+        <a href="merch/">Open standalone</a>
+        <a href="merch/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-merch">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">2000s web-badge + 9-produkt-grid. Ingen backend (visuellt bara).</p>
+    <iframe class="mod__frame" src="merch/?embed=1" loading="lazy" scrolling="no" style="height:1400px" data-mod="merch"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-merch">&lt;iframe
+  src="http://192.168.50.3:3000/merch/?embed=1"
+  title="Electro Union — Merch"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="1400"
+  loading="lazy"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/merch/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-merch">Copy</button>
+    </details>
+  </div>
+
+  <!-- ─────────── DRAWING ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">06</span>Drawing</h2>
+      <div class="mod__links">
+        <a href="drawing/">Open standalone</a>
+        <a href="drawing/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-drawing">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">Canvas med 9 stamps, animation modes, PNG/GIF-export. Exponerar <code>window.EU_DRAWING</code> för guestbook.</p>
+    <iframe class="mod__frame" src="drawing/?embed=1" loading="lazy" scrolling="no" style="height:1100px" allow="clipboard-write" data-mod="drawing"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-drawing">&lt;iframe
+  src="http://192.168.50.3:3000/drawing/?embed=1"
+  title="Electro Union — Drawing"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="1100"
+  loading="lazy"
+  allow="clipboard-write"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/drawing/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-drawing">Copy</button>
+    </details>
+  </div>
+
+  <!-- ─────────── GUESTBOOK ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">07</span>Guestbook</h2>
+      <div class="mod__links">
+        <a href="guestbook/">Open standalone</a>
+        <a href="guestbook/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-guestbook">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">Gallery + submit via Supabase. Konsumerar <code>window.EU_DRAWING</code> om drawing-modulen laddats.</p>
+    <iframe class="mod__frame" src="guestbook/?embed=1" loading="lazy" scrolling="no" style="height:900px" data-mod="guestbook"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-guestbook">&lt;iframe
+  src="http://192.168.50.3:3000/guestbook/?embed=1"
+  title="Electro Union — Guestbook"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="900"
+  loading="lazy"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/guestbook/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-guestbook">Copy</button>
+    </details>
+  </div>
+
+</div>
+
+<p class="footnote">
+  Höjden på varje <code>&lt;iframe&gt;</code> synkas automatiskt via
+  <code>postMessage</code>. När vi hostar modulerna (t.ex. på Vercel) byt
+  bara <code>src</code>. Alla 7 modulerna är standalone-sidor med sina
+  egna assets — inga beroenden utanför <code>_shared/</code>.
+</p>
+
+<!-- Iframe-resize-listener för denna sida -->
+<script>
+// Tar emot höjd från varje inbäddad modul och skalar respektive iframe
+window.addEventListener('message', function (e) {
+  if (!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+  var frames = document.querySelectorAll('iframe[data-mod]');
+  for (var i = 0; i < frames.length; i++) {
+    var f = frames[i];
+    if (f.contentWindow === e.source) {
+      f.style.height = e.data.height + 'px';
+      break;
+    }
+  }
+});
+
+// Copy-to-clipboard för embed-snippets — funkar både för mod__copy
+// (prominent knapp i header) och .copy (knappen inne i <details>)
+document.querySelectorAll('[data-copy]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = document.getElementById(btn.getAttribute('data-copy'));
+    if (!pre) return;
+    // pre-innehållet är HTML-escapade taggar — textContent ger riktig källkod
+    var txt = pre.textContent;
+    navigator.clipboard.writeText(txt).then(function () {
+      var orig = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('is-copied');
+      setTimeout(function () {
+        btn.textContent = orig;
+        btn.classList.remove('is-copied');
+      }, 1600);
+    });
+  });
+});
+</script>
+</body>
+</html>
