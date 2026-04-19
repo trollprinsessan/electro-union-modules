@@ -1,7 +1,7 @@
 /*
  * Electro Union — Toolkit Module
  *
- * Daniels favoritmodul: social media assets, stickers, messaging.
+ * Toolkit: social media assets, stickers, messaging.
  *
  * Kräver: ../_shared/fonts.css + ../_shared/tokens.css
  *
@@ -18,7 +18,7 @@
 }
 .eu-sharables__toggle{
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
-  font-size:clamp(14px,2vw,22px);
+  font-size:min(2.2vw,20px);
   text-transform:uppercase;
   letter-spacing:.03em;
   color:#009246;
@@ -32,6 +32,8 @@
   background:linear-gradient(180deg,#009246 0%,#009246 33%,#fff 33%,#fff 66%,#CE2B37 66%,#CE2B37 100%);
   transition:none;
   width:100%;
+  white-space:nowrap;
+  overflow:hidden;
 }
 .eu-sharables__toggle:hover{
   opacity:1;
@@ -42,6 +44,7 @@
   font-size:.5em;
 }
 .eu-sharables.is-open .eu-sharables__arrow{transform:rotate(180deg)}
+.eu-sharables.is-open .eu-sharables__toggle{font-size:min(3vw,22px)}
 .eu-sharables__content{
   display:none;
 }
@@ -95,7 +98,7 @@
   gap:clamp(12px,2vw,20px);
 }
 .eu-pap-card{
-  text-decoration:none;color:var(--ink);
+  color:var(--ink);
   display:flex;flex-direction:column;
   transition:transform .2s;
   text-align:left;
@@ -123,7 +126,6 @@
 }
 .eu-pap-card__btn{
   display:inline-block;
-  margin-top:clamp(5px,.7vw,8px);
   padding:clamp(4px,.5vw,6px) clamp(8px,1.1vw,14px);
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
   font-size:clamp(9px,1.1vw,12px);
@@ -137,8 +139,9 @@
   transition:opacity .15s;
   text-decoration:none;
   text-align:center;
-  align-self:flex-start;
   line-height:1;
+  -webkit-appearance:none;
+  appearance:none;
 }
 .eu-pap-card__btn:hover{opacity:0.8}
 .eu-pap__free{
@@ -205,3 +208,179 @@
 
 /* Hide sticky link in embed mode */
 .is-embed .eu-toolkit-sticky{display:none!important}
+
+/* ═══ HIDE CLICK HERE AFTER OPEN ═══ */
+.eu-sharables.is-open .eu-clickhere{display:none}
+
+/* ═══ CARD ACTIONS ROW ═══ */
+.eu-pap-card__actions{
+  display:flex;
+  gap:4px;
+  margin-top:clamp(5px,.7vw,8px);
+  flex-wrap:wrap;
+}
+.eu-pap-card__share--ig{background:#CE2B37}
+.eu-pap-card__share--ig:hover{opacity:0.8}
+.eu-pap-card__share--li{background:#0A66C2}
+.eu-pap-card__share--li:hover{opacity:0.8}
+
+/* ═══ GENERATE YOUR OWN TAB ═══ */
+.eu-pap__gen-intro{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(12px,1.4vw,16px);
+  color:#555;
+  text-align:center;
+  line-height:1.5;
+  margin:0 auto clamp(12px,2vw,20px);
+  max-width:480px;
+}
+.eu-pap__postcard-frame{
+  width:100%;
+  border:none;
+  display:block;
+  min-height:560px;
+}
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+@media (max-width:600px){
+  .eu-sharables{margin-top:32px}
+  .eu-sharables__inner{padding:14px 14px}
+  .eu-pap__nav{gap:10px;flex-wrap:wrap;justify-content:center}
+  .eu-pap__nav-item{font-size:11px;padding:6px 4px}
+  .eu-pap__grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .eu-pap-card__name{font-size:11px}
+  .eu-pap-card__desc{font-size:8px}
+  .eu-pap-card__actions{gap:3px}
+  .eu-pap-card__btn{font-size:8px;padding:5px 6px}
+}
+@media (max-width:380px){
+  .eu-pap__grid{grid-template-columns:1fr 1fr}
+  .eu-pap__nav{gap:6px}
+}
+
+/* ═══ DOWNLOAD DIVIDER ═══ */
+.eu-pap__dl-divider{
+  text-align:center;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(9px,1vw,11px);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin:clamp(28px,4vw,44px) 0 clamp(10px,1.5vw,16px);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.eu-pap__dl-divider::before,
+.eu-pap__dl-divider::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:rgba(0,0,0,.08);
+}
+
+/* ═══ OPTION LABEL (prototype only) ═══ */
+.eu-pap__option-label{
+  text-align:center;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin:clamp(16px,2.5vw,28px) 0 clamp(10px,1.5vw,16px);
+}
+
+/* ═══ OPTION C — SPLIT BUTTON ═══ */
+.eu-pap-card__split-wrap{
+  display:flex;
+  gap:5px;
+  margin-top:clamp(5px,.7vw,8px);
+}
+.eu-pap-card__split{
+  display:flex;
+  flex:1;
+  overflow:hidden;
+}
+.eu-pap-card__split-share{
+  flex:1;
+  padding:clamp(4px,.5vw,6px) clamp(6px,1vw,10px);
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(9px,1.1vw,12px);
+  text-transform:lowercase;
+  letter-spacing:0.01em;
+  border:none;
+  color:#fff;
+  cursor:pointer;
+  line-height:1;
+  text-align:center;
+  -webkit-appearance:none;
+  appearance:none;
+  transition:opacity .15s;
+}
+.eu-pap-card__split-share:hover{opacity:.8}
+.eu-pap-card__split-dl{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(4px,.5vw,6px) clamp(7px,1vw,10px);
+  font-size:clamp(10px,1.2vw,13px);
+  border:none;
+  border-left:1px solid rgba(255,255,255,.3);
+  color:#fff;
+  cursor:pointer;
+  line-height:1;
+  text-decoration:none;
+  transition:opacity .15s;
+}
+.eu-pap-card__split-dl:hover{opacity:.8}
+.eu-pap-card__split-share.eu-pap-card__split--li,
+.eu-pap-card__split-dl.eu-pap-card__split--li{background:#0A66C2}
+.eu-pap-card__split-share.eu-pap-card__split--ig,
+.eu-pap-card__split-dl.eu-pap-card__split--ig{background:#CE2B37}
+
+/* ═══ OPTION D — TWO ROWS ═══ */
+.eu-pap-card__rows{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin-top:clamp(5px,.7vw,8px);
+}
+.eu-pap-card__row{
+  display:flex;
+  gap:3px;
+}
+.eu-pap-card__row-share{
+  flex:1;
+  padding:clamp(4px,.5vw,6px) clamp(6px,1vw,10px);
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
+  font-size:clamp(9px,1.1vw,12px);
+  text-transform:lowercase;
+  letter-spacing:0.01em;
+  border:none;
+  color:#fff;
+  cursor:pointer;
+  line-height:1;
+  text-align:left;
+  -webkit-appearance:none;
+  appearance:none;
+  transition:opacity .15s;
+}
+.eu-pap-card__row-share:hover{opacity:.8}
+.eu-pap-card__row-dl{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(4px,.5vw,6px) clamp(10px,1.5vw,16px);
+  font-size:clamp(10px,1.2vw,13px);
+  border:none;
+  color:#fff;
+  cursor:pointer;
+  line-height:1;
+  text-decoration:none;
+  transition:opacity .15s;
+}
+.eu-pap-card__row-dl:hover{opacity:.8}
+.eu-pap-card__row-share.eu-pap-card__row--li,
+.eu-pap-card__row-dl.eu-pap-card__row--li{background:#0A66C2}
+.eu-pap-card__row-share.eu-pap-card__row--ig,
+.eu-pap-card__row-dl.eu-pap-card__row--ig{background:#CE2B37}

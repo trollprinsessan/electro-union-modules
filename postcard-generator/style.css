@@ -18,20 +18,69 @@
   position:relative;
   overflow:visible;
 }
+/* Stage row: framed preview + computer gif side by side */
+.eu-gen__row{
+  display:flex;
+  align-items:center;
+  gap:clamp(12px,2.5vw,28px);
+  width:100%;
+  max-width:700px;
+  justify-content:center;
+}
 .eu-gen__stage{
   position:relative;
   width:100%;
   max-width:550px;
+  flex-shrink:1;
+}
+/* Computer gif — right side of the image */
+.eu-gen__computer{
+  width:clamp(72px,12vw,130px);
+  flex-shrink:0;
+  display:block;
+  align-self:center;
+}
+@media(max-width:600px){
+  .eu-gen__computer{
+    display:none;
+  }
 }
 .eu-gen__controls{
   display:flex;
-  flex-direction:row;
-  align-items:flex-end;
+  flex-direction:column;
+  align-items:stretch;
   width:100%;
   max-width:550px;
   margin-top:clamp(20px,3vw,32px);
-  gap:clamp(12px,2vw,20px);
+  gap:clamp(8px,1.2vw,12px);
 }
+/* Button row: LinkedIn | Instagram | Download */
+.eu-gen__actions{
+  display:flex;
+  gap:clamp(6px,1vw,10px);
+}
+.eu-gen-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(11px,1.2vw,14px);
+  font-weight:normal;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  white-space:nowrap;
+  cursor:pointer;
+  line-height:1;
+  padding:clamp(10px,1.2vw,13px) clamp(10px,1.5vw,16px);
+  transition:opacity .15s;
+  border:none;
+  color:#fff;
+}
+.eu-gen-btn:hover{opacity:.85}
+.eu-gen-btn--li{background:#0A66C2}
+.eu-gen-btn--ig{background:#CE2B37}
 
 /* ── Light switch (shuffle trigger) ── */
 .eu-switch-wrap{
@@ -300,7 +349,7 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  flex:0 0 auto;
+  flex:1;
   box-sizing:border-box;
   font-family:'Times Eighteen',Georgia,serif;
   font-size:clamp(11px,1.2vw,14px);

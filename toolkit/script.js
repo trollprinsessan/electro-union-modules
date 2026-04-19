@@ -117,4 +117,69 @@
       });
     }
   }
+
+  // Hide "CLICK HERE" text after open (CSS handles it, but also set via class)
+  // (handled via CSS .eu-sharables.is-open .eu-clickhere{display:none})
+
+  // Per-card Instagram share (native Web Share API with file)
+  function shareToInstagram(btn) {
+    var src = btn.getAttribute('data-src');
+    if (!src) return;
+    var absUrl = new URL(src, window.location.href).href;
+    fetch(absUrl)
+      .then(function(r){ return r.blob(); })
+      .then(function(blob){
+        var ext = blob.type.includes('gif') ? 'gif' : blob.type.includes('png') ? 'png' : 'jpg';
+        var file = new File([blob], 'electro-union.' + ext, { type: blob.type });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({ files: [file], title: 'Electro Union' });
+        } else if (navigator.share) {
+          return navigator.share({ url: window.location.href, title: 'Electro Union — Join the movement' });
+        } else {
+          // Desktop fallback: trigger download + hint
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'electro-union.' + ext;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          var orig = btn.textContent;
+          btn.textContent = 'saved — share via app';
+          setTimeout(function(){ btn.textContent = orig; }, 3000);
+        }
+      })
+      .catch(function(){});
+  }
+
+  // Per-card LinkedIn share
+  function shareToLinkedIn(btn) {
+    var shareUrl = (function(){
+      try { if (window.parent !== window && document.referrer) return document.referrer; } catch(e){}
+      return 'https://trollprinsessan.github.io/electro-union-modules/toolkit/';
+    })();
+    window.open(
+      'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl),
+      '_blank', 'noopener,noreferrer,width=600,height=520'
+    );
+  }
+
+  // Event delegation on document for share buttons
+  // Covers plain (.share--ig/li), split (.split--ig/li) and row (.row--ig/li) variants
+  document.addEventListener('click', function(e){
+    var igBtn = e.target.closest('.eu-pap-card__share--ig, .eu-pap-card__split--ig, .eu-pap-card__row--ig');
+    if (igBtn) { e.stopPropagation(); shareToInstagram(igBtn); return; }
+    var liBtn = e.target.closest('.eu-pap-card__share--li, .eu-pap-card__split--li, .eu-pap-card__row--li');
+    if (liBtn) { e.stopPropagation(); shareToLinkedIn(liBtn); return; }
+  });
+
+  // Postcard generator iframe resize relay
+  window.addEventListener('message', function(e){
+    if(e.data && e.data.type === 'eu-resize' && e.data.height){
+      var frame = document.getElementById('euPostcardFrame');
+      if(frame) frame.style.height = e.data.height + 'px';
+    }
+  });
+
 })();

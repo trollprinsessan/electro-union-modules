@@ -12,6 +12,7 @@
  *   - Klick på fotot eller på light-switchen → shuffle (10 snabba byten)
  *   - Byline-input uppdaterar live preview
  *   - Download renderar 1080x1350 PNG via offscreen-canvas med byline-overlay
+ *   - LinkedIn/Instagram renderar canvas → Web Share API (mobil) eller fallback
  */
 
 (function () {
@@ -96,10 +97,11 @@
     }
   });
 
-  // Download PNG
-  document.getElementById('euDl').onclick = function (e) {
-    e.preventDefault();
-    var W = 1080, H = 1350, im = new Image();
+  // Render canvas → call cb(blob)
+  function renderToBlob(cb) {
+    var W = 1080, H = 1350;
+    cx.clearRect(0, 0, W, H);
+    var im = new Image();
     im.crossOrigin = 'anonymous';
     im.onload = function () {
       var r = Math.max(W / im.width, H / im.height);
@@ -107,7 +109,6 @@
       var s = new Image(); s.crossOrigin = 'anonymous';
       s.onload = function () {
         cx.drawImage(s, 0, 0, W, H);
-        // Render byline
         var byline = bylineInput.value.trim();
         if (byline) {
           cx.save();
@@ -120,13 +121,73 @@
           cx.fillText(byline, W / 2, H - 80);
           cx.restore();
         }
-        var a = document.createElement('a');
-        a.download = 'electro-union-postcard.png';
-        a.href = cv.toDataURL('image/png');
-        a.click();
+        cv.toBlob(cb, 'image/png');
       };
       s.src = ST[si];
     };
     im.src = BG[bi];
+  }
+
+  // Download PNG
+  document.getElementById('euDl').onclick = function (e) {
+    e.preventDefault();
+    renderToBlob(function(blob) {
+      if (!blob) return;
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.download = 'electro-union-postcard.png';
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   };
+
+  // Share via Web Share API (with file on mobile, URL fallback on desktop)
+  function sharePostcard(btn, shareUrl) {
+    renderToBlob(function(blob) {
+      if (!blob) return;
+      var file = new File([blob], 'electro-union-postcard.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'Electro Union — Join the movement' }).catch(function(){});
+      } else if (navigator.share) {
+        navigator.share({ url: shareUrl, title: 'Electro Union — Join the movement' }).catch(function(){});
+      } else {
+        // Desktop fallback: download + hint
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'electro-union-postcard.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        var orig = btn.textContent;
+        btn.textContent = 'saved — share via app';
+        setTimeout(function(){ btn.textContent = orig; }, 3000);
+      }
+    });
+  }
+
+  var toolkitUrl = 'https://trollprinsessan.github.io/electro-union-modules/toolkit/';
+
+  // LinkedIn share button
+  document.getElementById('euLi').onclick = function() {
+    if (navigator.share) {
+      sharePostcard(this, toolkitUrl);
+    } else {
+      // Desktop: open LinkedIn share dialog with toolkit URL
+      window.open(
+        'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(toolkitUrl),
+        '_blank', 'noopener,noreferrer,width=600,height=520'
+      );
+    }
+  };
+
+  // Instagram share button
+  document.getElementById('euIg').onclick = function() {
+    sharePostcard(this, toolkitUrl);
+  };
+
 })();

@@ -6,7 +6,7 @@
  *   <link rel="stylesheet" href="../_shared/tokens.css">
  *
  * Alla moduler använder `.eu`-containern som root. Allt nedan scope:at
- * till `.eu` för att undvika att kollidera med Webflow/Norrsken-stilar.
+ * till `.eu` för att undvika att kollidera med host-sidans stilar.
  */
 
 .eu * {
