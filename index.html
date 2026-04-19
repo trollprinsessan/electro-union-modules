@@ -441,12 +441,47 @@ window.addEventListener('message', function(e){
     </details>
   </div>
 
+  <!-- ─────────── GENERATOR ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">08</span>Generator</h2>
+      <div class="mod__links">
+        <a href="generator/">Open standalone</a>
+        <a href="generator/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-generator">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">Combined drawing + postcard: stamps, stickers, animate, background library, color picker, upload, byline — MP4/PNG export + share.</p>
+    <iframe class="mod__frame" src="generator/?embed=1" loading="lazy" scrolling="no" style="height:900px" allow="clipboard-write" data-mod="generator"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-generator">&lt;iframe
+  src="https://trollprinsessan.github.io/electro-union-modules/generator/?embed=1"
+  title="Electro Union — Generator"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="900"
+  loading="lazy"
+  allow="clipboard-write"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+window.addEventListener('message', function(e){
+  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){
+      if(f.src.indexOf('/generator/') &gt; -1) f.style.height = e.data.height + 'px';
+    });
+  }
+});
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-generator">Copy</button>
+    </details>
+  </div>
+
 </div>
 
 <p class="footnote">
   Höjden på varje <code>&lt;iframe&gt;</code> synkas automatiskt via
   <code>postMessage</code>. När vi hostar modulerna (t.ex. på Vercel) byt
-  bara <code>src</code>. Alla 7 modulerna är standalone-sidor med sina
+  bara <code>src</code>. Alla modulerna är standalone-sidor med sina
   egna assets — inga beroenden utanför <code>_shared/</code>.
 </p>
 
