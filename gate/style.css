@@ -27,8 +27,8 @@
   gap:clamp(12px,2vw,20px);
 }
 .eu-checkbox{
-  width:clamp(28px,4vw,44px);
-  height:clamp(28px,4vw,44px);
+  width:min(5vw,48px);
+  height:min(5vw,48px);
   border:2px solid #111;
   flex-shrink:0;
   position:relative;
@@ -53,24 +53,26 @@
 .eu.is-open .eu-checkbox__check{opacity:1}
 .eu-bar__cta{
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
-  font-size:clamp(24px,5vw,48px);
+  font-size:min(5vw,48px);
   font-weight:normal;
   color:#000;
   letter-spacing:-0.01em;
   line-height:1;
   text-transform:uppercase;
+  white-space:nowrap;
 }
 /* approved counter state */
 .eu-bar__approved{
   display:none;
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
-  font-size:clamp(24px,5vw,48px);
+  font-size:min(5vw,48px);
   font-weight:normal;
   color:#000;
   text-align:center;
   letter-spacing:-0.01em;
   line-height:1;
   text-transform:uppercase;
+  white-space:nowrap;
 }
 .eu-bar__count{
   color:var(--blue);
