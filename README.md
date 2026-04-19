@@ -83,7 +83,7 @@ Inget i Webflow behöver röras. Inget annat modul påverkas.
 Om/när du vill hosta modulerna på egen CDN:
 
 1. Ladda upp hela mappen till den servern
-2. Peka en subdomän dit, t.ex. `electro-union.norrsken.org`
+2. Peka en subdomän dit, t.ex. `electro-union.valfridomän.org`
 3. I Webflow CMS — söka-och-ersätt `trollprinsessan.github.io/electro-union-modules` med nya domänen i alla Embed-block
 
 Inga kodändringar. Koden inuti modulerna är host-agnostisk.
