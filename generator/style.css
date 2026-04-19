@@ -29,6 +29,24 @@
   border: 0;
 }
 
+/* ═══ EMBED MODE — break the iframe-resize feedback loop ═══
+   When embedded: parent resizes iframe to our scrollHeight. If we use 100vh,
+   each resize grows our height → scrollHeight grows → parent grows iframe →
+   endless loop. So in embed mode we lock .eu-gen2 to a fixed pixel height
+   and disable 100vh entirely. */
+html.is-embed,
+html.is-embed body {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html.is-embed .eu-gen2 {
+  height: 720px !important;
+  max-height: 720px !important;
+  min-height: 720px !important;
+}
+
 /* ═══ OUTER WRAPPER — locked to viewport ═══ */
 .eu-gen2 {
   box-sizing: border-box;
