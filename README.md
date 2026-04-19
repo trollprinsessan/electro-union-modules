@@ -1,11 +1,3 @@
-# Electro Union — Modules
-
-Modulär, embedbar version av Electro Union-kampanjen. Varje undermapp är en
-fristående HTML-sida som kan bäddas in i Webflow via `<iframe>`.
-
-Extraherad från det ursprungliga `trollprinsessan/electrounion`-repot (Golden-
-versionen) och uppdelad i 7 oberoende moduler som laddar in separat, så att
-artikeln i Webflow CMS kan välja vilken/vilka som används.
 
 ## Struktur
 
@@ -23,24 +15,9 @@ electro-union-modules/
 └── guestbook/            # Gallery + submit via Supabase
 ```
 
-## Hosting
 
-Hostas via **GitHub Pages** på branch `main`, från roten.
 
-- **Repo**: `trollprinsessan/electro-union-modules`
-- **Live URL**: `https://trollprinsessan.github.io/electro-union-modules/`
-- **Varje modul**: `https://trollprinsessan.github.io/electro-union-modules/<modul>/?embed=1`
-
-### Aktivera GitHub Pages
-
-1. Gå till `https://github.com/trollprinsessan/electro-union-modules/settings/pages`
-2. Source: "Deploy from a branch"
-3. Branch: `main` / `/ (root)`
-4. Save → vänta ~60 sekunder → URL visas högst upp
-
-## Webflow-embedding
-
-I Webflow CMS (artikeln), lägg till ett **Embed-block** där du vill ha modulen,
+I Webflow CMS, lägg till ett **Embed-block** där du vill ha modulen,
 och klistra in:
 
 ```html
@@ -101,9 +78,9 @@ Push till GitHub → live inom ~60 sekunder på GitHub Pages-URL:en.
 
 Inget i Webflow behöver röras. Inget annat modul påverkas.
 
-## Framtid: flytta till Norrsken-server
+## Framtid: flytta till Annan-server
 
-Om/när Norrsken vill hosta modulerna på egen CDN:
+Om/när du vill hosta modulerna på egen CDN:
 
 1. Ladda upp hela mappen till den servern
 2. Peka en subdomän dit, t.ex. `electro-union.norrsken.org`
@@ -114,26 +91,6 @@ Inga kodändringar. Koden inuti modulerna är host-agnostisk.
 ## Beroenden
 
 - **Ingen build**, inga frameworks, vanilla HTML/CSS/JS
-- **Supabase** (publik RPC): `qqaiqevsygqwlfnvnhiu.supabase.co` — för counter och guestbook
 - **Finsweet Copyclip** (inline): redan bundlat om det används
 - **GSAP/ScrollSmoother**: används INTE i modulerna (bara i Webflow-artikeln)
 
-## Vad som INTE är här
-
-Denna repo är **bara modulerna**. Det kompletta ursprungliga `electro-union-module.html`
-(Golden) ligger kvar i `trollprinsessan/electrounion` och är orört.
-
-## Version-history per modul
-
-```bash
-# Visa bara ändringar i music-player:
-git log -- music-player/
-
-# Visa bara diff i toolkit mellan två commits:
-git diff HEAD~3 HEAD -- toolkit/
-```
-
-## Licens
-
-Internt, Norrsken Foundation.
-<!-- KP test push -->
