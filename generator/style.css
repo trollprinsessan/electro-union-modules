@@ -1,0 +1,739 @@
+/*
+ * Electro Union — Combined Generator Module Styles
+ * All classes prefixed eu-gen2__
+ *
+ * Layout strategy — the entire module fits inside one viewport (100vh).
+ *   .eu-gen2         = height 100vh, flex-column, overflow hidden, max-width 768
+ *   .eu-gen2__workspace = flex:1 row/col : canvas-col | panel-col
+ *   .eu-gen2__actions   = flex:0 footer pinned at bottom (full content width)
+ *
+ * A = canvas-col: framed (flex:1) + byline-strip (auto)
+ * B = panel-col:  tools (auto) + bg-block (flex:1) + undo-row (auto)
+ *     tools grid: pastry|sticker side-by-side, then size slider, then animate row
+ * C = actions:   share + download, always 100% of content width
+ *
+ * Breakpoints:
+ *   ≥768px : A(50%) | B(50%), C below both
+ *   <768   : stacked — A fixed top (≤50vh), B scrollable (≤45vh), C pinned (≤5vh)
+ *   Thumbs always 1:1.
+ */
+
+/* ═══ A11y helpers ═══ */
+.eu-gen2__visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ═══ OUTER WRAPPER — locked to viewport ═══ */
+.eu-gen2 {
+  box-sizing: border-box;
+  height: 100vh;
+  max-height: 100vh;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  overflow: hidden;
+}
+
+/* ═══ WORKSPACE — A | B on desktop ═══ */
+.eu-gen2__workspace {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* ═══ A — CANVAS COLUMN (65% of content width) ═══ */
+.eu-gen2__canvas-col {
+  flex: 13 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Framed preview — 4:5 (1063:1270). Takes full col width, aspect-ratio sets height.
+   max-height prevents overflow when col is taller than aspect needs. */
+.eu-gen2__framed {
+  flex: 0 1 auto;
+  width: 100%;
+  aspect-ratio: 1063 / 1270;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.eu-gen2__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.eu-gen2__canvas-wrap {
+  position: absolute;
+  top: 49.4%;
+  left: 48.7%;
+  transform: translate(-50%, -50%);
+  width: 82%;
+  height: 82%;
+  background: #fff;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.eu-gen2__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.eu-gen2__byline-preview {
+  position: absolute;
+  bottom: 12%;
+  left: 9%;
+  right: 9%;
+  text-align: center;
+  font-family: 'Times Eighteen', Georgia, serif;
+  font-size: clamp(9px, 1.1vw, 13px);
+  font-style: italic;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  letter-spacing: 0.03em;
+  z-index: 3;
+  pointer-events: none;
+  line-height: 1.3;
+}
+
+/* Byline strip — natural height under preview */
+.eu-gen2__byline-strip {
+  flex: 0 0 auto;
+  width: min(100%, 680px);
+}
+
+.eu-gen2__byline-label {
+  display: block;
+  width: 100%;
+}
+
+.eu-gen2__byline-input {
+  font-family: 'Times Eighteen', Georgia, serif;
+  font-size: clamp(12px, 1.2vw, 14px);
+  font-style: italic;
+  border: none;
+  border-bottom: 1.5px dotted #333;
+  background: transparent;
+  color: var(--ink);
+  padding: 0 4px 4px;
+  width: 100%;
+  outline: none;
+  letter-spacing: 0;
+}
+
+.eu-gen2__byline-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.eu-gen2__byline-input:focus-visible {
+  border-bottom-color: var(--ink);
+  outline: 2px solid var(--blue, #0A66C2);
+  outline-offset: 2px;
+}
+
+/* ═══ B — PANEL COLUMN (35% of content width) ═══ */
+.eu-gen2__panel-col {
+  flex: 7 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  overflow: hidden;
+}
+
+/* 20px luft mellan alla direkta barn, utom det första */
+.eu-gen2__panel-col > * + * {
+  margin-top: 20px;
+}
+
+/* Tools grid — pastry | sticker side-by-side.
+   Visual order (rows):
+     1: pastry-title   | sticker-title
+     2: pastry carousel| sticker carousel
+     3: size slider (full width)
+     4: animate title (full width)
+     5: animate row   (full width)
+   Hidden stamp-row and sticker-row divs (display:none in markup)
+   don't participate in grid layout. Target by class/ID to avoid
+   nth-child off-by-hidden bugs. */
+.eu-gen2__tools {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 14px;
+  row-gap: 2px;
+  align-items: start;
+  min-width: 0;
+}
+/* Row 1-2: pastry | sticker */
+.eu-gen2__tools > .eu-gen2__section-title:nth-of-type(2) { grid-column: 1; grid-row: 1; }
+.eu-gen2__tools > #euGen2StampCarousel                   { grid-column: 1; grid-row: 2; }
+.eu-gen2__tools > .eu-gen2__section-title--sticker       { grid-column: 2; grid-row: 1; }
+.eu-gen2__tools > #euGen2StickerCarousel                 { grid-column: 2; grid-row: 2; }
+/* Row 3: size slider under pastry/sticker */
+.eu-gen2__tools > .eu-gen2__size-slider                  { grid-column: 1 / -1; grid-row: 3; }
+/* Row 4-5: animate (extra breathing room above) */
+.eu-gen2__tools > .eu-gen2__section-title:first-child    { grid-column: 1 / -1; grid-row: 4; margin-top: 20px; }
+.eu-gen2__tools > .eu-gen2__anim-row                     { grid-column: 1 / -1; grid-row: 5; }
+
+.eu-gen2__section-title {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #666;
+  margin-bottom: 4px;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+.eu-gen2__bg-block > .eu-gen2__section-title:first-child {
+  margin-top: 0;
+}
+
+/* Carousel */
+.eu-gen2__carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 0 clamp(3px, 0.4vw, 6px);
+}
+
+.eu-gen2__carousel-item {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  cursor: var(--eu-cursor, pointer);
+}
+
+.eu-gen2__carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.eu-gen2__carousel-arrow {
+  cursor: var(--eu-cursor, pointer);
+  font-family: 'ABC Schengen Mono', 'Courier New', monospace;
+  font-size: 15px;
+  color: #555;
+  user-select: none;
+  padding: 10px 8px;
+  line-height: 1;
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+.eu-gen2__carousel-arrow:hover,
+.eu-gen2__carousel-arrow:focus-visible {
+  color: #000;
+  outline: 2px solid var(--blue, #0A66C2);
+  outline-offset: 1px;
+}
+
+/* Size slider */
+.eu-gen2__size-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: #bbb;
+  outline: none;
+  border-radius: 0;
+  margin: clamp(3px, 0.4vw, 6px) 0 clamp(4px, 0.6vw, 8px);
+}
+
+.eu-gen2__size-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px; height: 14px;
+  background: #000;
+  border-radius: 50%;
+  cursor: var(--eu-cursor, pointer);
+}
+
+.eu-gen2__size-slider::-moz-range-thumb {
+  width: 14px; height: 14px;
+  background: #000;
+  border-radius: 50%;
+  cursor: var(--eu-cursor, pointer);
+  border: none;
+}
+
+.eu-gen2__size-slider:focus-visible {
+  outline: 2px solid var(--blue, #0A66C2);
+  outline-offset: 4px;
+}
+
+/* Animate row */
+.eu-gen2__anim-row {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+  align-items: stretch;
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+.eu-gen2__anim {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: var(--eu-cursor, pointer);
+  color: #444;
+  background: transparent;
+  border: 1px solid #888;
+  padding: 6px 4px;
+  min-height: 28px;
+  transition: all 0.15s ease;
+  user-select: none;
+  line-height: 1;
+  text-align: center;
+}
+
+.eu-gen2__anim:hover {
+  color: #000;
+  border-color: #000;
+}
+
+.eu-gen2__anim:focus-visible {
+  outline: 2px solid var(--blue, #0A66C2);
+  outline-offset: 2px;
+}
+
+.eu-gen2__anim.is-active {
+  color: #fff;
+  background: #000;
+  border-color: #000;
+}
+
+/* ═══ BG BLOCK — natural height; byline + undo sit directly beneath ═══ */
+.eu-gen2__bg-block {
+  flex: 0 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Photo grid — thumbs ALWAYS 1:1 square; 4 fixed columns, rows flow down. */
+.eu-gen2__photo-grid {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: auto;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.eu-gen2__photo-thumb {
+  cursor: var(--eu-cursor, pointer);
+  border: 1.5px solid transparent;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+}
+
+.eu-gen2__photo-thumb:hover { border-color: #888; }
+.eu-gen2__photo-thumb:focus-visible {
+  outline: 2px solid var(--blue, #0A66C2);
+  outline-offset: 1px;
+}
+.eu-gen2__photo-thumb.is-active { border-color: #000; }
+
+.eu-gen2__photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Upload + color tiles */
+.eu-gen2__photo-thumb--upload,
+.eu-gen2__photo-thumb--color {
+  background: #fafafa;
+  border: 1.5px solid #bbb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eu-gen2__photo-thumb--upload:hover,
+.eu-gen2__photo-thumb--color:hover {
+  border-color: #555;
+}
+
+.eu-gen2__photo-thumb--upload.is-active,
+.eu-gen2__photo-thumb--color.is-active {
+  border-color: #000;
+}
+
+.eu-gen2__thumb-icon {
+  position: relative;
+  z-index: 2;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: clamp(14px, 1.6vw, 20px);
+  font-weight: 300;
+  color: #333;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.eu-gen2__photo-thumb--color .eu-gen2__bg-color__swatch {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.eu-gen2__photo-thumb--color.is-active .eu-gen2__thumb-icon {
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.eu-gen2__photo-thumb--color input[type="color"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: var(--eu-cursor, pointer);
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+/* ═══ UNDO / CLEAR — at bottom of panel-col ═══ */
+.eu-gen2__undo-row {
+  flex: 0 0 auto;
+  display: flex;
+  gap: clamp(8px, 1vw, 12px);
+  padding: clamp(4px, 0.6vw, 8px) 0 0;
+  align-items: center;
+}
+
+.eu-gen2__arrow {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: clamp(9px, 0.9vw, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: var(--eu-cursor, pointer);
+  color: #555;
+  background: transparent;
+  border: none;
+  transition: color 0.15s ease;
+  user-select: none;
+  line-height: 1;
+  padding: 6px 4px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.eu-gen2__arrow:hover { color: #000; }
+.eu-gen2__arrow:focus-visible {
+  outline: 2px solid var(--blue, #0A66C2);
+  outline-offset: 2px;
+  color: #000;
+}
+
+/* ═══ C — ACTIONS (full content width, always visible bottom) ═══
+   DOM order: download-section, share-section.
+   Visual order (per spec): share (linkedin|instagram) LEFT, download (gif|png) RIGHT. */
+.eu-gen2__actions {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.eu-gen2__actions > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Visual order per spec: share LEFT, download RIGHT */
+.eu-gen2__share-row   { order: 1; }
+.eu-gen2__dl-label    { order: 2; flex: 0 0 auto; }
+.eu-gen2__dl-row      { order: 3; justify-content: flex-end; }
+
+.eu-gen2__dl-label {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: clamp(9px, 0.9vw, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #555;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.eu-gen2__dl-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(6px, 0.8vw, 10px);
+  padding: 0;
+}
+
+.eu-gen2__dl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: center;
+  cursor: var(--eu-cursor, pointer);
+  color: #000;
+  border: 1px solid #000;
+  background: transparent;
+  transition: all 0.2s ease;
+  padding: 10px 16px;
+  min-height: 40px;
+}
+
+.eu-gen2__dl-btn:hover {
+  color: #fff;
+  background: #000;
+}
+
+.eu-gen2__dl-btn:focus-visible {
+  outline: 2px solid var(--blue, #0A66C2);
+  outline-offset: 2px;
+}
+
+.eu-gen2__dl-btn--primary { background: #000; color: #fff; }
+.eu-gen2__dl-btn--primary:hover {
+  background: var(--blue, #0A66C2);
+  border-color: var(--blue, #0A66C2);
+}
+
+.eu-gen2__share-row {
+  display: flex;
+  gap: clamp(6px, 0.8vw, 10px);
+  margin-top: 0;
+}
+
+.eu-gen2__share-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-family: 'Times Eighteen', Georgia, serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: var(--eu-cursor, pointer);
+  line-height: 1;
+  padding: 10px 12px;
+  min-height: 40px;
+  transition: opacity 0.15s;
+  border: none;
+  color: #fff;
+}
+
+.eu-gen2__share-btn:hover { opacity: 0.85; }
+.eu-gen2__share-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+  box-shadow: 0 0 0 2px var(--blue, #0A66C2);
+}
+
+.eu-gen2__share-btn--li { background: #0A66C2; }
+.eu-gen2__share-btn--ig { background: #CE2B37; }
+
+/* ═══════════════════════════════════════════════════════════
+   UNDER 768px — stacked. A fixed top (≤50vh, no scroll),
+   B scrollable (≤45vh), C pinned bottom (≤5vh, min 44px).
+   Whole module still locked to 100vh.
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 767.98px) {
+  .eu-gen2 {
+    height: 100vh;
+    max-height: 100vh;
+    max-width: 100%;
+    padding: 8px 10px;
+    gap: 6px;
+    overflow: hidden;
+  }
+
+  /* Workspace = A above B */
+  .eu-gen2__workspace {
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: 0;
+  }
+
+  /* A — FIXED TOP (never scrolls) */
+  .eu-gen2__canvas-col {
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: 50vh;
+    overflow: hidden;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  /* Framed fills the A region (byline lives in panel now). */
+  .eu-gen2__framed {
+    flex: 0 0 auto;
+    height: 50vh;
+    width: min(100%, calc(50vh * 1063 / 1270));
+    max-width: 100%;
+    aspect-ratio: 1063 / 1270;
+  }
+
+  .eu-gen2__byline-strip {
+    flex: 0 0 auto;
+    width: min(100%, 680px);
+  }
+
+  /* B — SCROLLABLE PANEL (only thing that scrolls) */
+  .eu-gen2__panel-col {
+    flex: 1 1 auto;
+    width: 100%;
+    max-height: 45vh;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Keep pastry | sticker side-by-side; 2-col grid already set on desktop */
+
+  /* bg-block grows to fill B (and scroll if needed) */
+  .eu-gen2__bg-block {
+    flex: 0 0 auto;  /* natural height within scroll container */
+    overflow: visible;
+  }
+
+  .eu-gen2__photo-grid {
+    flex: none;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    grid-auto-rows: auto;
+    overflow: visible;
+    gap: 4px;
+  }
+
+  .eu-gen2__photo-thumb {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    height: auto;
+  }
+
+  .eu-gen2__undo-row { flex: 0 0 auto; }
+
+  /* C — PINNED BOTTOM (share|download) */
+  .eu-gen2__actions {
+    flex: 0 0 auto;
+    min-height: 44px;
+    max-height: max(5vh, 44px);
+    padding: 4px 0;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .eu-gen2__dl-label { display: none; }
+
+  .eu-gen2__dl-btn, .eu-gen2__share-btn {
+    min-height: 40px;
+    padding: 6px 8px;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NARROW PHONES (≤430px) — same layout, tighter tools sizing
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 430px) {
+  .eu-gen2 { padding: 6px 8px; }
+  .eu-gen2__tools { column-gap: 8px; }
+  .eu-gen2__carousel-item { width: 46px; height: 46px; }
+  .eu-gen2__carousel-arrow { font-size: 14px; padding: 8px 6px; min-width: 40px; min-height: 40px; }
+  .eu-gen2__anim { padding: 5px 2px; min-height: 26px; font-size: 9px; letter-spacing: 0.03em; }
+  .eu-gen2__section-title { font-size: 9px; margin: 2px 0 1px; }
+  .eu-gen2__photo-grid {
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    gap: 3px;
+  }
+  .eu-gen2__thumb-icon { font-size: 16px; }
+  .eu-gen2__dl-btn, .eu-gen2__share-btn {
+    font-size: 10px;
+    padding: 6px 4px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SHORT DESKTOP (height < 640px) — release 100vh lock so
+   nothing gets clipped on short laptop screens
+   ═══════════════════════════════════════════════════════════ */
+@media (min-width: 768px) and (max-height: 640px) {
+  .eu-gen2 {
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    overflow: visible;
+  }
+}

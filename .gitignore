@@ -25,3 +25,6 @@ build/
 # OS / tmp
 Thumbs.db
 desktop.ini
+
+# Local agent state
+.claude/

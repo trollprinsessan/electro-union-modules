@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electro Union — Generator</title>
+
+  <!-- Shared base -->
+  <link rel="stylesheet" href="../_shared/fonts.css">
+  <link rel="stylesheet" href="../_shared/tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="../_shared/embed.js"></script>
+</head>
+<body>
+
+<div class="eu" id="eu">
+  <div class="eu-gen2">
+
+    <!-- Workspace — flex row: canvas-col (preview + byline) | panel-col (tools + bg + undo). Both stretch to same height. -->
+    <div class="eu-gen2__workspace">
+
+      <div class="eu-gen2__canvas-col">
+      <!-- Preview -->
+      <div class="eu-gen2__framed" id="euGen2Framed">
+        <img class="eu-gen2__frame" id="euGen2Frame" src="../postcard-generator/Updated Imagery/FRAME1 UPDATED.png" alt="">
+        <div class="eu-gen2__canvas-wrap" id="euGen2CanvasWrap">
+          <canvas class="eu-gen2__canvas" id="euGen2Canvas" aria-label="Drawing canvas"></canvas>
+        </div>
+        <div class="eu-gen2__byline-preview" id="euGen2BylinePreview"></div>
+      </div>
+      </div><!-- /.eu-gen2__canvas-col -->
+
+      <div class="eu-gen2__panel-col">
+      <!-- Tools — animate | pastry | sticker + size -->
+      <div class="eu-gen2__tools">
+            <!-- Animate -->
+            <div class="eu-gen2__section-title">Animate</div>
+            <div class="eu-gen2__anim-row">
+              <div class="eu-gen2__anim is-active" data-anim="none">still</div>
+              <div class="eu-gen2__anim" data-anim="bounce">bounce</div>
+              <div class="eu-gen2__anim" data-anim="beat">beat</div>
+              <div class="eu-gen2__anim" data-anim="rotate">spin</div>
+            </div>
+
+            <!-- Pastry stamps carousel -->
+            <div class="eu-gen2__section-title">Pastry</div>
+            <div class="eu-gen2__carousel" id="euGen2StampCarousel">
+              <span class="eu-gen2__carousel-arrow" id="euGen2StampPrev">&#8592;</span>
+              <div class="eu-gen2__carousel-item" id="euGen2StampShow">
+                <img src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette">
+              </div>
+              <span class="eu-gen2__carousel-arrow" id="euGen2StampNext">&#8594;</span>
+            </div>
+
+            <!-- Hidden stamp items (used by carousel JS) -->
+            <div class="eu-gen2__stamp-row" style="display:none">
+              <div class="eu-gen2__stamp is-active" data-stamp="0"><img src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette"></div>
+              <div class="eu-gen2__stamp" data-stamp="1"><img src="../drawing/Updated Imagery/DSC_0410-a.png" alt="Stroopwafel"></div>
+              <div class="eu-gen2__stamp" data-stamp="2"><img src="../drawing/Updated Imagery/045.png" alt="Kanelbulle"></div>
+              <div class="eu-gen2__stamp" data-stamp="3"><img src="../drawing/Updated Imagery/baklava_udate.png" alt="Baklava"></div>
+              <div class="eu-gen2__stamp" data-stamp="4"><img src="../drawing/Updated Imagery/kürtőskalács.png" alt="Kürtőskalács"></div>
+              <div class="eu-gen2__stamp" data-stamp="5"><img src="../drawing/Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="Croissant"></div>
+              <div class="eu-gen2__stamp" data-stamp="6"><img src="../drawing/Updated Imagery/danish.png" alt="Danish"></div>
+              <div class="eu-gen2__stamp" data-stamp="7"><img src="../drawing/Updated Imagery/pastelnata.webp" alt="Pastel de Nata"></div>
+              <div class="eu-gen2__stamp" data-stamp="8"><img src="../drawing/Updated Imagery/sernik.png" alt="Sernik"></div>
+            </div>
+
+            <!-- EU Sticker carousel -->
+            <div class="eu-gen2__section-title eu-gen2__section-title--sticker">Sticker</div>
+            <div class="eu-gen2__carousel" id="euGen2StickerCarousel">
+              <span class="eu-gen2__carousel-arrow" id="euGen2StickerPrev">&#8592;</span>
+              <div class="eu-gen2__carousel-item" id="euGen2StickerShow">
+                <img src="../drawing/STICKERS/EU_Stickers_1080x1350_01.png" alt="EU Sticker 1">
+              </div>
+              <span class="eu-gen2__carousel-arrow" id="euGen2StickerNext">&#8594;</span>
+            </div>
+
+            <!-- Hidden sticker items (used by carousel JS) -->
+            <div class="eu-gen2__sticker-row" style="display:none">
+              <div class="eu-gen2__sticker-opt" data-sticker="0"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_01.png" alt="EU Sticker 1"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="1"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_02.png" alt="EU Sticker 2"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="2"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_03.png" alt="EU Sticker 3"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="3"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_04.png" alt="EU Sticker 4"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="4"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_08.png" alt="EU Sticker 5"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="5"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_09.png" alt="EU Sticker 6"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="6"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_12.png" alt="EU Sticker 7"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="7"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_13.png" alt="EU Sticker 8"></div>
+              <div class="eu-gen2__sticker-opt" data-sticker="8"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_14.png" alt="EU Sticker 9"></div>
+            </div>
+
+            <!-- Size slider -->
+            <input type="range" class="eu-gen2__size-slider" id="euGen2Size" min="0.3" max="7.5" step="0.1" value="1" aria-label="Stamp size">
+          </div><!-- /.eu-gen2__tools -->
+
+          <!-- Backgrounds (grid-area: bg) — photo grid + "+" color tile + upload tile -->
+          <div class="eu-gen2__bg-block">
+            <div class="eu-gen2__section-title">Background</div>
+            <div class="eu-gen2__photo-grid" id="euGen2PhotoGrid" role="listbox" aria-label="Background image">
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/Image_1.png"><img src="../postcard-generator/BACKGROUNDS/Image_1.png" alt="BG 1" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/Image_3.png"><img src="../postcard-generator/BACKGROUNDS/Image_3.png" alt="BG 3" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/Image_4.png"><img src="../postcard-generator/BACKGROUNDS/Image_4.png" alt="BG 4" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/Image_6.png"><img src="../postcard-generator/BACKGROUNDS/Image_6.png" alt="BG 6" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/Plage 1 copy.jpg"><img src="../postcard-generator/BACKGROUNDS/Plage 1 copy.jpg" alt="Plage" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/butter.jpg"><img src="../postcard-generator/BACKGROUNDS/butter.jpg" alt="Butter" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/fc7c5841b4c129d0408f9ba2e7c46c1e.jpg"><img src="../postcard-generator/BACKGROUNDS/fc7c5841b4c129d0408f9ba2e7c46c1e.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_13fd824f7a714b157c38b1c74874c102.jpg"><img src="../postcard-generator/BACKGROUNDS/original_13fd824f7a714b157c38b1c74874c102.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_229e9d187d588a7fee6e7ea2930b5f12.png"><img src="../postcard-generator/BACKGROUNDS/original_229e9d187d588a7fee6e7ea2930b5f12.png" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_2402ef13beb9b704f676c00af5eb7d72 (1).jpg"><img src="../postcard-generator/BACKGROUNDS/original_2402ef13beb9b704f676c00af5eb7d72 (1).jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_24386db4bdc673a8e2c127178587ce68.jpg"><img src="../postcard-generator/BACKGROUNDS/original_24386db4bdc673a8e2c127178587ce68.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_314002582b30e1f59d60f6cc449c4893 (2).jpg"><img src="../postcard-generator/BACKGROUNDS/original_314002582b30e1f59d60f6cc449c4893 (2).jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_370d3cb96067f4e231797ed5beb3a6cf.jpg"><img src="../postcard-generator/BACKGROUNDS/original_370d3cb96067f4e231797ed5beb3a6cf.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_40029e1f1ca3d8edb74a4a76d6898690.jpg"><img src="../postcard-generator/BACKGROUNDS/original_40029e1f1ca3d8edb74a4a76d6898690.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_4bdc51e802b02410cc5d4aa472900c38.jpg"><img src="../postcard-generator/BACKGROUNDS/original_4bdc51e802b02410cc5d4aa472900c38.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_7ca01b4f8b02fa3ab601c9341bfd60d6.jpg"><img src="../postcard-generator/BACKGROUNDS/original_7ca01b4f8b02fa3ab601c9341bfd60d6.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_827931d0025519cb087cb567ddbc1e31.png"><img src="../postcard-generator/BACKGROUNDS/original_827931d0025519cb087cb567ddbc1e31.png" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_8d84e36822d69f3babb8a64f86366b97.jpg"><img src="../postcard-generator/BACKGROUNDS/original_8d84e36822d69f3babb8a64f86366b97.jpg" alt="Photo" loading="lazy"></div>
+              <div class="eu-gen2__photo-thumb" data-bg="../postcard-generator/BACKGROUNDS/original_da6863c3bb938276289d0e850bb17375.jpg"><img src="../postcard-generator/BACKGROUNDS/original_da6863c3bb938276289d0e850bb17375.jpg" alt="Photo" loading="lazy"></div>
+
+              <!-- Upload tile (same square form as photo thumb) -->
+              <label class="eu-gen2__photo-thumb eu-gen2__photo-thumb--upload" id="euGen2UploadBgLabel" title="Upload background image">
+                <span class="eu-gen2__thumb-icon">↑</span>
+                <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" id="euGen2UploadBgInput" style="display:none">
+              </label>
+
+              <!-- Color picker tile (+ opens native colorpicker) -->
+              <label class="eu-gen2__photo-thumb eu-gen2__photo-thumb--color" id="euGen2BgColor" title="Custom background color">
+                <span class="eu-gen2__thumb-icon">+</span>
+                <span class="eu-gen2__bg-color__swatch" id="euGen2BgSwatch"></span>
+                <input type="color" id="euGen2BgColorPicker" value="#ffffff">
+              </label>
+            </div>
+          </div><!-- /.eu-gen2__bg-block -->
+
+          <!-- Byline — under background thumbnails -->
+          <div class="eu-gen2__byline-strip">
+            <label class="eu-gen2__byline-label" for="euGen2Byline">
+              <span class="eu-gen2__visually-hidden">Sign your name</span>
+              <input type="text" class="eu-gen2__byline-input" id="euGen2Byline" placeholder="sign with your name (optional)" maxlength="40">
+            </label>
+          </div>
+
+          <!-- Undo / Clear — bottom of panel-col -->
+          <div class="eu-gen2__undo-row">
+            <button type="button" class="eu-gen2__arrow" id="euGen2Undo" aria-label="Undo last stroke">&#8592; UNDO</button>
+            <button type="button" class="eu-gen2__arrow" id="euGen2Clear" aria-label="Clear canvas">&#215; CLEAR</button>
+          </div>
+
+      </div><!-- /.eu-gen2__panel-col -->
+
+    </div><!-- /.eu-gen2__workspace -->
+
+    <!-- Download + share — below everything, full width -->
+    <div class="eu-gen2__actions">
+      <div class="eu-gen2__dl-row">
+        <span class="eu-gen2__dl-label">Download</span>
+        <span class="eu-gen2__dl-btn eu-gen2__dl-btn--primary" id="euGen2DlGif">GIF</span>
+        <span class="eu-gen2__dl-btn" id="euGen2DlPng">PNG</span>
+      </div>
+      <div class="eu-gen2__share-row">
+        <button class="eu-gen2__share-btn eu-gen2__share-btn--li" id="euGen2ShareLi">LinkedIn</button>
+        <button class="eu-gen2__share-btn eu-gen2__share-btn--ig" id="euGen2ShareIg">Instagram</button>
+      </div>
+    </div>
+
+  </div><!-- /.eu-gen2 -->
+</div><!-- /.eu -->
+
+<script src="script.js"></script>
+</body>
+</html>
