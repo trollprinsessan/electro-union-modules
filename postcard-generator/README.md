@@ -1,16 +1,3 @@
-# Postcard Generator Module
-
-Generera ett eget Electro Union-postkort: slumpa bakgrund + sticker, skriv
-in din byline, ladda ner som PNG (1080×1350).
-
-## Vad den gör
-
-1. Visar en framed preview (FRAME1 UPDATED.png + foto + sticker)
-2. **Light switch** till vänster: klick = shuffle av bg/sticker
-3. Klick på själva fotot = shuffle (samma funktion)
-4. Byline-input uppdaterar live preview och renderas på PNG-export
-5. Download-knappen renderar 1080×1350 PNG via offscreen canvas
-
 ## Filer
 
 | Fil | Vad |
@@ -53,39 +40,3 @@ window.addEventListener('message', function(e){
 });
 </script>
 ```
-
-## Daniels feedback — prioritera INTE denna nu
-
-> "Postcard generator → save for later"
-
-Daniel rekommenderar att pausa postcard-generatorn i silver-versionen.
-Modulen extraheras ändå så den finns kvar för framtida bruk eller för
-att återinföras i bronze-varianten.
-
-## Kända quirks
-
-- Canvas-export kräver att `BG`/`ST`-bilderna ligger på samma origin (eller har
-  CORS-headers). I embed-läge fungerar det så länge iframe:n och assets:en
-  servas från samma domän.
-- GIF-bakgrunden (`ezgif-385a4b8503da6341.gif`) renderas som första-frame på
-  PNG-export (canvas har ingen animation).
-- Light-switchen är en inbyggd `<label for>` på en dold checkbox — auto-resettar
-  efter 500ms så den alltid står "uppe".
-- Byline max 40 tecken (HTML `maxlength`). Renderas på y=H-80 (270px från
-  botten).
-
-## Lokal preview
-
-```bash
-cd electro-union
-npx serve .
-# http://localhost:3000/modules/postcard-generator/
-# http://localhost:3000/modules/postcard-generator/?embed=1
-```
-
-## TODO (för silver/bronze)
-
-- [ ] Egen uppladdad bakgrund (drag-n-drop eller file picker)
-- [ ] Fler byline-positioner (top/bottom/corners)
-- [ ] Direkt-share via Web Share API (iOS/Android native sheet)
-- [ ] Beskära foto innan export (crop tool)
