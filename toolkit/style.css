@@ -44,7 +44,6 @@
   font-size:.5em;
 }
 .eu-sharables.is-open .eu-sharables__arrow{transform:rotate(180deg)}
-.eu-sharables.is-open .eu-sharables__toggle{font-size:min(3vw,22px)}
 .eu-sharables__content{
   display:none;
 }
