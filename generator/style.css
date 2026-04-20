@@ -615,8 +615,23 @@ html.is-embed .eu-gen2 {
   box-shadow: 0 0 0 2px var(--blue, #0A66C2);
 }
 
-.eu-gen2__share-btn--li { background: #0A66C2; }
+/* --li is now the copy-to-clipboard button (black). --ig is share. */
+.eu-gen2__share-btn--li { background: #000; }
 .eu-gen2__share-btn--ig { background: #CE2B37; }
+
+/* Disabled state — applied until user has drawn / picked a bg */
+.eu-gen2__dl-btn.is-disabled,
+.eu-gen2__share-btn.is-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+.eu-gen2__dl-btn.is-busy,
+.eu-gen2__share-btn.is-busy {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: wait;
+}
 
 /* ═══════════════════════════════════════════════════════════
    UNDER 768px — stacked. A fixed top (≤50vh, no scroll),

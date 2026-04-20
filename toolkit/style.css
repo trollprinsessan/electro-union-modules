@@ -220,7 +220,8 @@
 }
 .eu-pap-card__share--ig{background:#CE2B37}
 .eu-pap-card__share--ig:hover{opacity:0.8}
-.eu-pap-card__share--li{background:#0A66C2}
+/* --li is now the copy-to-clipboard button (black) */
+.eu-pap-card__share--li{background:#000}
 .eu-pap-card__share--li:hover{opacity:0.8}
 
 /* ═══ GENERATE YOUR OWN TAB ═══ */
@@ -332,8 +333,9 @@
   transition:opacity .15s;
 }
 .eu-pap-card__split-dl:hover{opacity:.8}
+/* --li is now the copy-to-clipboard button (black) */
 .eu-pap-card__split-share.eu-pap-card__split--li,
-.eu-pap-card__split-dl.eu-pap-card__split--li{background:#0A66C2}
+.eu-pap-card__split-dl.eu-pap-card__split--li{background:#000}
 .eu-pap-card__split-share.eu-pap-card__split--ig,
 .eu-pap-card__split-dl.eu-pap-card__split--ig{background:#CE2B37}
 
@@ -379,7 +381,8 @@
   transition:opacity .15s;
 }
 .eu-pap-card__row-dl:hover{opacity:.8}
+/* --li is now the copy-to-clipboard button (black) */
 .eu-pap-card__row-share.eu-pap-card__row--li,
-.eu-pap-card__row-dl.eu-pap-card__row--li{background:#0A66C2}
+.eu-pap-card__row-dl.eu-pap-card__row--li{background:#000}
 .eu-pap-card__row-share.eu-pap-card__row--ig,
 .eu-pap-card__row-dl.eu-pap-card__row--ig{background:#CE2B37}
