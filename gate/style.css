@@ -21,7 +21,6 @@
   border-bottom:none;
   transition:background .15s;
 }
-.eu-bar:hover{background:#fafafa}
 .eu-bar__initial{
   display:flex;align-items:center;justify-content:center;
   gap:clamp(12px,2vw,20px);
@@ -271,4 +270,4 @@
 .is-embed .eu.is-open .eu-gate-scene__counter,
 .is-embed .eu.is-open .eu-gate-scene__preamble{animation:none}
 .is-embed .eu{box-shadow:none}
-.is-embed .eu.is-open{box-shadow:0 4px 24px rgba(0,0,0,.12)}
+.is-embed .eu.is-open{box-shadow:none}
