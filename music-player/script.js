@@ -50,7 +50,7 @@
     if (playing) {
       audio.pause();
       playing = false;
-      playBtn.innerHTML = '&#9654;';
+      playBtn.innerHTML = '&#9654;&#xFE0E;';
     } else {
       audio.play();
       playing = true;
