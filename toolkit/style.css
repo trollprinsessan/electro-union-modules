@@ -336,6 +336,11 @@
 .eu-pap-card__split-dl.eu-pap-card__split--li{background:#0A66C2}
 .eu-pap-card__split-share.eu-pap-card__split--ig,
 .eu-pap-card__split-dl.eu-pap-card__split--ig{background:#CE2B37}
+.eu-pap-card__split-share.eu-pap-card__split--copy{
+  background:#000;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+}
+.eu-pap-card__split-share.eu-pap-card__split--copy svg{width:14px;height:14px;display:block}
 
 /* ═══ OPTION D — TWO ROWS ═══ */
 .eu-pap-card__rows{

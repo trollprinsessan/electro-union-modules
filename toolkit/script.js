@@ -153,25 +153,67 @@
       .catch(function(){});
   }
 
-  // Per-card LinkedIn share
-  function shareToLinkedIn(btn) {
-    var shareUrl = (function(){
-      try { if (window.parent !== window && document.referrer) return document.referrer; } catch(e){}
-      return 'https://trollprinsessan.github.io/electro-union-modules/toolkit/';
-    })();
-    window.open(
-      'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl),
-      '_blank', 'noopener,noreferrer,width=600,height=520'
-    );
+  // Källfilerna är JPEG trots .png-ändelse — Clipboard API kräver image/png.
+  // Konvertera via canvas för att alltid få riktig PNG (full upplösning).
+  function flashBtn(btn, text, ms) {
+    if (!btn || btn.tagName !== 'BUTTON') return;
+    var orig = btn.innerHTML;
+    btn.textContent = text;
+    setTimeout(function(){ btn.innerHTML = orig; }, ms || 2400);
   }
 
-  // Event delegation on document for share buttons
-  // Covers plain (.share--ig/li), split (.split--ig/li) and row (.row--ig/li) variants
+  function ensurePngBlob(blob) {
+    if (blob.type === 'image/png') return Promise.resolve(blob);
+    return new Promise(function(resolve, reject) {
+      var img = new Image();
+      var burl = URL.createObjectURL(blob);
+      img.onload = function() {
+        URL.revokeObjectURL(burl);
+        var c = document.createElement('canvas');
+        c.width = img.naturalWidth; c.height = img.naturalHeight;
+        c.getContext('2d').drawImage(img, 0, 0);
+        c.toBlob(function(png){ png ? resolve(png) : reject(); }, 'image/png');
+      };
+      img.onerror = function(){ URL.revokeObjectURL(burl); reject(); };
+      img.src = burl;
+    });
+  }
+
+  function downloadBlob(blob, name) {
+    var u = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = u; a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(u);
+  }
+
+  // Copy full-size image to clipboard. Fallback: download.
+  function copyImageOnly(btn) {
+    var src = btn.getAttribute('data-src-copy') || btn.getAttribute('data-src-li') || btn.getAttribute('data-src');
+    if (!src) return;
+    var absUrl = new URL(src, window.location.href).href;
+    flashBtn(btn, '…');
+    fetch(absUrl)
+      .then(function(r){ return r.blob(); })
+      .then(ensurePngBlob)
+      .then(function(pngBlob){
+        return navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+      })
+      .then(function(){ flashBtn(btn, '✓ copied'); })
+      .catch(function(){
+        fetch(absUrl).then(function(r){ return r.blob(); }).then(function(blob){
+          downloadBlob(blob, 'electro-union.png');
+          flashBtn(btn, '↓ saved');
+        });
+      });
+  }
+
+  // Event delegation on document for share/copy buttons
   document.addEventListener('click', function(e){
     var igBtn = e.target.closest('.eu-pap-card__share--ig, .eu-pap-card__split--ig, .eu-pap-card__row--ig');
     if (igBtn) { e.stopPropagation(); shareToInstagram(igBtn); return; }
-    var liBtn = e.target.closest('.eu-pap-card__share--li, .eu-pap-card__split--li, .eu-pap-card__row--li');
-    if (liBtn) { e.stopPropagation(); shareToLinkedIn(liBtn); return; }
+    var copyBtn = e.target.closest('.eu-pap-card__split--copy');
+    if (copyBtn) { e.stopPropagation(); copyImageOnly(copyBtn); return; }
   });
 
   // Postcard generator iframe resize relay
