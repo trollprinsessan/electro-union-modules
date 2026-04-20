@@ -38,7 +38,16 @@
   function postHeight() {
     clearTimeout(postTimer);
     postTimer = setTimeout(function () {
-      var h = document.documentElement.scrollHeight;
+      // Mät .eu-containerns faktiska innehållshöjd istället för
+      // documentElement.scrollHeight — den senare återspeglar iframe-
+      // viewportens höjd (satt av host) och skapar en self-fulfilling
+      // loop där modulen aldrig rapporterar en mindre höjd än nuvarande
+      // iframe. .eu-containern innehåller all modulinnehåll (se
+      // _shared/tokens.css) och ger en viewport-oberoende mätning.
+      var eu = document.querySelector('.eu');
+      var h = eu
+        ? Math.ceil(eu.getBoundingClientRect().bottom + window.scrollY)
+        : document.documentElement.scrollHeight;
       if (Math.abs(h - lastH) > 10) {
         lastH = h;
         window.parent.postMessage({ type: 'eu-resize', height: h }, '*');
