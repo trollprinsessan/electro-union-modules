@@ -218,16 +218,21 @@
   title="Electro Union — Gate"
   style="width:100%;border:none;display:block;overflow:hidden"
   scrolling="no"
-  height="800"
+  height="170"
   loading="lazy"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/gate/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/gate/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-gate">Copy</button>
     </details>
@@ -252,17 +257,22 @@ window.addEventListener('message', function(e){
   title="Electro Union — Toolkit"
   style="width:100%;border:none;display:block;overflow:hidden"
   scrolling="no"
-  height="800"
+  height="180"
   loading="lazy"
   allow="clipboard-write"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/toolkit/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/toolkit/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-toolkit">Copy</button>
     </details>
@@ -287,17 +297,22 @@ window.addEventListener('message', function(e){
   title="Electro Union — Postcard"
   style="width:100%;border:none;display:block;overflow:hidden"
   scrolling="no"
-  height="900"
+  height="1200"
   loading="lazy"
   allow="clipboard-write"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/postcard-generator/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/postcard-generator/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-postcard">Copy</button>
     </details>
@@ -322,17 +337,22 @@ window.addEventListener('message', function(e){
   title="Electro Union — Music"
   style="width:100%;border:none;display:block;overflow:hidden"
   scrolling="no"
-  height="700"
+  height="620"
   loading="lazy"
   allow="autoplay"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/music-player/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/music-player/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-music">Copy</button>
     </details>
@@ -360,13 +380,18 @@ window.addEventListener('message', function(e){
   height="1400"
   loading="lazy"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/merch/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/merch/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-merch">Copy</button>
     </details>
@@ -395,13 +420,18 @@ window.addEventListener('message', function(e){
   loading="lazy"
   allow="clipboard-write"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/drawing/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/drawing/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-drawing">Copy</button>
     </details>
@@ -429,13 +459,18 @@ window.addEventListener('message', function(e){
   height="900"
   loading="lazy"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/guestbook/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/guestbook/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-guestbook">Copy</button>
     </details>
@@ -460,17 +495,22 @@ window.addEventListener('message', function(e){
   title="Electro Union — Generator"
   style="width:100%;border:none;display:block;overflow:hidden"
   scrolling="no"
-  height="900"
+  height="1000"
   loading="lazy"
   allow="clipboard-write"&gt;&lt;/iframe&gt;
 &lt;script&gt;
-window.addEventListener('message', function(e){
-  if(e.data &amp;&amp; e.data.type === 'eu-resize' &amp;&amp; e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){
-      if(f.src.indexOf('/generator/') &gt; -1) f.style.height = e.data.height + 'px';
-    });
-  }
-});
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/generator/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = e.data.height + 'px';
+        return;
+      }
+    }
+  });
+})();
 &lt;/script&gt;</pre>
       <button class="copy" data-copy="snip-generator">Copy</button>
     </details>

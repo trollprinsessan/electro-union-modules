@@ -73,19 +73,24 @@
     }, 50);
   }
 
-  // Tvinga lazy images att laddas ivrigt i embed-läge så de reserverar
-  // plats direkt — annars mäter vi för lite när iframen initialiseras
-  // under-the-fold och lazy-loading aldrig triggas.
-  function eagerizeImages() {
-    var imgs = document.querySelectorAll('img[loading="lazy"]');
+  // Tvinga lazy images att laddas ivrigt i embed-läge + re-posta höjd
+  // när varje bild laddar klart (bilder reserverar ingen plats utan
+  // width/height-attribut, så .eu-containern växer när bilden laddar).
+  function eagerizeAndTrackImages() {
+    var imgs = document.querySelectorAll('img');
     for (var i = 0; i < imgs.length; i++) {
-      imgs[i].loading = 'eager';
+      var img = imgs[i];
+      if (img.loading === 'lazy') img.loading = 'eager';
+      if (!img.complete) {
+        img.addEventListener('load', postHeight);
+        img.addEventListener('error', postHeight);
+      }
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', eagerizeImages);
+    document.addEventListener('DOMContentLoaded', eagerizeAndTrackImages);
   } else {
-    eagerizeImages();
+    eagerizeAndTrackImages();
   }
 
   // Poll för height-ändringar (gate-open, gallery-load, etc.)
