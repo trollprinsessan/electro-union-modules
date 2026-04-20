@@ -82,7 +82,7 @@
 .eu-pap__nav-item.is-active{border-bottom-color:#000}
 .eu-pap__cat{
   font-size:clamp(9px,1vw,12px);
-  font-family:Arial,Helvetica,sans-serif;
+  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
   text-transform:uppercase;
   letter-spacing:.12em;
   color:var(--dim);
