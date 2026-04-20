@@ -581,8 +581,75 @@
     }
   }
 
+  // ═══ READY-STATE (grey out download/share until user has created something) ═══
+  // "Created something" = placed at least one stamp/sticker OR chosen a bg photo.
+  var dlGifBtn  = document.getElementById('euGen2DlGif');
+  var dlPngBtn  = document.getElementById('euGen2DlPng');
+  var shareLiBtn = document.getElementById('euGen2ShareLi');
+  var shareIgBtn = document.getElementById('euGen2ShareIg');
+  var gatedBtns = [dlGifBtn, dlPngBtn, shareLiBtn, shareIgBtn].filter(Boolean);
+  function isReady() {
+    return placements.length > 0 || bgPhotoActive;
+  }
+  function updateGateState() {
+    var ready = isReady();
+    gatedBtns.forEach(function (b) {
+      if (ready) b.classList.remove('is-disabled');
+      else       b.classList.add('is-disabled');
+    });
+  }
+  // Initial state
+  updateGateState();
+  // Re-evaluate after every user action that could enable the buttons.
+  // renderAll runs after placements push / bg change so we hook that path.
+  var _prevPlacementCount = 0;
+  var _prevBgActive = bgPhotoActive;
+  setInterval(function () {
+    if (placements.length !== _prevPlacementCount || bgPhotoActive !== _prevBgActive) {
+      _prevPlacementCount = placements.length;
+      _prevBgActive = bgPhotoActive;
+      updateGateState();
+    }
+  }, 250);
+
+  // ═══ Rate limit / abuse guard ═══
+  // Static site on GitHub Pages — no server to overwhelm, but heavy ops
+  // (GIF encoding especially) can freeze the tab if spammed. Per-button
+  // cooldown + session cap.
+  var CLICK_COOLDOWN_MS = 2000;
+  var GIF_COOLDOWN_MS   = 5000;
+  var SESSION_CAP = 60;  // generator ops are heavier; lower than toolkit's 120
+  function getSessionCount() {
+    try { return parseInt(sessionStorage.getItem('eu_gen_count') || '0', 10) || 0; }
+    catch (e) { return 0; }
+  }
+  function incSessionCount() {
+    try { sessionStorage.setItem('eu_gen_count', String(getSessionCount() + 1)); } catch (e) {}
+  }
+  function flashBtn(btn, msg, ms) {
+    var orig = btn.textContent;
+    btn.textContent = msg;
+    setTimeout(function () { btn.textContent = orig; }, ms || 2200);
+  }
+  function gatePass(btn, cooldownMs) {
+    if (btn.classList.contains('is-disabled')) return false;
+    if (btn.classList.contains('is-busy')) return false;
+    var now = Date.now();
+    var last = parseInt(btn.getAttribute('data-last-click') || '0', 10);
+    if (now - last < cooldownMs) return false;
+    if (getSessionCount() >= SESSION_CAP) {
+      flashBtn(btn, 'slow down');
+      return false;
+    }
+    btn.setAttribute('data-last-click', String(now));
+    incSessionCount();
+    return true;
+  }
+
   // ═══ DOWNLOAD GIF ═══
-  document.getElementById('euGen2DlGif').onclick = function () {
+  dlGifBtn.onclick = function () {
+    if (!gatePass(this, GIF_COOLDOWN_MS)) return;
+    var btn = this;
     var ew = EXPORT_W, eh = EXPORT_H;
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
@@ -598,27 +665,39 @@
       return;
     }
 
-    var numFrames = 36, cycleDur = 2;
-    var savedMode = animMode;
-    renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
-    var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
-    var gifFrames = [];
-    for (var f = 0; f < numFrames; f++) {
-      var t = f * (cycleDur / numFrames);
-      renderExportFrame(tmpCtx, savedMode, t, ew, eh);
-      gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
-    }
-    var delay = Math.round(cycleDur / numFrames * 100);
-    var blob = buildGIF(gifFrames, ew, eh, delay, palette);
-    var link = document.createElement('a');
-    link.download = 'electro-union-generator.gif';
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
+    btn.classList.add('is-busy');
+    var origText = btn.textContent;
+    btn.textContent = 'encoding…';
+    // Defer heavy work so UI can paint
+    setTimeout(function () {
+      try {
+        var numFrames = 36, cycleDur = 2;
+        var savedMode = animMode;
+        renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
+        var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
+        var gifFrames = [];
+        for (var f = 0; f < numFrames; f++) {
+          var t = f * (cycleDur / numFrames);
+          renderExportFrame(tmpCtx, savedMode, t, ew, eh);
+          gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
+        }
+        var delay = Math.round(cycleDur / numFrames * 100);
+        var blob = buildGIF(gifFrames, ew, eh, delay, palette);
+        var link = document.createElement('a');
+        link.download = 'electro-union-generator.gif';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
+      } finally {
+        btn.classList.remove('is-busy');
+        btn.textContent = origText;
+      }
+    }, 30);
   };
 
   // ═══ DOWNLOAD PNG ═══
-  document.getElementById('euGen2DlPng').onclick = function () {
+  dlPngBtn.onclick = function () {
+    if (!gatePass(this, CLICK_COOLDOWN_MS)) return;
     var ew = EXPORT_W, eh = EXPORT_H;
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
@@ -630,10 +709,13 @@
     link.click();
   };
 
-  // ═══ SHARE HELPERS ═══
-  var toolkitUrl = 'https://trollprinsessan.github.io/electro-union-modules/toolkit/';
+  // ═══ SHARE / COPY HELPERS ═══
+  // NOTE: no title, no text, no url passed to navigator.share — KP's rule
+  // is that only the image/GIF file may leave the toolkit, never any
+  // metadata that share targets (Telegram, Mail, SMS) can extract as text.
 
-  function renderToBlob(cb) {
+  // Render current composition to a still PNG blob (4:5).
+  function renderToPngBlob(cb) {
     var ew = EXPORT_W, eh = EXPORT_H;
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
@@ -642,41 +724,133 @@
     tmpCanvas.toBlob(cb, 'image/png');
   }
 
+  // Render current composition to an animated GIF blob (4:5). Reuses the
+  // same encoder as the GIF download button.
+  function renderToGifBlob() {
+    var ew = EXPORT_W, eh = EXPORT_H;
+    var tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = ew; tmpCanvas.height = eh;
+    var tmpCtx = tmpCanvas.getContext('2d');
+    var numFrames = 36, cycleDur = 2;
+    var savedMode = animMode;
+    renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
+    var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
+    var gifFrames = [];
+    for (var f = 0; f < numFrames; f++) {
+      var t = f * (cycleDur / numFrames);
+      renderExportFrame(tmpCtx, savedMode, t, ew, eh);
+      gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
+    }
+    var delay = Math.round(cycleDur / numFrames * 100);
+    return buildGIF(gifFrames, ew, eh, delay, palette);
+  }
+
+  // Actually share a File via Web Share API. Only the file — no title, no
+  // text, no url — to prevent share targets from pulling those out as
+  // the message body.
+  function shareFile(btn, file) {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file] }).catch(function () {});
+    } else {
+      flashBtn(btn, 'not supported here');
+    }
+  }
+
+  // Share current composition. If animated: encode GIF and share GIF file.
+  // If static: share PNG.
   function sharePostcard(btn) {
-    renderToBlob(function (blob) {
-      if (!blob) return;
-      var file = new File([blob], 'electro-union-generator.png', { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file], title: 'Electro Union — Join the movement' }).catch(function () {});
-      } else if (navigator.share) {
-        navigator.share({ url: toolkitUrl, title: 'Electro Union — Join the movement' }).catch(function () {});
-      } else {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url; a.download = 'electro-union-generator.png';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        var orig = btn.textContent;
-        btn.textContent = 'saved — share via app';
-        setTimeout(function () { btn.textContent = orig; }, 3000);
+    if (animMode === 'none') {
+      renderToPngBlob(function (blob) {
+        if (!blob) return;
+        var file = new File([blob], 'electro-union-generator.png', { type: 'image/png' });
+        shareFile(btn, file);
+      });
+      return;
+    }
+    // Animated — encode GIF synchronously inside the user-gesture window.
+    // GIF encoding at 4:5 1080x1350 / 36 frames takes ~1-3s on desktop,
+    // longer on mobile. Show busy state.
+    btn.classList.add('is-busy');
+    var origText = btn.textContent;
+    btn.textContent = 'encoding…';
+    // Defer one tick so UI can paint busy state
+    setTimeout(function () {
+      try {
+        var gifBlob = renderToGifBlob();
+        var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
+        shareFile(btn, file);
+      } finally {
+        btn.classList.remove('is-busy');
+        btn.textContent = origText;
       }
+    }, 30);
+  }
+
+  // Copy button behaviour:
+  //   • Static (animMode === 'none'): copy PNG to clipboard (paste anywhere).
+  //   • Animated: clipboard can't hold GIFs, so trigger a GIF download
+  //     instead — user gets the animated asset and a clear feedback.
+  function copyPostcard(btn) {
+    if (animMode !== 'none') {
+      // Animated → encode GIF + trigger download
+      btn.classList.add('is-busy');
+      var origText = btn.textContent;
+      btn.textContent = 'encoding…';
+      setTimeout(function () {
+        try {
+          var gifBlob = renderToGifBlob();
+          var url = URL.createObjectURL(gifBlob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'electro-union-generator.gif';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+          btn.classList.remove('is-busy');
+          btn.textContent = origText;
+          flashBtn(btn, 'GIF downloaded', 2400);
+        } catch (e) {
+          btn.classList.remove('is-busy');
+          btn.textContent = origText;
+          flashBtn(btn, 'encode failed');
+        }
+      }, 30);
+      return;
+    }
+    // Static → copy PNG to clipboard
+    renderToPngBlob(function (blob) {
+      if (!blob) {
+        flashBtn(btn, 'copy failed');
+        return;
+      }
+      if (!navigator.clipboard || !window.ClipboardItem) {
+        flashBtn(btn, 'needs https');
+        return;
+      }
+      navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]).then(function () {
+        flashBtn(btn, 'copied ✓');
+      }).catch(function () {
+        flashBtn(btn, 'copy failed');
+      });
     });
   }
 
-  // LinkedIn share
-  document.getElementById('euGen2ShareLi').onclick = function () {
-    if (navigator.share) {
-      sharePostcard(this);
-    } else {
-      window.open(
-        'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(toolkitUrl),
-        '_blank', 'noopener,noreferrer,width=600,height=520'
-      );
-    }
+  // Copy button (was LinkedIn). When animated, triggers GIF download
+  // (heavier op → longer cooldown), otherwise writes PNG to clipboard.
+  shareLiBtn.onclick = function () {
+    var cd = (animMode === 'none') ? CLICK_COOLDOWN_MS : GIF_COOLDOWN_MS;
+    if (!gatePass(this, cd)) return;
+    copyPostcard(this);
   };
 
-  // Instagram share
-  document.getElementById('euGen2ShareIg').onclick = function () {
+  // Share button (was Instagram). Shares GIF when animated, PNG when static.
+  shareIgBtn.onclick = function () {
+    // Use GIF cooldown when animated (heavier op), otherwise standard.
+    var cd = (animMode === 'none') ? CLICK_COOLDOWN_MS : GIF_COOLDOWN_MS;
+    if (!gatePass(this, cd)) return;
     sharePostcard(this);
   };
 

@@ -121,57 +121,144 @@
   // Hide "CLICK HERE" text after open (CSS handles it, but also set via class)
   // (handled via CSS .eu-sharables.is-open .eu-clickhere{display:none})
 
-  // Per-card Instagram share (native Web Share API with file)
+  // ═══ Rate limit / abuse guard ═══
+  // Per-button cooldown + session cap. Static site on GitHub Pages has no
+  // server to overwhelm, but this prevents a single user from spamming
+  // the Clipboard/Web Share APIs or freezing their own tab.
+  var CLICK_COOLDOWN_MS = 1500;
+  var SESSION_CAP = 120;
+  function getSessionCount() {
+    try { return parseInt(sessionStorage.getItem('eu_action_count') || '0', 10) || 0; }
+    catch (e) { return 0; }
+  }
+  function incSessionCount() {
+    try { sessionStorage.setItem('eu_action_count', String(getSessionCount() + 1)); } catch (e) {}
+  }
+  function rateLimited(btn) {
+    var now = Date.now();
+    var last = parseInt(btn.getAttribute('data-last-click') || '0', 10);
+    if (now - last < CLICK_COOLDOWN_MS) return true;
+    if (getSessionCount() >= SESSION_CAP) {
+      flashBtn(btn, 'slow down');
+      return true;
+    }
+    btn.setAttribute('data-last-click', String(now));
+    incSessionCount();
+    return false;
+  }
+  function flashBtn(btn, msg) {
+    var orig = btn.textContent;
+    btn.textContent = msg;
+    setTimeout(function () { btn.textContent = orig; }, 2200);
+  }
+
+  // ═══ Share to Instagram / native share sheet ═══
+  // Renamed to "share" in UI. Shares ONLY the image file — no title, no
+  // text, no URL — so that apps like Telegram can't pull out a text/link
+  // field and send that instead of the image.
   function shareToInstagram(btn) {
     var src = btn.getAttribute('data-src');
     if (!src) return;
     var absUrl = new URL(src, window.location.href).href;
     fetch(absUrl)
-      .then(function(r){ return r.blob(); })
-      .then(function(blob){
+      .then(function (r) { return r.blob(); })
+      .then(function (blob) {
         var ext = blob.type.includes('gif') ? 'gif' : blob.type.includes('png') ? 'png' : 'jpg';
         var file = new File([blob], 'electro-union.' + ext, { type: blob.type });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          return navigator.share({ files: [file], title: 'Electro Union' });
-        } else if (navigator.share) {
-          return navigator.share({ url: window.location.href, title: 'Electro Union — Join the movement' });
-        } else {
-          // Desktop fallback: trigger download + hint
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = 'electro-union.' + ext;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          var orig = btn.textContent;
-          btn.textContent = 'saved — share via app';
-          setTimeout(function(){ btn.textContent = orig; }, 3000);
+          return navigator.share({ files: [file] }).catch(function (err) {
+            if (err && err.name === 'AbortError') return; // user cancelled
+            flashBtn(btn, 'share: ' + (err && err.name || 'failed'));
+          });
         }
+        // Explicitly no URL fallback — KP's rule: only the image, nothing else.
+        flashBtn(btn, 'share not supported');
       })
-      .catch(function(){});
+      .catch(function (err) {
+        flashBtn(btn, 'fetch: ' + (err && err.name || 'failed'));
+      });
   }
 
-  // Per-card LinkedIn share
-  function shareToLinkedIn(btn) {
-    var shareUrl = (function(){
-      try { if (window.parent !== window && document.referrer) return document.referrer; } catch(e){}
-      return 'https://trollprinsessan.github.io/electro-union-modules/toolkit/';
-    })();
-    window.open(
-      'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl),
-      '_blank', 'noopener,noreferrer,width=600,height=520'
-    );
+  // ═══ Copy 4:5 image to clipboard ═══
+  // Fetches the 4:5 asset (data-src-li), converts to PNG via canvas
+  // (Clipboard API only reliably supports image/png), writes to clipboard.
+  function copyToClipboard(btn) {
+    var src = btn.getAttribute('data-src-li');
+    if (!src) return;
+    var absUrl = new URL(src, window.location.href).href;
+
+    // Convert any blob to a PNG blob via canvas (works for png/jpeg/webp sources)
+    function toPngBlob(srcBlob) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image();
+        img.onload = function () {
+          var c = document.createElement('canvas');
+          c.width = img.naturalWidth;
+          c.height = img.naturalHeight;
+          c.getContext('2d').drawImage(img, 0, 0);
+          c.toBlob(function (pngBlob) {
+            if (pngBlob) resolve(pngBlob); else reject(new Error('no blob'));
+          }, 'image/png');
+        };
+        img.onerror = function () { reject(new Error('img load')); };
+        img.src = URL.createObjectURL(srcBlob);
+      });
+    }
+
+    fetch(absUrl)
+      .then(function (r) { return r.blob(); })
+      .then(function (blob) {
+        // Always re-encode through canvas. Firefox (especially Android)
+        // rejects fetched PNG blobs with DataError; a canvas-generated PNG
+        // is accepted reliably across Safari/Chrome/Firefox.
+        return toPngBlob(blob);
+      })
+      .then(function (pngBlob) {
+        if (!navigator.clipboard || !window.ClipboardItem) {
+          flashBtn(btn, 'clipboard unavailable');
+          return;
+        }
+        return navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': pngBlob })
+        ]).then(function () {
+          flashBtn(btn, 'copied ✓');
+        }).catch(function (err) {
+          flashBtn(btn, 'copy: ' + (err && err.name || 'failed'));
+        });
+      })
+      .catch(function (err) {
+        flashBtn(btn, 'copy: ' + (err && err.name || 'failed'));
+      });
   }
 
-  // Event delegation on document for share buttons
-  // Covers plain (.share--ig/li), split (.split--ig/li) and row (.row--ig/li) variants
-  document.addEventListener('click', function(e){
+  // Event delegation on document for share/copy/download buttons.
+  // --ig → share (Web Share API)
+  // --li → copy-to-clipboard (4:5)
+  // .eu-pap-card__btn[download] → direct download link (rate-limited too)
+  document.addEventListener('click', function (e) {
     var igBtn = e.target.closest('.eu-pap-card__share--ig, .eu-pap-card__split--ig, .eu-pap-card__row--ig');
-    if (igBtn) { e.stopPropagation(); shareToInstagram(igBtn); return; }
+    if (igBtn) {
+      e.stopPropagation();
+      if (rateLimited(igBtn)) return;
+      shareToInstagram(igBtn);
+      return;
+    }
     var liBtn = e.target.closest('.eu-pap-card__share--li, .eu-pap-card__split--li, .eu-pap-card__row--li');
-    if (liBtn) { e.stopPropagation(); shareToLinkedIn(liBtn); return; }
+    if (liBtn) {
+      e.stopPropagation();
+      if (rateLimited(liBtn)) return;
+      copyToClipboard(liBtn);
+      return;
+    }
+    // Rate-limit direct download <a> links in the downloads tab
+    var dlLink = e.target.closest('.eu-pap-card__btn[download]');
+    if (dlLink) {
+      if (rateLimited(dlLink)) {
+        e.preventDefault();
+        return;
+      }
+      // Let the browser handle the download normally.
+    }
   });
 
   // Postcard generator iframe resize relay
