@@ -251,6 +251,10 @@
   .eu-pap-card__desc{font-size:8px}
   .eu-pap-card__actions{gap:3px}
   .eu-pap-card__btn{font-size:8px;padding:5px 6px}
+  .eu-pap-card__row-share{font-size:8px;padding:5px 6px}
+  .eu-pap-card__rows{gap:2px}
+  .eu-pap-card__row{gap:2px}
+  .eu-copy-label{font-size:7px}
 }
 @media (max-width:380px){
   .eu-pap__grid{grid-template-columns:1fr 1fr}
@@ -341,6 +345,30 @@
   display:flex;align-items:center;justify-content:center;
 }
 .eu-pap-card__split-share.eu-pap-card__split--copy svg{width:14px;height:14px;display:block}
+
+/* ═══ 5-BUTTON ROW LAYOUT (share / ig / copy×2 / linkedin) ═══ */
+.eu-pap-card__row-share.eu-pap-card__row--share{
+  background:#333;
+  text-align:center;
+}
+.eu-pap-card__row-share.eu-pap-card__row--copy{
+  background:#111;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+}
+.eu-pap-card__row-share.eu-pap-card__row--copy svg{
+  width:12px;height:12px;display:block;flex-shrink:0;
+}
+.eu-copy-label{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(7px,.75vw,9px);
+  letter-spacing:.04em;
+  font-style:normal;
+  opacity:.75;
+  line-height:1;
+}
 
 /* ═══ OPTION D — TWO ROWS ═══ */
 .eu-pap-card__rows{

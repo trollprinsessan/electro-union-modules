@@ -9,19 +9,18 @@
  *   3184-3197 (tab navigation)
  *   4127-4170 (sticky toolkit link — standalone only)
  *
- * Beteende:
- *   - Toolkit börjar stängd; klick på togglern öppnar/stänger
- *   - Togglerns bakgrund cyklar genom 27 EU-länders flaggfärger var 4s
- *   - Tre tabbar (social / stickers / messaging) — klick byter visad sektion
- *   - Meddelanden kan kopieras till urklipp via klick (inline onclick)
- *   - Standalone: "back to toolkit"-länk visas bottom-right när användare
- *     scrollat förbi toolkit
+ * Knappar per kort:
+ *   1. share      — Web Share API, LinkedIn-format (4:5), data-src-share
+ *   2. Instagram  — Web Share API, Instagram-format (9:16), data-src
+ *   3. copy 4:5   — Clipboard API, LinkedIn-format, data-src-copy
+ *   4. copy 9:16  — Clipboard API, Instagram-format, data-src-copy
+ *   5. linkedin   — Öppna LinkedIn composer + kopiera bild, data-src-li
  */
 
 (function () {
   var isEmbed = window.EU_IS_EMBED === true;
 
-  // Sharables foldout toggle
+  // ── Sharables foldout toggle ─────────────────────────────────────────────
   var toggleBtn = document.getElementById('euSharablesBtn');
   var sharables = document.getElementById('euSharables');
   if (toggleBtn && sharables) {
@@ -30,7 +29,7 @@
     });
   }
 
-  // EU flag color rotation (toggle button background)
+  // ── EU flag color rotation (toggle button background) ───────────────────
   (function () {
     var flags = [
       { name: 'Italy',       colors: ['#009246', '#fff',    '#CE2B37'] },
@@ -67,7 +66,6 @@
     function applyFlag() {
       var f = flags[fi];
       btn.style.background = 'linear-gradient(180deg,' + f.colors[0] + ' 0%,' + f.colors[0] + ' 33%,' + f.colors[1] + ' 33%,' + f.colors[1] + ' 66%,' + f.colors[2] + ' 66%,' + f.colors[2] + ' 100%)';
-      // pick text color that contrasts with middle stripe
       var mid = f.colors[1];
       btn.style.color = (mid === '#fff' || mid === '#FECC00' || mid === '#FCD116' || mid === '#FAE042' || mid === '#F1BF00' || mid === '#FDB913' || mid === '#D47600') ? '#000' : '#fff';
       fi = (fi + 1) % flags.length;
@@ -76,7 +74,7 @@
     setInterval(applyFlag, 4000);
   })();
 
-  // Tab navigation
+  // ── Tab navigation ────────────────────────────────────────────────────────
   var navItems = document.querySelectorAll('.eu-pap__nav-item');
   var papSections = document.querySelectorAll('.eu-pap__section');
   navItems.forEach(function (tab) {
@@ -91,7 +89,7 @@
     });
   });
 
-  // Sticky toolkit link (standalone only)
+  // ── Sticky toolkit link (standalone only) ────────────────────────────────
   if (!isEmbed) {
     var stickyEl = document.getElementById('euToolkitSticky');
     if (stickyEl && sharables) {
@@ -118,63 +116,34 @@
     }
   }
 
-  // Hide "CLICK HERE" text after open (CSS handles it, but also set via class)
-  // (handled via CSS .eu-sharables.is-open .eu-clickhere{display:none})
+  // ── SVG icons ─────────────────────────────────────────────────────────────
+  var CHECKMARK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
-  // Per-card Instagram share (native Web Share API with file)
-  function shareToInstagram(btn) {
-    var src = btn.getAttribute('data-src');
-    if (!src) return;
-    var absUrl = new URL(src, window.location.href).href;
-    fetch(absUrl)
-      .then(function(r){ return r.blob(); })
-      .then(function(blob){
-        var ext = blob.type.includes('gif') ? 'gif' : blob.type.includes('png') ? 'png' : 'jpg';
-        var file = new File([blob], 'electro-union.' + ext, { type: blob.type });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          return navigator.share({ files: [file], title: 'Electro Union' });
-        } else if (navigator.share) {
-          return navigator.share({ url: window.location.href, title: 'Electro Union — Join the movement' });
-        } else {
-          // Desktop fallback: trigger download + hint
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = 'electro-union.' + ext;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          var orig = btn.textContent;
-          btn.textContent = 'saved — share via app';
-          setTimeout(function(){ btn.textContent = orig; }, 3000);
-        }
-      })
-      .catch(function(){});
-  }
+  // ── Helpers ───────────────────────────────────────────────────────────────
 
-  // Källfilerna är JPEG trots .png-ändelse — Clipboard API kräver image/png.
-  // Konvertera via canvas för att alltid få riktig PNG (full upplösning).
+  // Bevarar innerHTML (inklusive SVG) när den flashar och återställer
   function flashBtn(btn, text, ms) {
     if (!btn || btn.tagName !== 'BUTTON') return;
     var orig = btn.innerHTML;
     btn.textContent = text;
-    setTimeout(function(){ btn.innerHTML = orig; }, ms || 2400);
+    setTimeout(function () { btn.innerHTML = orig; }, ms || 2400);
   }
 
+  // Källfilerna är JPEG trots .png-ändelse — Clipboard API kräver image/png.
+  // Konvertera via canvas för att alltid få riktig PNG (full upplösning).
   function ensurePngBlob(blob) {
     if (blob.type === 'image/png') return Promise.resolve(blob);
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       var img = new Image();
       var burl = URL.createObjectURL(blob);
-      img.onload = function() {
+      img.onload = function () {
         URL.revokeObjectURL(burl);
         var c = document.createElement('canvas');
         c.width = img.naturalWidth; c.height = img.naturalHeight;
         c.getContext('2d').drawImage(img, 0, 0);
-        c.toBlob(function(png){ png ? resolve(png) : reject(); }, 'image/png');
+        c.toBlob(function (png) { png ? resolve(png) : reject(); }, 'image/png');
       };
-      img.onerror = function(){ URL.revokeObjectURL(burl); reject(); };
+      img.onerror = function () { URL.revokeObjectURL(burl); reject(); };
       img.src = burl;
     });
   }
@@ -187,40 +156,172 @@
     URL.revokeObjectURL(u);
   }
 
-  // Copy full-size image to clipboard. Fallback: download.
+  // Returnerar unikt filnamn från URL (undviker att webbläsaren cachar fel
+  // thumbnail vid Web Share när alla filer hette 'electro-union.jpg')
+  function filenameFromUrl(absUrl, blobType) {
+    var name = decodeURIComponent(absUrl.split('/').pop()) || 'electro-union';
+    // Byt ut ändelse mot faktisk MIME-typ (filer kan vara JPEG trots .png-namn)
+    var ext = blobType.includes('gif') ? 'gif' : blobType.includes('png') ? 'png' : 'jpg';
+    return name.replace(/\.[^/.]+$/, '') + '.' + ext;
+  }
+
+  // Desktop: räknar om till mobil/tablet. macOS Arc stöder canShare men
+  // har inget LinkedIn i share-sheeten — desktop ska alltid gå via clipboard.
+  function isMobileDevice() {
+    if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) return true;
+    try { return navigator.maxTouchPoints > 0 && matchMedia('(pointer: coarse)').matches; }
+    catch (e) { return false; }
+  }
+
+  // ── 1. Share button — Web Share, LinkedIn-format (4:5) ───────────────────
+  function shareAsset(btn) {
+    var src = btn.getAttribute('data-src-share') || btn.getAttribute('data-src');
+    if (!src) return;
+    var absUrl = new URL(src, window.location.href).href;
+    fetch(absUrl)
+      .then(function (r) { return r.blob(); })
+      .then(function (blob) {
+        var fname = filenameFromUrl(absUrl, blob.type);
+        var file = new File([blob], fname, { type: blob.type });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({ files: [file], title: 'Electro Union' });
+        } else if (navigator.share) {
+          return navigator.share({ url: window.location.href, title: 'Electro Union — Join the movement' });
+        } else {
+          // Desktop fallback: ladda ner
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = fname;
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      })
+      .catch(function () {});
+  }
+
+  // ── 2. Instagram button — Web Share, Instagram-format (9:16) ─────────────
+  function shareToInstagram(btn) {
+    var src = btn.getAttribute('data-src');
+    if (!src) return;
+    var absUrl = new URL(src, window.location.href).href;
+    fetch(absUrl)
+      .then(function (r) { return r.blob(); })
+      .then(function (blob) {
+        var fname = filenameFromUrl(absUrl, blob.type);
+        var file = new File([blob], fname, { type: blob.type });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({ files: [file], title: 'Electro Union' });
+        } else if (navigator.share) {
+          return navigator.share({ url: window.location.href, title: 'Electro Union — Join the movement' });
+        } else {
+          // Desktop fallback: ladda ner + hint
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = fname;
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          var orig = btn.textContent;
+          btn.textContent = 'saved — share via app';
+          setTimeout(function () { btn.textContent = orig; }, 3000);
+        }
+      })
+      .catch(function () {});
+  }
+
+  // ── 3+4. Copy buttons — Clipboard, checkmark-ikon vid succé ──────────────
   function copyImageOnly(btn) {
     var src = btn.getAttribute('data-src-copy') || btn.getAttribute('data-src-li') || btn.getAttribute('data-src');
     if (!src) return;
+    var orig = btn.innerHTML;  // spara SVG + eventuell "4:5"/"9:16"-text
     var absUrl = new URL(src, window.location.href).href;
-    flashBtn(btn, '…');
+    btn.innerHTML = '…';
     fetch(absUrl)
-      .then(function(r){ return r.blob(); })
+      .then(function (r) { return r.blob(); })
       .then(ensurePngBlob)
-      .then(function(pngBlob){
+      .then(function (pngBlob) {
         return navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
       })
-      .then(function(){ flashBtn(btn, '✓ copied'); })
-      .catch(function(){
-        fetch(absUrl).then(function(r){ return r.blob(); }).then(function(blob){
-          downloadBlob(blob, 'electro-union.png');
-          flashBtn(btn, '↓ saved');
+      .then(function () {
+        // Visa checkmark-ikon, återställ copy-ikon efter 2.4s
+        btn.innerHTML = CHECKMARK_SVG;
+        setTimeout(function () { btn.innerHTML = orig; }, 2400);
+      })
+      .catch(function () {
+        // Fallback: ladda ner om clipboard verkligen inte stöds
+        fetch(absUrl).then(function (r) { return r.blob(); }).then(function (blob) {
+          downloadBlob(blob, filenameFromUrl(absUrl, blob.type));
+          btn.innerHTML = '↓';
+          setTimeout(function () { btn.innerHTML = orig; }, 2400);
+        }).catch(function () {
+          btn.innerHTML = orig;
         });
       });
   }
 
-  // Event delegation on document for share/copy buttons
-  document.addEventListener('click', function(e){
+  // ── 5. LinkedIn button — öppna composer + kopiera bild ───────────────────
+  var LINKEDIN_COMPOSER = 'https://www.linkedin.com/feed/?shareActive=true';
+
+  function desktopLinkedIn(absUrl, btn) {
+    // Öppna LinkedIn SYNKRONT (user-gesture-kontext → ingen popup-blockering)
+    window.open(LINKEDIN_COMPOSER, '_blank', 'noopener,noreferrer');
+    flashBtn(btn, 'opening LinkedIn…');
+    // Kopiera bild till clipboard i bakgrunden
+    fetch(absUrl)
+      .then(function (r) { return r.blob(); })
+      .then(ensurePngBlob)
+      .then(function (pngBlob) {
+        return navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+      })
+      .then(function () { flashBtn(btn, 'copied — paste ⌘V in LinkedIn'); })
+      .catch(function () {
+        // Clipboard blockerat → ladda ner, user bifogar manuellt
+        fetch(absUrl).then(function (r) { return r.blob(); }).then(function (blob) {
+          downloadBlob(blob, filenameFromUrl(absUrl, blob.type));
+          flashBtn(btn, 'saved — attach in LinkedIn');
+        });
+      });
+  }
+
+  function shareToLinkedIn(btn) {
+    var src = btn.getAttribute('data-src-li');
+    if (!src) return;
+    var absUrl = new URL(src, window.location.href).href;
+
+    // Mobil: Web Share med fil → OS native sheet → LinkedIn-appen tar emot bilden
+    if (isMobileDevice() && navigator.canShare) {
+      fetch(absUrl).then(function (r) { return r.blob(); }).then(function (blob) {
+        var file = new File([blob], filenameFromUrl(absUrl, blob.type), { type: blob.type });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'Electro Union' }).catch(function () {});
+          return;
+        }
+        desktopLinkedIn(absUrl, btn);
+      }).catch(function () {});
+      return;
+    }
+    desktopLinkedIn(absUrl, btn);
+  }
+
+  // ── Event delegation ──────────────────────────────────────────────────────
+  document.addEventListener('click', function (e) {
+    var shareBtn = e.target.closest('.eu-pap-card__row--share');
+    if (shareBtn) { e.stopPropagation(); shareAsset(shareBtn); return; }
+
     var igBtn = e.target.closest('.eu-pap-card__share--ig, .eu-pap-card__split--ig, .eu-pap-card__row--ig');
     if (igBtn) { e.stopPropagation(); shareToInstagram(igBtn); return; }
-    var copyBtn = e.target.closest('.eu-pap-card__split--copy');
+
+    var copyBtn = e.target.closest('.eu-pap-card__split--copy, .eu-pap-card__row--copy');
     if (copyBtn) { e.stopPropagation(); copyImageOnly(copyBtn); return; }
+
+    var liBtn = e.target.closest('.eu-pap-card__share--li, .eu-pap-card__split--li, .eu-pap-card__row--li');
+    if (liBtn) { e.stopPropagation(); shareToLinkedIn(liBtn); return; }
   });
 
-  // Postcard generator iframe resize relay
-  window.addEventListener('message', function(e){
-    if(e.data && e.data.type === 'eu-resize' && e.data.height){
+  // ── Postcard generator iframe resize relay ────────────────────────────────
+  window.addEventListener('message', function (e) {
+    if (e.data && e.data.type === 'eu-resize' && e.data.height) {
       var frame = document.getElementById('euPostcardFrame');
-      if(frame) frame.style.height = e.data.height + 'px';
+      if (frame) frame.style.height = e.data.height + 'px';
     }
   });
 
