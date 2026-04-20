@@ -306,7 +306,7 @@
   padding:clamp(4px,.5vw,6px) clamp(6px,1vw,10px);
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
   font-size:clamp(9px,1.1vw,12px);
-  text-transform:lowercase;
+  text-transform:uppercase;
   letter-spacing:0.01em;
   border:none;
   color:#fff;
@@ -355,7 +355,7 @@
   padding:clamp(4px,.5vw,6px) clamp(6px,1vw,10px);
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
   font-size:clamp(9px,1.1vw,12px);
-  text-transform:lowercase;
+  text-transform:uppercase;
   letter-spacing:0.01em;
   border:none;
   color:#fff;
