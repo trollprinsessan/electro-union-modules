@@ -227,7 +227,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/gate/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
@@ -267,7 +270,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/toolkit/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
@@ -307,7 +313,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/postcard-generator/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
@@ -347,7 +356,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/music-player/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
@@ -386,7 +398,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/merch/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
@@ -426,7 +441,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/drawing/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
@@ -465,7 +483,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/guestbook/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
@@ -505,7 +526,10 @@
     var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/generator/"]');
     for (var i = 0; i &lt; frames.length; i++) {
       if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = e.data.height + 'px';
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
         return;
       }
     }
