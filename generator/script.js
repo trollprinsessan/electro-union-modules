@@ -374,10 +374,33 @@
   canvas.addEventListener('touchend', function () { endStroke(); });
 
   // ═══ UNDO / CLEAR ═══
+  // Undo steps through stamp strokes first. When no strokes remain, the
+  // next undo removes the background (photo → colour → default white).
+  // Clear resets everything: placements, undo history, and background.
+  var DEFAULT_BG_COLOR = '#ffffff';
+
+  function resetBackground() {
+    bgPhotoActive = false;
+    bgPhotoSrc    = '';
+    bgPhotoImg    = new Image();
+    bgColor       = DEFAULT_BG_COLOR;
+    if (bgSwatch) bgSwatch.style.background = DEFAULT_BG_COLOR;
+    if (bgColorPicker) {
+      try { bgColorPicker.value = DEFAULT_BG_COLOR; } catch (e) {}
+    }
+    clearAllBgActive();
+  }
+
   document.getElementById('euGen2Undo').onclick = function () {
     if (undoStack.length > 0) {
       var count = undoStack.pop();
       placements.splice(placements.length - count, count);
+      renderAll();
+      return;
+    }
+    // No strokes left — step back through background state
+    if (bgPhotoActive || bgColor !== DEFAULT_BG_COLOR) {
+      resetBackground();
       renderAll();
     }
   };
@@ -385,6 +408,7 @@
   document.getElementById('euGen2Clear').onclick = function () {
     placements = [];
     undoStack  = [];
+    resetBackground();
     renderAll();
   };
 
