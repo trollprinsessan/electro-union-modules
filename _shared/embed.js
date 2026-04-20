@@ -38,21 +38,54 @@
   function postHeight() {
     clearTimeout(postTimer);
     postTimer = setTimeout(function () {
-      // Mät .eu-containerns faktiska innehållshöjd istället för
-      // documentElement.scrollHeight — den senare återspeglar iframe-
-      // viewportens höjd (satt av host) och skapar en self-fulfilling
-      // loop där modulen aldrig rapporterar en mindre höjd än nuvarande
-      // iframe. .eu-containern innehåller all modulinnehåll (se
-      // _shared/tokens.css) och ger en viewport-oberoende mätning.
+      // Mät modulens innehållshöjd. Utmaningar:
+      //   1. documentElement.scrollHeight returnerar max(content, viewport),
+      //      och iframe-viewportens höjd sätts av host → self-fulfilling
+      //      loop där modulen aldrig krymper.
+      //   2. .eu-containerns getBoundingClientRect kan vara för liten när
+      //      lazy-loaded images inte har laddat (reserverar 0 plats utan
+      //      width/height-attribut).
+      // Lösning: mät flera candidates och ta max av de content-baserade.
       var eu = document.querySelector('.eu');
-      var h = eu
-        ? Math.ceil(eu.getBoundingClientRect().bottom + window.scrollY)
-        : document.documentElement.scrollHeight;
+      var measures = [];
+      if (eu) {
+        measures.push(Math.ceil(eu.getBoundingClientRect().bottom + window.scrollY));
+        measures.push(eu.scrollHeight);
+        measures.push(eu.offsetHeight);
+      }
+      if (document.body) {
+        // Summera alla direkta body-children's bottom-kant — undviker att
+        // body ärver viewport-höjd via default html/body-stylen.
+        var maxBottom = 0;
+        var kids = document.body.children;
+        for (var i = 0; i < kids.length; i++) {
+          var r = kids[i].getBoundingClientRect();
+          if (r.bottom > maxBottom) maxBottom = r.bottom;
+        }
+        measures.push(Math.ceil(maxBottom + window.scrollY));
+      }
+      var h = Math.max.apply(null, measures.filter(function(n){ return n > 0; }));
+      if (!h || !isFinite(h)) h = document.documentElement.scrollHeight;
       if (Math.abs(h - lastH) > 10) {
         lastH = h;
         window.parent.postMessage({ type: 'eu-resize', height: h }, '*');
       }
     }, 50);
+  }
+
+  // Tvinga lazy images att laddas ivrigt i embed-läge så de reserverar
+  // plats direkt — annars mäter vi för lite när iframen initialiseras
+  // under-the-fold och lazy-loading aldrig triggas.
+  function eagerizeImages() {
+    var imgs = document.querySelectorAll('img[loading="lazy"]');
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].loading = 'eager';
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', eagerizeImages);
+  } else {
+    eagerizeImages();
   }
 
   // Poll för height-ändringar (gate-open, gallery-load, etc.)
