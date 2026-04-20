@@ -129,11 +129,11 @@
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
   font-size:clamp(9px,1.1vw,12px);
   font-weight:normal;
-  text-transform:lowercase;
+  text-transform:uppercase;
   letter-spacing:0.01em;
   border:none;
   color:#fff;
-  background:var(--blue);
+  background:#000;
   cursor:var(--eu-cursor);
   transition:opacity .15s;
   text-decoration:none;
@@ -228,7 +228,7 @@
 .eu-pap__gen-intro{
   font-family:'Times Eighteen',Georgia,serif;
   font-size:clamp(12px,1.4vw,16px);
-  color:#555;
+  color:var(--ink);
   text-align:center;
   line-height:1.5;
   margin:0 auto clamp(12px,2vw,20px);
