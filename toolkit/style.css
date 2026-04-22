@@ -342,16 +342,12 @@
   transition:opacity .15s;
 }
 .eu-pap-card__split-dl:hover{opacity:.8}
-/* French flag palette: --li (copy) = blue, --dl (download) = white, --ig (share) = red */
+/* Palette: --li (copy) = green, --dl (download) = blue, --ig (share) = red */
 .eu-pap-card__split-share.eu-pap-card__split--li,
-.eu-pap-card__split-dl.eu-pap-card__split--li{background:var(--blue)}
+.eu-pap-card__split-dl.eu-pap-card__split--li{background:#009246}
 .eu-pap-card__split-share.eu-pap-card__split--ig,
 .eu-pap-card__split-dl.eu-pap-card__split--ig{background:#CE2B37}
-.eu-pap-card__split-share.eu-pap-card__split--dl{
-  background:#fff;
-  color:var(--ink);
-  border:1px solid var(--ink);
-}
+.eu-pap-card__split-share.eu-pap-card__split--dl{background:var(--blue)}
 
 /* ═══ OPTION D — TWO ROWS ═══ */
 .eu-pap-card__rows{
