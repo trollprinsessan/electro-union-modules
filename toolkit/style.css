@@ -111,6 +111,8 @@
 .eu-pap-card__video{
   width:100%;
   display:block;
+  aspect-ratio:4/5;
+  object-fit:cover;
   background:transparent;
   pointer-events:none;
 }
