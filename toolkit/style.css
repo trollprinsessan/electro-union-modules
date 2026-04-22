@@ -342,13 +342,16 @@
   transition:opacity .15s;
 }
 .eu-pap-card__split-dl:hover{opacity:.8}
-/* --li is now the copy-to-clipboard button (black) */
+/* Italian flag palette: --li (copy) = green, --ig (share) = red, --dl (download) = white */
 .eu-pap-card__split-share.eu-pap-card__split--li,
-.eu-pap-card__split-dl.eu-pap-card__split--li{background:#000}
+.eu-pap-card__split-dl.eu-pap-card__split--li{background:#009246}
 .eu-pap-card__split-share.eu-pap-card__split--ig,
 .eu-pap-card__split-dl.eu-pap-card__split--ig{background:#CE2B37}
-/* --dl is used for animated-asset download anchors */
-.eu-pap-card__split-share.eu-pap-card__split--dl{background:#000}
+.eu-pap-card__split-share.eu-pap-card__split--dl{
+  background:#fff;
+  color:var(--ink);
+  border:1px solid var(--ink);
+}
 
 /* ═══ OPTION D — TWO ROWS ═══ */
 .eu-pap-card__rows{
