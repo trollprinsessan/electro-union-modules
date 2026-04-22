@@ -576,10 +576,11 @@ html.is-embed .eu-gen2 {
   outline-offset: 2px;
 }
 
-.eu-gen2__dl-btn--primary { background: #000; color: #fff; }
+.eu-gen2__dl-btn--primary { background: var(--blue, #003399); color: #fff; border-color: var(--blue, #003399); }
 .eu-gen2__dl-btn--primary:hover {
-  background: var(--blue, #0A66C2);
-  border-color: var(--blue, #0A66C2);
+  opacity: 0.85;
+  background: var(--blue, #003399);
+  border-color: var(--blue, #003399);
 }
 
 .eu-gen2__share-row {
@@ -615,8 +616,8 @@ html.is-embed .eu-gen2 {
   box-shadow: 0 0 0 2px var(--blue, #0A66C2);
 }
 
-/* --li is now the copy-to-clipboard button (black). --ig is share. */
-.eu-gen2__share-btn--li { background: #000; }
+/* Palette: --li (copy) = green, --ig (share) = red */
+.eu-gen2__share-btn--li { background: #009246; }
 .eu-gen2__share-btn--ig { background: #CE2B37; }
 
 /* Disabled state — applied until user has drawn / picked a bg */
