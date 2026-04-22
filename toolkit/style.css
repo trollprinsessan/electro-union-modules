@@ -113,7 +113,7 @@
   display:block;
   aspect-ratio:4/5;
   object-fit:contain;
-  background:#000;
+  background:#fff;
   pointer-events:none;
 }
 .eu-pap-card__name{
