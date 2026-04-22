@@ -108,6 +108,12 @@
   display:block;
   background:transparent;
 }
+.eu-pap-card__video{
+  width:100%;
+  display:block;
+  background:transparent;
+  pointer-events:none;
+}
 .eu-pap-card__name{
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
   font-size:clamp(11px,1.3vw,14px);
@@ -313,6 +319,7 @@
   cursor:pointer;
   line-height:1;
   text-align:center;
+  text-decoration:none;
   -webkit-appearance:none;
   appearance:none;
   transition:opacity .15s;
@@ -338,6 +345,8 @@
 .eu-pap-card__split-dl.eu-pap-card__split--li{background:#000}
 .eu-pap-card__split-share.eu-pap-card__split--ig,
 .eu-pap-card__split-dl.eu-pap-card__split--ig{background:#CE2B37}
+/* --dl is used for animated-asset download anchors */
+.eu-pap-card__split-share.eu-pap-card__split--dl{background:#000}
 
 /* ═══ OPTION D — TWO ROWS ═══ */
 .eu-pap-card__rows{

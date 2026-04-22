@@ -163,7 +163,11 @@
     fetch(absUrl)
       .then(function (r) { return r.blob(); })
       .then(function (blob) {
-        var ext = blob.type.includes('gif') ? 'gif' : blob.type.includes('png') ? 'png' : 'jpg';
+        var ext = blob.type.includes('gif') ? 'gif'
+          : blob.type.includes('png') ? 'png'
+          : blob.type.includes('mp4') ? 'mp4'
+          : blob.type.indexOf('video/') === 0 ? blob.type.split('/')[1]
+          : 'jpg';
         var file = new File([blob], 'electro-union.' + ext, { type: blob.type });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           return navigator.share({ files: [file] }).catch(function (err) {
