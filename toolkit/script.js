@@ -73,7 +73,7 @@
       fi = (fi + 1) % flags.length;
     }
     applyFlag();
-    setInterval(applyFlag, 4000);
+    setInterval(applyFlag, 3000);
   })();
 
   // Tab navigation

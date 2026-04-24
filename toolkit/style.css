@@ -135,7 +135,7 @@
   display:inline-block;
   padding:clamp(4px,.5vw,6px) clamp(8px,1.1vw,14px);
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
-  font-size:clamp(9px,1.1vw,12px);
+  font-size:clamp(8px,1vw,10px);
   font-weight:normal;
   text-transform:uppercase;
   letter-spacing:0.01em;
@@ -260,6 +260,7 @@
   .eu-pap-card__desc{font-size:8px}
   .eu-pap-card__actions{gap:3px}
   .eu-pap-card__btn{font-size:8px;padding:5px 6px}
+  .eu-pap-card__split-share{font-size:8px}
 }
 @media (max-width:380px){
   .eu-pap__grid{grid-template-columns:1fr 1fr}
@@ -313,7 +314,7 @@
   flex:1;
   padding:clamp(4px,.5vw,6px) clamp(2px,.3vw,4px);
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
-  font-size:7px;
+  font-size:clamp(8px,1vw,10px);
   text-transform:uppercase;
   letter-spacing:0;
   border:none;
