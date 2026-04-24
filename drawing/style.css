@@ -300,21 +300,19 @@
   align-items:center;
   position:relative;
 }
+/* Frame img drives container height naturally via its own aspect.
+   No aspect-ratio, no object-fit — the file's dimensions are authoritative
+   (mobile 9:16, desktop 4:5 via <picture>). */
 .eu-draw__framed{
   position:relative;
   width:100%;
-  aspect-ratio:1063/1271;
 }
 .eu-draw__frame{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:contain;
   display:block;
+  width:100%;
+  height:auto;
   opacity:1;
   pointer-events:none;
-  z-index:0;
 }
 .eu-draw__canvas-wrap{
   position:absolute;
@@ -566,11 +564,7 @@
     padding:0;
   }
   .eu-draw__area{max-width:100%;margin:0 auto}
-  .eu-draw__framed{
-    min-height:280px;
-    margin:0 auto;
-    aspect-ratio:1063/1742;
-  }
+  .eu-draw__framed{margin:0 auto}
   .eu-draw__canvas-wrap{
     top:47.7%;
     left:50%;

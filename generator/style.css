@@ -85,26 +85,22 @@ html.is-embed .eu-gen2 {
   gap: 6px;
 }
 
-/* Framed preview — 4:5 desktop (1063×1271). Takes full col width. */
+/* Framed preview — frame img drives container height naturally via its
+   own aspect. No aspect-ratio, no object-fit — the image file's native
+   proportions are authoritative (mobile 9:16, desktop 4:5 via <picture>). */
 .eu-gen2__framed {
   flex: 0 1 auto;
   width: 100%;
-  aspect-ratio: 1063 / 1271;
   max-width: 100%;
-  max-height: 100%;
   margin: 0 auto;
   position: relative;
 }
 
 .eu-gen2__frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
   display: block;
+  width: 100%;
+  height: auto;
   pointer-events: none;
-  z-index: 0;
 }
 
 .eu-gen2__canvas-wrap {
@@ -668,17 +664,15 @@ html.is-embed .eu-gen2 {
     align-items: center;
   }
 
-  /* Mobile frame is already 9:16. Let aspect-ratio + width drive sizing —
-     never set an explicit height that would fight with the frame file. */
+  /* Mobile: frame img (9:16 file) drives its own size — no aspect-ratio override.
+     Canvas-wrap insets differ from desktop because the mobile frame has
+     different proportional lace borders. */
   .eu-gen2__framed {
     flex: 0 0 auto;
     width: 100%;
     max-width: 100%;
-    aspect-ratio: 1063 / 1742;
-    height: auto;
   }
 
-  /* Canvas-wrap inset matches mobile frame's inner drawing pad (measured from asset) */
   .eu-gen2__canvas-wrap {
     top: 47.5%;
     left: 50%;
