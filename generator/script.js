@@ -11,8 +11,17 @@
 
 (function () {
 
-  // ═══ EXPORT DIMENSIONS (fixed 4:5) ═══
-  var EXPORT_W = 1080, EXPORT_H = 1350;
+  // ═══ EXPORT DIMENSIONS ═══
+  // Mobile viewport → 9:16 (1080×1920 for Instagram/LinkedIn Stories).
+  // Desktop viewport → 4:5 (1080×1350 for feed posts).
+  // Matches the frame loaded via <picture>, so export isn't distorted.
+  var MOBILE_MEDIA = '(max-width: 767.98px)';
+  function getExportDims() {
+    if (typeof window.matchMedia === 'function' && window.matchMedia(MOBILE_MEDIA).matches) {
+      return { w: 1080, h: 1920 };
+    }
+    return { w: 1080, h: 1350 };
+  }
 
   // ═══ DOM REFS ═══
   var canvas    = document.getElementById('euGen2Canvas');
@@ -672,7 +681,7 @@
   dlGifBtn.onclick = function () {
     if (!gatePass(this, GIF_COOLDOWN_MS)) return;
     var btn = this;
-    var ew = EXPORT_W, eh = EXPORT_H;
+    var dims = getExportDims(), ew = dims.w, eh = dims.h;
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
     var tmpCtx = tmpCanvas.getContext('2d');
@@ -724,7 +733,7 @@
 
   // Render current composition to a still PNG blob (4:5).
   function renderToPngBlob(cb) {
-    var ew = EXPORT_W, eh = EXPORT_H;
+    var dims = getExportDims(), ew = dims.w, eh = dims.h;
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
     var tmpCtx = tmpCanvas.getContext('2d');
@@ -735,7 +744,7 @@
   // Render current composition to an animated GIF blob (4:5). Reuses the
   // same encoder as the GIF download button.
   function renderToGifBlob() {
-    var ew = EXPORT_W, eh = EXPORT_H;
+    var dims = getExportDims(), ew = dims.w, eh = dims.h;
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
     var tmpCtx = tmpCanvas.getContext('2d');

@@ -658,11 +658,13 @@ html.is-embed .eu-gen2 {
     max-width: 100%;
   }
 
+  /* 9:16 canvas aspect inside 1063/1742 frame (for undistorted 1080x1920 export).
+     height/width ratio = 16/9 × (1063/1742) ≈ 0.922, so width:height ≈ 74:80 */
   .eu-gen2__canvas-wrap {
     top: 47.5%;
     left: 50%;
-    width: 82%;
-    height: 76%;
+    width: 74%;
+    height: 80%;
   }
 
   .eu-gen2__byline-strip {
