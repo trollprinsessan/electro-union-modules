@@ -669,13 +669,22 @@ html.is-embed .eu-gen2 {
     align-items: center;
   }
 
-  /* Framed fills the A region (byline lives in panel now). */
+  /* Framed fills the A region (byline lives in panel now).
+     Mobile uses a taller frame (1063/1742 ≈ 10:16) matching portrait screens. */
   .eu-gen2__framed {
     flex: 0 0 auto;
     height: 50vh;
-    width: min(100%, calc(50vh * 1063 / 1270));
+    width: min(100%, calc(50vh * 1063 / 1742));
     max-width: 100%;
-    aspect-ratio: 1063 / 1270;
+    aspect-ratio: 1063 / 1742;
+  }
+
+  /* Canvas-wrap inset matches mobile frame's inner drawing pad (measured from asset) */
+  .eu-gen2__canvas-wrap {
+    top: 47.5%;
+    left: 50%;
+    width: 85%;
+    height: 79%;
   }
 
   .eu-gen2__byline-strip {
