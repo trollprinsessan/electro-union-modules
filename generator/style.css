@@ -668,14 +668,14 @@ html.is-embed .eu-gen2 {
     align-items: center;
   }
 
-  /* Framed fills the A region (byline lives in panel now).
-     Mobile uses a taller frame (1063/1742 ≈ 10:16) matching portrait screens. */
+  /* Mobile frame is already 9:16. Let aspect-ratio + width drive sizing —
+     never set an explicit height that would fight with the frame file. */
   .eu-gen2__framed {
     flex: 0 0 auto;
-    height: 50vh;
-    width: min(100%, calc(50vh * 1063 / 1742));
+    width: 100%;
     max-width: 100%;
     aspect-ratio: 1063 / 1742;
+    height: auto;
   }
 
   /* Canvas-wrap inset matches mobile frame's inner drawing pad (measured from asset) */
