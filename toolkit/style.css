@@ -85,7 +85,7 @@
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
   text-transform:uppercase;
   letter-spacing:.12em;
-  color:var(--dim);
+  color:var(--ink);
   margin-bottom:clamp(10px,1.5vw,16px);
   margin-top:clamp(24px,3vw,36px);
   text-align:left;
