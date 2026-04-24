@@ -224,12 +224,12 @@ html.is-embed .eu-gen2 {
 .eu-gen2__tools > .eu-gen2__anim-row                     { grid-column: 1 / -1; grid-row: 5; }
 
 .eu-gen2__section-title {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
   font-size: 10px;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #666;
+  color: var(--ink);
   margin-bottom: 4px;
   margin-top: 8px;
   flex-shrink: 0;
@@ -263,9 +263,9 @@ html.is-embed .eu-gen2 {
 
 .eu-gen2__carousel-arrow {
   cursor: var(--eu-cursor, pointer);
-  font-family: 'ABC Schengen Mono', 'Courier New', monospace;
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
   font-size: 15px;
-  color: #555;
+  color: var(--ink);
   user-select: none;
   padding: 10px 8px;
   line-height: 1;
@@ -333,12 +333,12 @@ html.is-embed .eu-gen2 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: var(--eu-cursor, pointer);
-  color: #444;
+  color: var(--ink);
   background: transparent;
   border: 1px solid #888;
   padding: 6px 4px;
@@ -434,10 +434,10 @@ html.is-embed .eu-gen2 {
 .eu-gen2__thumb-icon {
   position: relative;
   z-index: 2;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
   font-size: clamp(14px, 1.6vw, 20px);
   font-weight: 300;
-  color: #333;
+  color: var(--ink);
   line-height: 1;
   pointer-events: none;
 }
@@ -477,12 +477,12 @@ html.is-embed .eu-gen2 {
 }
 
 .eu-gen2__arrow {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
   font-size: clamp(9px, 0.9vw, 11px);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: var(--eu-cursor, pointer);
-  color: #555;
+  color: var(--ink);
   background: transparent;
   border: none;
   transition: color 0.15s ease;
@@ -533,7 +533,7 @@ html.is-embed .eu-gen2 {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
