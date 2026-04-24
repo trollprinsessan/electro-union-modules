@@ -29,22 +29,22 @@
   border: 0;
 }
 
-/* ═══ EMBED MODE — break the iframe-resize feedback loop ═══
-   When embedded: parent resizes iframe to our scrollHeight. If we use 100vh,
-   each resize grows our height → scrollHeight grows → parent grows iframe →
-   endless loop. So in embed mode we lock .eu-gen2 to a fixed pixel height
-   and disable 100vh entirely. */
+/* ═══ EMBED MODE ═══
+   _shared/embed.js measures the .eu container's bounding-rect (not
+   documentElement.scrollHeight), so the old iframe-resize feedback loop
+   is gone. In embed mode we just let the module grow to its content
+   height — no more fixed 720px lock that clipped buttons. */
 html.is-embed,
 html.is-embed body {
   height: auto !important;
   min-height: 0 !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 html.is-embed .eu-gen2 {
-  height: 720px !important;
-  max-height: 720px !important;
-  min-height: 720px !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
 }
 
 /* ═══ OUTER WRAPPER — locked to viewport ═══ */
@@ -74,9 +74,9 @@ html.is-embed .eu-gen2 {
   align-items: stretch;
 }
 
-/* ═══ A — CANVAS COLUMN (65% of content width) ═══ */
+/* ═══ A — CANVAS COLUMN (~50% of content width, less crammed than 65%) ═══ */
 .eu-gen2__canvas-col {
-  flex: 13 1 0;
+  flex: 10 1 0;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -87,11 +87,13 @@ html.is-embed .eu-gen2 {
 
 /* Framed preview — frame img drives container height naturally via its
    own aspect. No aspect-ratio, no object-fit — the image file's native
-   proportions are authoritative (mobile 9:16, desktop 4:5 via <picture>). */
+   proportions are authoritative (mobile 9:16, desktop 4:5 via <picture>).
+   max-width keeps desktop frame from dominating the module's vertical
+   space — smaller frame leaves room for action buttons below. */
 .eu-gen2__framed {
   flex: 0 1 auto;
   width: 100%;
-  max-width: 100%;
+  max-width: 460px;
   margin: 0 auto;
   position: relative;
 }
@@ -651,7 +653,7 @@ html.is-embed .eu-gen2 {
 
   /* Mobile: frame img (9:16 file) drives its own size — no aspect-ratio override.
      Canvas-wrap insets differ from desktop because the mobile frame has
-     different proportional lace borders. */
+     different proportional lace borders. Override desktop's 460px cap. */
   .eu-gen2__framed {
     flex: 0 0 auto;
     width: 100%;
