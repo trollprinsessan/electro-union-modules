@@ -313,7 +313,7 @@
   flex:1;
   padding:clamp(4px,.5vw,6px) clamp(2px,.3vw,4px);
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
-  font-size:clamp(6px,.7vw,8px);
+  font-size:5px;
   text-transform:uppercase;
   letter-spacing:0;
   border:none;
