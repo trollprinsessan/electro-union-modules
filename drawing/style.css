@@ -303,7 +303,7 @@
 .eu-draw__framed{
   position:relative;
   width:100%;
-  aspect-ratio:1063/1052;
+  aspect-ratio:1063/1271;
 }
 .eu-draw__frame{
   position:absolute;
@@ -318,11 +318,10 @@
 }
 .eu-draw__canvas-wrap{
   position:absolute;
-  top:49.1%;left:48.9%;
+  top:49.6%;left:50%;
   transform:translate(-50%,-50%);
-  width:80%;
-  height:80%;
-  aspect-ratio:1/1;
+  width:85%;
+  height:83.5%;
   border:none;
   background:#fff;
   z-index:1;
@@ -567,7 +566,17 @@
     padding:0;
   }
   .eu-draw__area{max-width:100%;margin:0 auto}
-  .eu-draw__framed{min-height:280px;margin:0 auto}
+  .eu-draw__framed{
+    min-height:280px;
+    margin:0 auto;
+    aspect-ratio:1063/1742;
+  }
+  .eu-draw__canvas-wrap{
+    top:47.7%;
+    left:50%;
+    width:85%;
+    height:79%;
+  }
   .eu-draw__panel-col{
     flex:none;
     width:100%;
