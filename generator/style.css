@@ -507,8 +507,8 @@ html.is-embed .eu-gen2 {
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap: 14px;
-  align-items: center;
+  gap: clamp(6px, 0.8vw, 10px);
+  align-items: stretch;
   padding-top: 10px;
   border-top: 1px solid #e8e8e8;
 }
@@ -516,21 +516,6 @@ html.is-embed .eu-gen2 {
 .eu-gen2__actions > * {
   flex: 1 1 0;
   min-width: 0;
-}
-
-/* Visual order per spec: share LEFT, download RIGHT */
-.eu-gen2__share-row   { order: 1; }
-.eu-gen2__dl-label    { order: 2; flex: 0 0 auto; }
-.eu-gen2__dl-row      { order: 3; justify-content: flex-end; }
-
-.eu-gen2__dl-label {
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: clamp(9px, 0.9vw, 11px);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #555;
-  line-height: 1;
-  white-space: nowrap;
 }
 
 .eu-gen2__dl-row {
@@ -611,9 +596,9 @@ html.is-embed .eu-gen2 {
   box-shadow: 0 0 0 2px var(--blue, #0A66C2);
 }
 
-/* Palette: --li (copy) = green, --ig (share) = red */
-.eu-gen2__share-btn--li { background: #009246; }
+/* Palette: --ig (share) = red, --dl (download) = blue */
 .eu-gen2__share-btn--ig { background: #CE2B37; }
+.eu-gen2__share-btn--dl { background: var(--blue, #003399); }
 
 /* Disabled state — applied until user has drawn / picked a bg */
 .eu-gen2__dl-btn.is-disabled,
