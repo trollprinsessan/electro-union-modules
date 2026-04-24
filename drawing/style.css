@@ -316,10 +316,10 @@
 }
 .eu-draw__canvas-wrap{
   position:absolute;
-  top:49.6%;left:50%;
+  top:49%;left:50%;
   transform:translate(-50%,-50%);
-  width:85%;
-  height:83.5%;
+  width:80%;
+  height:78%;
   border:none;
   background:#fff;
   z-index:1;
@@ -566,10 +566,10 @@
   .eu-draw__area{max-width:100%;margin:0 auto}
   .eu-draw__framed{margin:0 auto}
   .eu-draw__canvas-wrap{
-    top:47.7%;
+    top:47.5%;
     left:50%;
-    width:85%;
-    height:79%;
+    width:82%;
+    height:76%;
   }
   .eu-draw__panel-col{
     flex:none;
