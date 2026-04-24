@@ -85,12 +85,11 @@ html.is-embed .eu-gen2 {
   gap: 6px;
 }
 
-/* Framed preview — 4:5 (1063:1270). Takes full col width, aspect-ratio sets height.
-   max-height prevents overflow when col is taller than aspect needs. */
+/* Framed preview — 4:5 desktop (1063×1271). Takes full col width. */
 .eu-gen2__framed {
   flex: 0 1 auto;
   width: 100%;
-  aspect-ratio: 1063 / 1270;
+  aspect-ratio: 1063 / 1271;
   max-width: 100%;
   max-height: 100%;
   margin: 0 auto;
@@ -110,11 +109,11 @@ html.is-embed .eu-gen2 {
 
 .eu-gen2__canvas-wrap {
   position: absolute;
-  top: 49.4%;
-  left: 48.7%;
+  top: 49.6%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 82%;
-  height: 82%;
+  width: 85%;
+  height: 83.5%;
   background: #fff;
   z-index: 1;
   overflow: hidden;
