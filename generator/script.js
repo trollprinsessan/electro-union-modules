@@ -608,10 +608,8 @@
   // ═══ READY-STATE (grey out download/share until user has created something) ═══
   // "Created something" = placed at least one stamp/sticker OR chosen a bg photo.
   var dlGifBtn  = document.getElementById('euGen2DlGif');
-  var dlPngBtn  = document.getElementById('euGen2DlPng');
-  var shareLiBtn = document.getElementById('euGen2ShareLi');
   var shareIgBtn = document.getElementById('euGen2ShareIg');
-  var gatedBtns = [dlGifBtn, dlPngBtn, shareLiBtn, shareIgBtn].filter(Boolean);
+  var gatedBtns = [dlGifBtn, shareIgBtn].filter(Boolean);
   function isReady() {
     return placements.length > 0 || bgPhotoActive;
   }
@@ -717,20 +715,6 @@
         btn.textContent = origText;
       }
     }, 30);
-  };
-
-  // ═══ DOWNLOAD PNG ═══
-  dlPngBtn.onclick = function () {
-    if (!gatePass(this, CLICK_COOLDOWN_MS)) return;
-    var ew = EXPORT_W, eh = EXPORT_H;
-    var tmpCanvas = document.createElement('canvas');
-    tmpCanvas.width = ew; tmpCanvas.height = eh;
-    var tmpCtx = tmpCanvas.getContext('2d');
-    renderExportFrame(tmpCtx, 'none', 0, ew, eh);
-    var link = document.createElement('a');
-    link.download = 'electro-union-generator.png';
-    link.href = tmpCanvas.toDataURL('image/png');
-    link.click();
   };
 
   // ═══ SHARE / COPY HELPERS ═══
@@ -862,15 +846,7 @@
     });
   }
 
-  // Copy button (was LinkedIn). When animated, triggers GIF download
-  // (heavier op → longer cooldown), otherwise writes PNG to clipboard.
-  shareLiBtn.onclick = function () {
-    var cd = (animMode === 'none') ? CLICK_COOLDOWN_MS : GIF_COOLDOWN_MS;
-    if (!gatePass(this, cd)) return;
-    copyPostcard(this);
-  };
-
-  // Share button (was Instagram). Shares GIF when animated, PNG when static.
+  // Share button. Shares GIF when animated, PNG when static.
   shareIgBtn.onclick = function () {
     // Use GIF cooldown when animated (heavier op), otherwise standard.
     var cd = (animMode === 'none') ? CLICK_COOLDOWN_MS : GIF_COOLDOWN_MS;

@@ -576,20 +576,6 @@
     setTimeout(function(){URL.revokeObjectURL(link.href);},5000);
   };
 
-  // Download PNG (always still, 1080x1080)
-  document.getElementById('euDrawDlPng').onclick=function(){
-    if(placements.length===0) return;
-    var ew=1080,eh=1080;
-    var tmpCanvas=document.createElement('canvas');
-    tmpCanvas.width=ew;tmpCanvas.height=eh;
-    var tmpCtx=tmpCanvas.getContext('2d');
-    renderExportFrame(tmpCtx,'none',0);
-    var link=document.createElement('a');
-    link.download='electro-union-drawing.png';
-    link.href=tmpCanvas.toDataURL('image/png');
-    link.click();
-  };
-
   // ── Expose drawing internals for the guestbook module ──
   // Gör det möjligt för ../guestbook/script.js att bygga en GIF/PNG som matchar
   // vad som just nu är i drawing-canvas. Ingen beteendeförändring för golden:
