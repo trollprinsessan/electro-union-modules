@@ -33,8 +33,9 @@
   /* Typsnitt */
   --mono: 'ABC Schengen Mono', 'Courier New', monospace;
 
-  /* Custom thunderbolt-cursor (inline SVG, 20×20) */
-  --eu-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23003399'/%3E%3Cpolygon points='14,2 9,11 13,11 10,22 17,11 13,11' fill='%23FFD700'/%3E%3C/svg%3E") 10 10, pointer;
+  /* Custom hover indicator — yellow/white spinning ball gif (159×119).
+     Lives in _shared/ so every module's relative URL resolves to the same file. */
+  --eu-cursor: url("67VNHCP5WYYBCARAO2YC32XRMYQ3S2UK.gif") 16 16, pointer;
 
   color: var(--ink);
   background: var(--cream);

@@ -27,8 +27,6 @@
   var canvas    = document.getElementById('euGen2Canvas');
   if (!canvas) return; // silent exit if module not mounted
   var canvasWrap = document.getElementById('euGen2CanvasWrap');
-  var bylineInput  = document.getElementById('euGen2Byline');
-  var bylinePreview = document.getElementById('euGen2BylinePreview');
   var sizeSlider = document.getElementById('euGen2Size');
   var ctx = canvas.getContext('2d');
 
@@ -135,20 +133,6 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBgToCtx(ctx, canvas.width, canvas.height);
     drawPlacements(ctx, canvas.width, canvas.height, animMode, t, 1);
-    // Byline on canvas preview
-    var byline = bylineInput ? bylineInput.value.trim() : '';
-    if (byline) {
-      var fs = Math.max(10, canvas.height * 0.028);
-      ctx.save();
-      ctx.font = fs + 'px "Times Eighteen", Georgia, serif';
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = 'rgba(0,0,0,0.6)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetY = 1;
-      ctx.textAlign = 'center';
-      ctx.fillText(byline, canvas.width / 2, canvas.height * 0.92);
-      ctx.restore();
-    }
   }
 
   function drawPlacements(c, w, h, mode, t, scale) {
@@ -187,102 +171,100 @@
     animRAF = requestAnimationFrame(tick);
   }
 
-  // ═══ BYLINE PREVIEW ═══
-  // Text is drawn on canvas (renderAll) — also mirror to overlay div for visual feedback
-  bylineInput.addEventListener('input', function () {
-    if (bylinePreview) bylinePreview.textContent = bylineInput.value;
-    if (animMode === 'none') renderAll();
+  // ═══ PASTRY + STICKER GRIDS ═══
+  // Each tile is clickable (selects as active stamp) and draggable (drop on canvas).
+  function wireTile(el, globalIdx, deselectSelector) {
+    el.setAttribute('draggable', 'true');
+    el.classList.add('eu-gen2__draggable');
+    var innerImg = el.querySelector('img');
+    if (innerImg) innerImg.setAttribute('draggable', 'false');
+
+    function activate() {
+      document.querySelectorAll('.eu-gen2__tile').forEach(function (x) { x.classList.remove('is-active'); });
+      el.classList.add('is-active');
+      activeStamp = globalIdx;
+    }
+
+    el.addEventListener('click', activate);
+    el.addEventListener('dragstart', function (e) {
+      activate();
+      el.classList.add('is-dragging');
+      try { e.dataTransfer.effectAllowed = 'copy'; } catch (_) {}
+      try { e.dataTransfer.setData('text/plain', 'tile:' + globalIdx); } catch (_) {}
+      if (innerImg && e.dataTransfer.setDragImage) {
+        var r = innerImg.getBoundingClientRect();
+        e.dataTransfer.setDragImage(innerImg, r.width / 2, r.height / 2);
+      }
+    });
+    el.addEventListener('dragend', function () {
+      el.classList.remove('is-dragging');
+    });
+  }
+
+  document.querySelectorAll('.eu-gen2__stamp').forEach(function (el) {
+    var i = parseInt(el.getAttribute('data-stamp'), 10) || 0;
+    wireTile(el, i);
+  });
+  document.querySelectorAll('.eu-gen2__sticker-opt').forEach(function (el) {
+    var i = parseInt(el.getAttribute('data-sticker'), 10) || 0;
+    wireTile(el, stickerStartIdx + i);
   });
 
-  // ═══ STAMP CAROUSEL ═══
-  (function () {
-    var stampItems = document.querySelectorAll('.eu-gen2__stamp');
-    var stampShow  = document.getElementById('euGen2StampShow');
-    var stampIdx   = 0;
-
-    function showStamp(i) {
-      stampIdx = i;
-      var stampEl = stampItems[i];
-      if (!stampEl) return;
-      stampShow.querySelector('img').src = stampEl.querySelector('img').src;
-      activeStamp = i;
-      // Deselect stickers
-      document.querySelectorAll('.eu-gen2__sticker-opt').forEach(function (x) { x.classList.remove('is-active'); });
-    }
-
-    document.getElementById('euGen2StampPrev').onclick = function () {
-      showStamp((stampIdx - 1 + stampItems.length) % stampItems.length);
-    };
-    document.getElementById('euGen2StampNext').onclick = function () {
-      showStamp((stampIdx + 1) % stampItems.length);
-    };
-    stampShow.onclick = function () { showStamp(stampIdx); };
-  })();
-
-  // ═══ STICKER CAROUSEL ═══
-  (function () {
-    var stickerItems = document.querySelectorAll('.eu-gen2__sticker-opt');
-    var stickerShow  = document.getElementById('euGen2StickerShow');
-    var stickerIdx   = 0;
-
-    function showSticker(i) {
-      stickerIdx = i;
-      var el = stickerItems[i];
-      if (!el) return;
-      stickerItems.forEach(function (x) { x.classList.remove('is-active'); });
-      el.classList.add('is-active');
-      stickerShow.querySelector('img').src = el.querySelector('img').src;
-      // Sticker click sets active stamp to that sticker
-      activeStamp = stickerStartIdx + i;
-      // Deselect pastry stamps from UI perspective (stamp carousel doesn't show active state, but clean anyway)
-    }
-
-    document.getElementById('euGen2StickerPrev').onclick = function () {
-      showSticker((stickerIdx - 1 + stickerItems.length) % stickerItems.length);
-    };
-    document.getElementById('euGen2StickerNext').onclick = function () {
-      showSticker((stickerIdx + 1) % stickerItems.length);
-    };
-    stickerShow.onclick = function () { showSticker(stickerIdx); };
-  })();
-
   // ═══ BACKGROUND: refs ═══
-  // Preset photo thumbs: exclude the upload + color tiles (they share the
-  // .eu-gen2__photo-thumb base class but have no data-bg).
-  var photoThumbs = document.querySelectorAll(
-    '.eu-gen2__photo-thumb:not(.eu-gen2__photo-thumb--upload):not(.eu-gen2__photo-thumb--color)'
-  );
-  var bgColorEl     = document.getElementById('euGen2BgColor');       // color tile (+)
-  var bgColorPicker = document.getElementById('euGen2BgColorPicker'); // native <input type="color">
-  var bgSwatch      = document.getElementById('euGen2BgSwatch');      // swatch behind the +
+  var bgSourceItems = document.querySelectorAll('#euGen2BgSource [data-bg]');
+  var bgShow        = document.getElementById('euGen2BgShow');
+  var bgShowImg     = bgShow ? bgShow.querySelector('img') : null;
+  var bgModal       = document.getElementById('euGen2BgModal');
+  var bgColorEl     = document.getElementById('euGen2BgColor');
+  var bgColorPicker = document.getElementById('euGen2BgColorPicker');
+  var bgSwatch      = document.getElementById('euGen2BgSwatch');
   var uploadBgInput = document.getElementById('euGen2UploadBgInput');
-  var uploadBgLabel = document.getElementById('euGen2UploadBgLabel'); // upload tile (↑)
+  var uploadBgLabel = document.getElementById('euGen2UploadBgLabel');
 
   function clearAllBgActive() {
-    photoThumbs.forEach(function (x) { x.classList.remove('is-active'); });
+    if (bgShow)        bgShow.classList.remove('is-active');
     if (bgColorEl)     bgColorEl.classList.remove('is-active');
     if (uploadBgLabel) uploadBgLabel.classList.remove('is-active');
   }
 
-  // ═══ BACKGROUND: PHOTO GRID ═══
-  photoThumbs.forEach(function (thumb) {
-    thumb.onclick = function () {
-      clearAllBgActive();
-      thumb.classList.add('is-active');
-      bgPhotoSrc    = thumb.getAttribute('data-bg');
-      bgPhotoActive = true;
-      bgPhotoImg    = new Image();
-      bgPhotoImg.src = bgPhotoSrc;
-      bgPhotoImg.onload = function () { renderAll(); };
-    };
-  });
+  // ═══ BACKGROUND: IMAGE PICKER MODAL ═══
+  function openBgModal()  { if (bgModal) bgModal.hidden = false; }
+  function closeBgModal() { if (bgModal) bgModal.hidden = true; }
+
+  function applyBgImage(src) {
+    if (!src) return;
+    if (bgShowImg) bgShowImg.src = src;
+    clearAllBgActive();
+    if (bgShow) bgShow.classList.add('is-active');
+    bgPhotoSrc    = src;
+    bgPhotoActive = true;
+    bgPhotoImg    = new Image();
+    bgPhotoImg.src = src;
+    bgPhotoImg.onload = function () { renderAll(); };
+  }
+
+  if (bgShow) bgShow.onclick = openBgModal;
+  if (bgModal) {
+    bgModal.addEventListener('click', function (e) {
+      if (e.target.matches('[data-close]')) closeBgModal();
+    });
+    bgSourceItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        applyBgImage(item.getAttribute('data-bg'));
+        closeBgModal();
+      });
+    });
+  }
 
   // ═══ BACKGROUND: COLOR TILE (+ opens native colorpicker) ═══
   if (bgColorPicker) {
     bgColorPicker.addEventListener('input', function () {
       bgColor       = bgColorPicker.value;
       bgPhotoActive = false;
-      if (bgSwatch) bgSwatch.style.background = bgColor;
+      if (bgSwatch) {
+        bgSwatch.style.animation = 'none'; // freeze the cycling once user picks
+        bgSwatch.style.background = bgColor;
+      }
       clearAllBgActive();
       if (bgColorEl) bgColorEl.classList.add('is-active');
       renderAll();
@@ -365,6 +347,32 @@
   canvas.addEventListener('mouseup',    function () { endStroke(); });
   canvas.addEventListener('mouseleave', function () { endStroke(); });
 
+  // ═══ DRAG-TO-STAMP (drop handlers on canvas; dragstart wiring is inside each carousel IIFE) ═══
+  (function () {
+    canvas.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      try { e.dataTransfer.dropEffect = 'copy'; } catch (_) {}
+      canvas.classList.add('is-drop-target');
+    });
+    canvas.addEventListener('dragleave', function () {
+      canvas.classList.remove('is-drop-target');
+    });
+    canvas.addEventListener('drop', function (e) {
+      e.preventDefault();
+      canvas.classList.remove('is-drop-target');
+      resizeCanvas();
+      var r = canvas.getBoundingClientRect();
+      var scaleX = canvas.width / r.width;
+      var scaleY = canvas.height / r.height;
+      var x = (e.clientX - r.left) * scaleX;
+      var y = (e.clientY - r.top)  * scaleY;
+      strokeStartIdx = placements.length;
+      addPlacement(x, y);
+      var added = placements.length - strokeStartIdx;
+      if (added > 0) undoStack.push(added);
+    });
+  })();
+
   canvas.addEventListener('touchstart', function (e) {
     e.preventDefault();
     resizeCanvas();
@@ -393,7 +401,11 @@
     bgPhotoSrc    = '';
     bgPhotoImg    = new Image();
     bgColor       = DEFAULT_BG_COLOR;
-    if (bgSwatch) bgSwatch.style.background = DEFAULT_BG_COLOR;
+    if (bgSwatch) {
+      // Restart the cycling animation so the tile reads as "pick a color" again
+      bgSwatch.style.animation = '';
+      bgSwatch.style.background = '';
+    }
     if (bgColorPicker) {
       try { bgColorPicker.value = DEFAULT_BG_COLOR; } catch (e) {}
     }
@@ -597,19 +609,6 @@
       var dw = ar >= 1 ? s : s * ar;
       var dh = ar >= 1 ? s / ar : s;
       tmpCtx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
-      tmpCtx.restore();
-    }
-    // Byline text
-    var byline = bylineInput ? bylineInput.value.trim() : '';
-    if (byline) {
-      tmpCtx.save();
-      tmpCtx.font = '32px "Times Eighteen", Georgia, serif';
-      tmpCtx.fillStyle = '#ffffff';
-      tmpCtx.shadowColor = 'rgba(0,0,0,0.6)';
-      tmpCtx.shadowBlur = 6;
-      tmpCtx.shadowOffsetY = 2;
-      tmpCtx.textAlign = 'center';
-      tmpCtx.fillText(byline, ew / 2, eh * 0.94);
       tmpCtx.restore();
     }
   }

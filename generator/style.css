@@ -50,7 +50,6 @@ html.is-embed .eu-gen2 {
 /* ═══ OUTER WRAPPER — locked to viewport ═══ */
 .eu-gen2 {
   box-sizing: border-box;
-  height: 100vh;
   max-height: 100vh;
   width: 100%;
   max-width: 960px;
@@ -63,20 +62,82 @@ html.is-embed .eu-gen2 {
   overflow: hidden;
 }
 
-/* ═══ WORKSPACE — A | B on desktop ═══ */
+/* ═══ INTRO COPY (top) + ACTIONS CAPTION (bottom) — editorial italic serif ═══ */
+.eu-gen2__intro,
+.eu-gen2__actions-caption {
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--ink, #111);
+  flex: 0 0 auto;
+}
+.eu-gen2__intro {
+  font-size: clamp(12px, 1.1vw, 14px);
+  text-align: center;
+  margin: 0 auto;
+  max-width: 640px;
+  padding: 4px 8px 0;
+}
+.eu-gen2__actions-caption {
+  font-size: 10px;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+.eu-gen2__intro strong,
+.eu-gen2__actions-caption strong {
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* ═══ WORKSPACE — three columns: LEFT inputs | CENTER canvas | RIGHT controls ═══ */
 .eu-gen2__workspace {
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap: 40px;
+  gap: 24px;
   align-items: stretch;
 }
 
-/* ═══ A — CANVAS COLUMN (~50% of content width, less crammed than 65%) ═══ */
+/* LEFT COL — pastry, sticker, size (size pinned to bottom of frame) */
+.eu-gen2__left-col {
+  flex: 4 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  overflow: visible;
+}
+.eu-gen2__left-col > * + * { margin-top: 14px; }
+/* Push the SIZE block to the bottom of the column. */
+.eu-gen2__left-col > .eu-gen2__section-title:last-of-type { margin-top: auto; }
+/* Lift the SIZE slider 15px off the bottom edge */
+.eu-gen2__left-col > .eu-gen2__size-slider { margin-bottom: 15px; }
+
+/* RIGHT COL — bg, animate, icon row, share/download (last block pinned to bottom) */
+.eu-gen2__right-col {
+  flex: 4 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  overflow: visible;
+}
+.eu-gen2__right-col > * + * { margin-top: 14px; }
+/* Extra 15px breathing room above the ANIMATE section */
+.eu-gen2__right-col > .eu-gen2__section-title { margin-top: 29px; }
+/* 50px breathing room above the SHARE / DOWNLOAD CTA, lifted 15px from the bottom */
+.eu-gen2__right-col > .eu-gen2__actions { margin-top: 50px; margin-bottom: 15px; }
+/* Push the actions caption (and the share/download buttons that follow it) to the bottom. */
+.eu-gen2__right-col > .eu-gen2__actions-caption { margin-top: auto; }
+
+/* CENTER — canvas column */
 .eu-gen2__canvas-col {
-  flex: 10 1 0;
+  flex: 9 1 0;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -107,11 +168,11 @@ html.is-embed .eu-gen2 {
 
 .eu-gen2__canvas-wrap {
   position: absolute;
-  top: 49%;
-  left: 50%;
+  top: 50%;
+  left: 49%;
   transform: translate(-50%, -50%);
-  width: 80%;
-  height: 78%;
+  width: 85%;
+  height: 87%;
   background: #fff;
   z-index: 1;
   overflow: hidden;
@@ -124,110 +185,12 @@ html.is-embed .eu-gen2 {
   cursor: crosshair;
 }
 
-.eu-gen2__byline-preview {
-  position: absolute;
-  bottom: 12%;
-  left: 9%;
-  right: 9%;
-  text-align: center;
-  font-family: 'Times Eighteen', Georgia, serif;
-  font-size: clamp(9px, 1.1vw, 13px);
-  font-style: italic;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-  letter-spacing: 0.03em;
-  z-index: 3;
-  pointer-events: none;
-  line-height: 1.3;
-}
-
-/* Byline strip — natural height under preview */
-.eu-gen2__byline-strip {
-  flex: 0 0 auto;
-  width: min(100%, 680px);
-  margin-top: 16px;
-}
-
-.eu-gen2__byline-label {
-  display: block;
-  width: 100%;
-}
-
-.eu-gen2__byline-input {
-  font-family: 'Times Eighteen', Georgia, serif;
-  font-size: clamp(12px, 1.2vw, 14px);
-  font-style: italic;
-  border: none;
-  border-bottom: 1.5px dotted #333;
-  background: transparent;
-  color: var(--ink);
-  padding: 0 4px 4px;
-  width: 100%;
-  outline: none;
-  letter-spacing: 0;
-}
-
-.eu-gen2__byline-input::placeholder {
-  color: #888;
-  font-style: italic;
-}
-
-.eu-gen2__byline-input:focus-visible {
-  border-bottom-color: var(--ink);
-  outline: 2px solid var(--blue, #0A66C2);
-  outline-offset: 2px;
-}
-
-/* ═══ B — PANEL COLUMN (35% of content width) ═══ */
-.eu-gen2__panel-col {
-  flex: 7 1 0;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding-top: 10px;
-  overflow: hidden;
-}
-
-/* 20px luft mellan alla direkta barn, utom det första */
-.eu-gen2__panel-col > * + * {
-  margin-top: 20px;
-}
-
-/* Tools grid — pastry | sticker side-by-side.
-   Visual order (rows):
-     1: pastry-title   | sticker-title
-     2: pastry carousel| sticker carousel
-     3: size slider (full width)
-     4: animate title (full width)
-     5: animate row   (full width)
-   Hidden stamp-row and sticker-row divs (display:none in markup)
-   don't participate in grid layout. Target by class/ID to avoid
-   nth-child off-by-hidden bugs. */
-.eu-gen2__tools {
-  flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 14px;
-  row-gap: 2px;
-  align-items: start;
-  min-width: 0;
-}
-/* Row 1-2: pastry | sticker */
-.eu-gen2__tools > .eu-gen2__section-title:nth-of-type(2) { grid-column: 1; grid-row: 1; }
-.eu-gen2__tools > #euGen2StampCarousel                   { grid-column: 1; grid-row: 2; }
-.eu-gen2__tools > .eu-gen2__section-title--sticker       { grid-column: 2; grid-row: 1; }
-.eu-gen2__tools > #euGen2StickerCarousel                 { grid-column: 2; grid-row: 2; }
-/* Row 3: size slider under pastry/sticker */
-.eu-gen2__tools > .eu-gen2__size-slider                  { grid-column: 1 / -1; grid-row: 3; }
-/* Row 4-5: animate (extra breathing room above) */
-.eu-gen2__tools > .eu-gen2__section-title:first-child    { grid-column: 1 / -1; grid-row: 4; margin-top: 20px; }
-.eu-gen2__tools > .eu-gen2__anim-row                     { grid-column: 1 / -1; grid-row: 5; }
+/* (Old .eu-gen2__panel-col / .eu-gen2__tools rules removed — replaced by left-col + right-col 3-column layout above.) */
 
 .eu-gen2__section-title {
   font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
   font-size: 10px;
-  font-weight: 400;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--ink);
@@ -256,6 +219,341 @@ html.is-embed .eu-gen2 {
   cursor: var(--eu-cursor, pointer);
 }
 
+.eu-gen2__draggable { cursor: grab; }
+.eu-gen2__draggable:active,
+.eu-gen2__draggable.is-dragging { cursor: grabbing; }
+.eu-gen2__draggable.is-dragging { opacity: 0.6; }
+
+/* Tile grid — pastry / sticker shown in full */
+.eu-gen2__tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 0;
+}
+.eu-gen2__tile {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  border: none;
+  transition: transform 0.1s ease, filter 0.1s ease;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.06));
+}
+.eu-gen2__tile > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Sticker artwork has transparent padding around the shape — zoom in so the
+   sticker reads at the same visual weight as the pastry photos. */
+.eu-gen2__sticker-opt > img { transform: scale(1.5); }
+
+/* Stroopwafel + kanelbulle are circular and fill the square more than the
+   elongated pastries — shrink slightly so the row reads even. */
+.eu-gen2__stamp[data-stamp="1"] > img,
+.eu-gen2__stamp[data-stamp="2"] > img { transform: scale(0.85); }
+
+/* Off-axis tilts — collage feel, never on a perfect grid */
+.eu-gen2__tile-grid > .eu-gen2__tile:nth-child(3n+1) { transform: rotate(-2deg); }
+.eu-gen2__tile-grid > .eu-gen2__tile:nth-child(3n+2) { transform: rotate(1deg); }
+.eu-gen2__tile-grid > .eu-gen2__tile:nth-child(3n+3) { transform: rotate(-1deg); }
+.eu-gen2__tile-grid > .eu-gen2__tile:nth-child(4n)   { transform: rotate(2deg); }
+
+/* Hover + selected — straighten, scale up, mid shadow. No outline.
+   Specificity has to match the nth-child tilt rules above, otherwise
+   the rotation wins and the scale is silently ignored. */
+.eu-gen2__tile-grid > .eu-gen2__tile:hover,
+.eu-gen2__tile-grid > .eu-gen2__tile.is-active,
+.eu-gen2__tile-grid > .eu-gen2__tile.is-dragging {
+  transform: rotate(0deg) scale(1.16);
+  filter: drop-shadow(0 4px 7px rgba(0,0,0,0.18));
+  z-index: 2;
+}
+
+/* BACKGROUND — 3 equal tiles row: IMAGE | UPLOAD | COLOR */
+.eu-gen2__bg-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+}
+.eu-gen2__bg-tile-wrap {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.eu-gen2__bg-tile {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: visible;
+  cursor: var(--eu-cursor, pointer);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.1s ease, filter 0.1s ease;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.06));
+}
+.eu-gen2__bg-tile:hover,
+.eu-gen2__bg-tile.is-active {
+  transform: scale(1.08);
+  filter: drop-shadow(0 4px 7px rgba(0,0,0,0.18));
+}
+.eu-gen2__bg-tile--image {
+  overflow: hidden; /* clip the photo to its square */
+}
+.eu-gen2__bg-tile--image > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.eu-gen2__bg-tile--upload,
+.eu-gen2__bg-tile--color {
+  overflow: hidden;
+}
+.eu-gen2__bg-tile-icon {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--ink, #111);
+  line-height: 1;
+}
+.eu-gen2__bg-tile-svg {
+  width: 56%;
+  height: 56%;
+  color: var(--ink, #111);
+  display: block;
+}
+.eu-gen2__bg-tile-svg--color {
+  position: relative;
+  z-index: 2;
+}
+.eu-gen2__icon-svg {
+  width: 24px;
+  height: 24px;
+  color: var(--ink, #111);
+  display: block;
+}
+.eu-gen2__bg-tile--color .eu-gen2__bg-color__swatch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Cycle through 8 European flags. steps(1) = hard switch, no fade.
+     JS replaces this with a fixed color once the user picks one. */
+  animation: eu-bg-flag-switch 8s steps(1, end) infinite;
+}
+
+@keyframes eu-bg-flag-switch {
+  0%    { background: linear-gradient(to right, #0055A4 0 33.33%, #ffffff 33.33% 66.66%, #EF4135 66.66% 100%); } /* France */
+  12.5% { background: linear-gradient(to right, #009246 0 33.33%, #F1F2F1 33.33% 66.66%, #CE2B37 66.66% 100%); } /* Italy */
+  25%   { background: linear-gradient(to bottom, #000000 0 33.33%, #DD0000 33.33% 66.66%, #FFCE00 66.66% 100%); } /* Germany */
+  37.5% { background: linear-gradient(to right, #000000 0 33.33%, #FAE042 33.33% 66.66%, #ED2939 66.66% 100%); } /* Belgium */
+  50%   { background: linear-gradient(to bottom, #AE1C28 0 33.33%, #ffffff 33.33% 66.66%, #21468B 66.66% 100%); } /* Netherlands */
+  62.5% { background: linear-gradient(to right, #169B62 0 33.33%, #ffffff 33.33% 66.66%, #FF883E 66.66% 100%); } /* Ireland */
+  75%   { background: linear-gradient(to right, #002B7F 0 33.33%, #FCD116 33.33% 66.66%, #CE1126 66.66% 100%); } /* Romania */
+  87.5% { background: linear-gradient(to bottom, #CE2939 0 33.33%, #ffffff 33.33% 66.66%, #477050 66.66% 100%); } /* Hungary */
+}
+.eu-gen2__bg-tile--color input[type="color"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: var(--eu-cursor, pointer);
+  border: none;
+  padding: 0;
+}
+
+/* Tile labels (image / upload / color) are hidden — the icons + previews
+   carry the meaning on their own, both desktop and mobile. */
+.eu-gen2__bg-tile-label { display: none; }
+
+/* PASTRY + STICKER section titles are hidden everywhere — the tile grids
+   speak for themselves. SIZE / BACKGROUND / ANIMATE titles stay. */
+.eu-gen2__left-col > .eu-gen2__section-title:first-child,
+.eu-gen2__left-col > .eu-gen2__section-title--sticker {
+  display: none;
+}
+
+/* Color tile icon sits above the swatch fill */
+.eu-gen2__bg-tile--color .eu-gen2__bg-tile-icon {
+  position: relative;
+  z-index: 2;
+  color: var(--ink, #111);
+}
+
+/* ─── BG IMAGE PICKER MODAL ─── */
+.eu-gen2__bg-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.eu-gen2__bg-modal[hidden] { display: none; }
+.eu-gen2__bg-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.eu-gen2__bg-modal-panel {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  width: min(720px, 92vw);
+  max-height: 86vh;
+  padding: 18px 20px 20px;
+  border: 1.5px solid var(--blue, #003399);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.eu-gen2__bg-modal-title {
+  font-family: 'Times Eighteen', Georgia, serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--blue, #003399);
+  margin-bottom: 14px;
+}
+.eu-gen2__bg-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--blue, #003399);
+  cursor: var(--eu-cursor, pointer);
+  line-height: 1;
+  padding: 4px 8px;
+}
+.eu-gen2__bg-modal .eu-gen2__bg-source {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+}
+.eu-gen2__bg-source-item {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: var(--eu-cursor, pointer);
+  border: 1.5px solid transparent;
+  transition: border-color 0.1s ease, transform 0.1s ease;
+}
+.eu-gen2__bg-source-item:hover {
+  border-color: var(--blue, #003399);
+  transform: scale(1.03);
+}
+.eu-gen2__bg-source-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ─── PILL ROW (UPLOAD + COLOR, sits inside the BACKGROUND block) ─── */
+.eu-gen2__pill-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.eu-gen2__pill {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--blue, #003399);
+  background: transparent;
+  color: var(--blue, #003399);
+  font-family: 'Times Eighteen', Georgia, serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: var(--eu-cursor, pointer);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.eu-gen2__pill:hover {
+  background: var(--blue, #003399);
+  color: #fff;
+}
+.eu-gen2__pill.is-active {
+  background: var(--blue, #003399);
+  color: #fff;
+}
+.eu-gen2__pill-icon {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+.eu-gen2__pill input[type="color"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: var(--eu-cursor, pointer);
+  border: none;
+  padding: 0;
+}
+.eu-gen2__pill .eu-gen2__bg-color__swatch {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* ─── ICON CIRCLES (undo / clear) ─── */
+.eu-gen2__icon-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.eu-gen2__icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--ink, #111);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: var(--eu-cursor, pointer);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.1s ease;
+}
+.eu-gen2__icon-btn:hover { transform: scale(1.15); }
+
+.eu-gen2__canvas.is-drop-target {
+  outline: 2px dashed var(--blue, #003399);
+  outline-offset: -6px;
+}
+
 .eu-gen2__carousel-item img {
   width: 100%;
   height: 100%;
@@ -264,18 +562,18 @@ html.is-embed .eu-gen2 {
 
 .eu-gen2__carousel-arrow {
   cursor: var(--eu-cursor, pointer);
-  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
-  font-size: 15px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
   color: var(--ink);
   user-select: none;
-  padding: 10px 8px;
+  padding: 6px 4px;
   line-height: 1;
-  min-width: 32px;
-  min-height: 32px;
+  min-width: 28px;
+  min-height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2px;
 }
 
 .eu-gen2__carousel-arrow:hover,
@@ -329,41 +627,76 @@ html.is-embed .eu-gen2 {
   padding: 0;
 }
 
+/* Outlined circle anim buttons — baguette inside, label below */
 .eu-gen2__anim {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 6px;
   font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  cursor: var(--eu-cursor, pointer);
-  color: var(--ink);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  color: var(--ink, #111);
   background: transparent;
-  border: 1px solid #888;
-  padding: 6px 4px;
-  min-height: 28px;
-  transition: all 0.15s ease;
+  cursor: var(--eu-cursor, pointer);
   user-select: none;
   line-height: 1;
   text-align: center;
+  padding: 0;
+}
+.eu-gen2__anim-circle {
+  width: 44px;
+  height: 44px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  background: transparent;
+  transition: transform 0.1s ease, filter 0.1s ease;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.06));
+}
+.eu-gen2__anim-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  pointer-events: none;
+  transform-origin: center;
+}
+.eu-gen2__anim-label { display: block; }
+
+.eu-gen2__anim:hover .eu-gen2__anim-circle,
+.eu-gen2__anim.is-active .eu-gen2__anim-circle {
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 7px rgba(0,0,0,0.18));
+}
+.eu-gen2__anim:focus-visible { outline: none; }
+.eu-gen2__anim.is-active .eu-gen2__anim-label {
+  font-style: italic;
+  font-weight: 700;
 }
 
-.eu-gen2__anim:hover {
-  color: #000;
-  border-color: #000;
-}
+/* Micro animation previews — every button shows its mode running so you can see what you're picking */
+.eu-gen2__anim[data-anim="bounce"] .eu-gen2__anim-icon { animation: eu-anim-bounce 1.1s ease-in-out infinite; }
+.eu-gen2__anim[data-anim="beat"]   .eu-gen2__anim-icon { animation: eu-anim-beat 0.9s ease-in-out infinite; }
+.eu-gen2__anim[data-anim="rotate"] .eu-gen2__anim-icon { animation: eu-anim-rotate 1.6s ease-in-out infinite; }
 
-.eu-gen2__anim:focus-visible {
-  outline: 2px solid var(--blue, #0A66C2);
-  outline-offset: 2px;
+@keyframes eu-anim-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
 }
-
-.eu-gen2__anim.is-active {
-  color: #fff;
-  background: #000;
-  border-color: #000;
+@keyframes eu-anim-beat {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.25); }
+}
+@keyframes eu-anim-rotate {
+  0%, 100% { transform: rotate(-22deg); }
+  50%      { transform: rotate(22deg); }
 }
 
 /* ═══ BG BLOCK — natural height; byline + undo sit directly beneath ═══ */
@@ -415,30 +748,35 @@ html.is-embed .eu-gen2 {
 /* Upload + color tiles */
 .eu-gen2__photo-thumb--upload,
 .eu-gen2__photo-thumb--color {
-  background: #fafafa;
-  border: 1.5px solid #bbb;
+  border-radius: 50%;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
+/* Upload = EU yellow (bring your own image) */
+.eu-gen2__photo-thumb--upload { background: #FFCC00; }
+/* Color = EU blue (pick a color) */
+.eu-gen2__photo-thumb--color  { background: var(--blue, #003399); }
+
 .eu-gen2__photo-thumb--upload:hover,
-.eu-gen2__photo-thumb--color:hover {
-  border-color: #555;
-}
+.eu-gen2__photo-thumb--color:hover { opacity: 0.85; }
 
 .eu-gen2__photo-thumb--upload.is-active,
 .eu-gen2__photo-thumb--color.is-active {
-  border-color: #000;
+  outline: 2px solid #000;
+  outline-offset: 2px;
 }
 
 .eu-gen2__thumb-icon {
   position: relative;
   z-index: 2;
-  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
-  font-size: clamp(14px, 1.6vw, 20px);
-  font-weight: 300;
-  color: var(--ink);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
   line-height: 1;
   pointer-events: none;
 }
@@ -451,9 +789,9 @@ html.is-embed .eu-gen2 {
   pointer-events: none;
 }
 
+.eu-gen2__photo-thumb--color .eu-gen2__thumb-icon { color: #fff; }
 .eu-gen2__photo-thumb--color.is-active .eu-gen2__thumb-icon {
   color: #fff;
-  mix-blend-mode: difference;
 }
 
 .eu-gen2__photo-thumb--color input[type="color"] {
@@ -578,35 +916,38 @@ html.is-embed .eu-gen2 {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  font-family: 'Times Eighteen', Georgia, serif;
-  font-size: 12px;
+  /* Match the toolkit's .eu-pap-card__btn — Times Eighteen regular, uppercase, tight letter-spacing */
+  font-family: 'Times Eighteen', Georgia, 'Times New Roman', serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: clamp(9px, 1.05vw, 12px);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   cursor: var(--eu-cursor, pointer);
   line-height: 1;
-  padding: 10px 12px;
-  min-height: 40px;
-  transition: opacity 0.15s;
+  padding: 8px 16px;
+  height: 35px;
+  min-height: 35px;
+  transition: opacity 0.15s ease;
   border: none;
   color: #fff;
+  text-decoration: none;
+  text-align: center;
 }
 
-.eu-gen2__share-btn:hover { opacity: 0.85; }
-.eu-gen2__share-btn:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: -4px;
-  box-shadow: 0 0 0 2px var(--blue, #0A66C2);
-}
+.eu-gen2__share-btn:hover { opacity: 0.8; }
+.eu-gen2__share-btn:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
 
-/* Palette: --ig (share) = red, --dl (download) = blue */
+/* Filled flag-color blocks — share = red, download = blue */
 .eu-gen2__share-btn--ig { background: #CE2B37; }
 .eu-gen2__share-btn--dl { background: var(--blue, #003399); }
 
-/* Disabled state — applied until user has drawn / picked a bg */
+/* Disabled state — block clicks but keep full saturation
+   (the buttons should always read as primary, never faded). */
 .eu-gen2__dl-btn.is-disabled,
 .eu-gen2__share-btn.is-disabled {
-  opacity: 0.35;
+  opacity: 1;
   pointer-events: none;
   cursor: not-allowed;
 }
@@ -624,97 +965,227 @@ html.is-embed .eu-gen2 {
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 767.98px) {
   .eu-gen2 {
-    height: 100vh;
-    max-height: 100vh;
+    max-height: none;
     max-width: 100%;
     padding: 8px 10px;
-    gap: 6px;
-    overflow: hidden;
+    gap: 8px;
+    overflow: visible;
   }
 
-  /* Workspace = A above B */
+  /* Workspace stacks vertically; the page scrolls naturally. */
   .eu-gen2__workspace {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     flex-direction: column;
-    gap: 6px;
+    gap: 10px;
     align-items: stretch;
     justify-content: flex-start;
     min-height: 0;
   }
 
-  /* A — FIXED TOP (never scrolls) */
+  /* Stack order: canvas (top), left-col (pastry/sticker/animate), right-col (bg/size/undo). */
+  .eu-gen2__canvas-col { order: 1; }
+  .eu-gen2__left-col   { order: 2; }
+  .eu-gen2__right-col  { order: 3; }
+
+  /* Canvas — top, capped so the rest of the controls fit in one viewport */
   .eu-gen2__canvas-col {
     flex: 0 0 auto;
     width: 100%;
-    max-height: 50vh;
-    overflow: hidden;
-    justify-content: flex-start;
+    max-height: 45vh;
+    overflow: visible;
+    justify-content: center;
     align-items: center;
   }
-
-  /* Mobile: frame img (9:16 file) drives its own size — no aspect-ratio override.
-     Canvas-wrap insets differ from desktop because the mobile frame has
-     different proportional lace borders. Override desktop's 460px cap. */
+  /* Mobile frame is 1063x1742 (9:16 portrait). Compute width from height so
+     the container is sized to the lace frame's actual aspect — width: auto
+     on a flex column child otherwise expands to 100%. */
   .eu-gen2__framed {
-    flex: 0 0 auto;
-    width: 100%;
+    height: 45vh;
+    width: calc(45vh * 1063 / 1742);
     max-width: 100%;
+    margin: 0 auto;
   }
-
-  /* 9:16 canvas aspect inside 1063/1742 frame (for undistorted 1080x1920 export).
-     height/width ratio = 16/9 × (1063/1742) ≈ 0.922, so width:height ≈ 74:80 */
-  .eu-gen2__canvas-wrap {
-    top: 47.5%;
-    left: 50%;
-    width: 74%;
-    height: 80%;
-  }
-
-  .eu-gen2__byline-strip {
-    flex: 0 0 auto;
-    width: min(100%, 680px);
-  }
-
-  /* B — SCROLLABLE PANEL (only thing that scrolls) */
-  .eu-gen2__panel-col {
-    flex: 1 1 auto;
+  .eu-gen2__frame {
     width: 100%;
-    max-height: 45vh;
+    height: 100%;
+    display: block;
+  }
+
+  /* Hide the long editorial copy on mobile — we need the vertical real estate */
+  .eu-gen2__intro,
+  .eu-gen2__actions-caption { display: none; }
+
+  /* Mobile 9:16 canvas opening inside the lace frame.
+     Frame aspect is 1063:1742 (≈0.610). Canvas must export as 9:16 (=0.5625),
+     so it's slightly narrower-than-the-frame proportionally:
+       width 78% → height = 78% × (1063/1742) ÷ (9/16) ≈ 84.5%. */
+  .eu-gen2__canvas-wrap {
+    top: 49%;
+    left: 50%;
+    width: 78%;
+    height: 84.5%;
+  }
+
+  /* B — STACKED PANELS, natural height. notwk-style: canvas on top, then
+     horizontally scrolling strips of stamps/stickers/animations below. */
+  .eu-gen2__left-col,
+  .eu-gen2__right-col {
+    flex: 0 0 auto;
+    width: 100%;
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: 4px;
+    overflow: visible;
+    padding: 0;
     -webkit-overflow-scrolling: touch;
   }
+  .eu-gen2__left-col > * + * { margin-top: 8px; }
+  .eu-gen2__right-col > * + * { margin-top: 8px; }
+  /* Drop the desktop bottom-anchor pushers — mobile is just stacked. */
+  .eu-gen2__left-col > .eu-gen2__section-title:last-of-type { margin-top: 0; }
+  .eu-gen2__right-col > .eu-gen2__actions-caption { margin-top: 0; }
 
-  /* Keep pastry | sticker side-by-side; 2-col grid already set on desktop */
-
-  /* bg-block grows to fill B (and scroll if needed) */
-  .eu-gen2__bg-block {
-    flex: 0 0 auto;  /* natural height within scroll container */
-    overflow: visible;
-  }
-
-  .eu-gen2__photo-grid {
-    flex: none;
-    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-    grid-auto-rows: auto;
-    overflow: visible;
+  /* PASTRY + STICKER grids → horizontal scroll strips, smaller tiles */
+  .eu-gen2__tile-grid {
+    display: flex;
+    flex-direction: row;
+    grid-template-columns: none;
     gap: 4px;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 4px 2px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
-
-  .eu-gen2__photo-thumb {
+  .eu-gen2__tile-grid::-webkit-scrollbar { display: none; }
+  .eu-gen2__tile-grid > .eu-gen2__tile {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
     aspect-ratio: 1 / 1;
-    width: 100%;
-    height: auto;
+    scroll-snap-align: start;
   }
 
-  .eu-gen2__undo-row { flex: 0 0 auto; }
+  /* ANIMATE row — outlined rectangular buttons, above the BG strip on mobile. */
+  .eu-gen2__right-col { display: flex; flex-direction: column; }
+  .eu-gen2__right-col > .eu-gen2__anim-row { order: 1; margin-bottom: 16px; }
+  .eu-gen2__right-col > .eu-gen2__bg-block  { order: 2; }
+  .eu-gen2__right-col > .eu-gen2__icon-row  { order: 3; }
+  .eu-gen2__right-col > .eu-gen2__actions-caption { order: 4; }
+  .eu-gen2__right-col > .eu-gen2__actions   { order: 5; }
+
+  .eu-gen2__anim-row {
+    overflow-x: visible;
+    flex-wrap: nowrap;
+    padding: 0;
+    gap: 6px;
+  }
+  .eu-gen2__anim {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px 6px;
+    font-size: 12px;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border: 1.5px solid var(--ink, #111);
+    background: transparent;
+    color: var(--ink, #111);
+    transition: background 0.1s ease, color 0.1s ease;
+  }
+  .eu-gen2__anim-circle { display: none; }
+  .eu-gen2__anim-label { font-size: 12px; }
+  .eu-gen2__anim:hover { background: rgba(0,0,0,0.05); transform: none; }
+  .eu-gen2__anim.is-active {
+    background: var(--ink, #111);
+    color: #fff;
+  }
+  .eu-gen2__anim.is-active .eu-gen2__anim-label {
+    font-style: normal;
+    font-weight: 700;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  /* Hide section titles on mobile — labels speak for themselves */
+  .eu-gen2__left-col .eu-gen2__section-title:nth-of-type(1),
+  .eu-gen2__left-col .eu-gen2__section-title--sticker,
+  .eu-gen2__right-col .eu-gen2__section-title:nth-of-type(2) {
+    display: none;
+  }
+
+  /* Extra breathing room between SIZE slider and the BG strip below it */
+  .eu-gen2__size-slider { margin-bottom: 14px; }
+
+  /* BG: collapse the 3-tile row + modal into one horizontal scroll strip.
+     Upload + Color from bg-row stay; IMAGE tile is dropped (replaced by inline previews).
+     Modal opens inline (no overlay) and its source items become the rest of the strip. */
+  .eu-gen2__bg-block {
+    flex: 0 0 auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .eu-gen2__bg-block::-webkit-scrollbar { display: none; }
+
+  /* BG section title moves out of the strip — kill it on mobile */
+  .eu-gen2__bg-block > .eu-gen2__section-title { display: none; }
+
+  /* bg-row also flattens — upload + color tiles become direct flex children of bg-block */
+  .eu-gen2__bg-row { display: contents; }
+  .eu-gen2__bg-row .eu-gen2__bg-tile-wrap:first-child { display: none; }
+  .eu-gen2__bg-row .eu-gen2__bg-tile-wrap { width: 55px; flex: 0 0 auto; }
+  .eu-gen2__bg-tile { width: 55px !important; height: 55px; }
+  .eu-gen2__bg-tile-label { display: none; }
+
+  /* Modal flattens into the bg-block flex strip via display: contents.
+     The source items become direct flex children of .eu-gen2__bg-block,
+     scrolling alongside upload + color. */
+  .eu-gen2__bg-modal,
+  .eu-gen2__bg-modal[hidden],
+  .eu-gen2__bg-modal-panel {
+    display: contents;
+  }
+  .eu-gen2__bg-modal-backdrop,
+  .eu-gen2__bg-modal-close,
+  .eu-gen2__bg-modal-title { display: none; }
+  .eu-gen2__bg-modal .eu-gen2__bg-source { display: contents; }
+  .eu-gen2__bg-source-item {
+    flex: 0 0 auto;
+    width: 55px;
+    height: 55px;
+    border: none;
+  }
+
+  /* Section titles tighter on mobile */
+  .eu-gen2__section-title { margin-top: 0; margin-bottom: 0; font-size: 9px; }
+  .eu-gen2__left-col > * + *,
+  .eu-gen2__right-col > * + * { margin-top: 4px; }
+  .eu-gen2__workspace { gap: 4px; }
+  .eu-gen2 { gap: 4px; padding: 6px 10px; }
+
+  .eu-gen2__icon-row { flex: 0 0 auto; gap: 14px; }
+  .eu-gen2__icon-btn { width: 28px; height: 28px; }
+  .eu-gen2__icon-svg { width: 20px; height: 20px; }
+
+  /* Share/Download — full-width, never faded, caps; spaced from undo/clear above */
+  .eu-gen2__actions { gap: 8px; margin-top: 50px; }
+  .eu-gen2__share-btn { height: 35px; min-height: 35px; padding: 8px 14px; font-size: 11px; }
 
   /* C — PINNED BOTTOM (share|download) — wider on mobile so buttons stay tappable */
   .eu-gen2__actions {
     flex: 0 0 auto;
+    width: 100%;
     max-width: 100%;
+    margin: 0;
     min-height: 44px;
     max-height: max(5vh, 44px);
     padding: 4px 0;
