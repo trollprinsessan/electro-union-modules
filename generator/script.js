@@ -777,12 +777,12 @@
           renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
           var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
           var gifFrames = [];
-          for (var f = 0; f < 24; f++) {
-            var t = f * (cycleDur / 24);
+          for (var f = 0; f < 36; f++) {
+            var t = f * (cycleDur / 36);
             renderExportFrame(tmpCtx, savedMode, t, ew, eh);
             gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
           }
-          var blob = buildGIF(gifFrames, ew, eh, Math.round(cycleDur / 24 * 100), palette);
+          var blob = buildGIF(gifFrames, ew, eh, Math.round(cycleDur / 36 * 100), palette);
           var link = document.createElement('a');
           link.download = 'electro-union-generator.gif';
           link.href = URL.createObjectURL(blob);
@@ -820,7 +820,7 @@
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
     var tmpCtx = tmpCanvas.getContext('2d');
-    var numFrames = 24, cycleDur = 2;
+    var numFrames = 36, cycleDur = 2;
     var savedMode = animMode;
     renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
     var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
@@ -845,9 +845,8 @@
     }
   }
 
-  // Share current composition. Static → PNG. Animated → MP4 via WebCodecs
-  // (much faster than GIF, fits inside the iOS user-gesture window so the
-  // share sheet actually opens). Falls back to GIF if WebCodecs missing.
+  // Share current composition. If animated: encode GIF and share GIF file.
+  // If static: share PNG.
   function sharePostcard(btn) {
     if (animMode === 'none') {
       renderToPngBlob(function (blob) {
@@ -857,35 +856,21 @@
       });
       return;
     }
+    // Animated — encode GIF synchronously inside the user-gesture window.
     btn.classList.add('is-busy');
     var origText = btn.textContent;
     btn.textContent = 'encoding…';
-
-    var dims = getExportDims();
-    var savedMode = animMode;
-
-    function done() {
-      btn.classList.remove('is-busy');
-      btn.textContent = origText;
-    }
-
-    renderToMp4Blob(savedMode, dims.w, dims.h, 48, 2)
-      .then(function (blob) {
-        var file = new File([blob], 'electro-union-generator.mp4', { type: 'video/mp4' });
+    // Defer one tick so UI can paint busy state
+    setTimeout(function () {
+      try {
+        var gifBlob = renderToGifBlob();
+        var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
         shareFile(btn, file);
-        done();
-      })
-      .catch(function () {
-        // Fallback: GIF (slower but works on browsers without WebCodecs)
-        try {
-          var gifBlob = renderToGifBlob();
-          var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
-          shareFile(btn, file);
-        } catch (e) {
-          flashBtn(btn, 'encode failed');
-        }
-        done();
-      });
+      } finally {
+        btn.classList.remove('is-busy');
+        btn.textContent = origText;
+      }
+    }, 30);
   }
 
   // Copy button behaviour:
