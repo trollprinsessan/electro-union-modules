@@ -67,14 +67,43 @@
       return false;
     }
 
+    // Hide the OS cursor on the element we're showing the gif over,
+    // so the user doesn't see both hand + gif at once. We track the active
+    // target and restore its inline cursor when leaving.
+    var activeTarget = null;
+    var prevCursor = '';
+    function hideOsCursorOn(el) {
+      if (activeTarget === el) return;
+      releaseOsCursor();
+      activeTarget = el;
+      prevCursor = el.style.cursor;
+      el.style.cursor = 'none';
+    }
+    function releaseOsCursor() {
+      if (!activeTarget) return;
+      activeTarget.style.cursor = prevCursor;
+      activeTarget = null;
+      prevCursor = '';
+    }
+
     document.addEventListener('mousemove', function (e) {
       // Position centered on the pointer
       img.style.transform = 'translate(' + (e.clientX - 16) + 'px,' + (e.clientY - 16) + 'px)';
 
       var t = e.target;
-      if (!t || !(t instanceof Element) || !isInsideEu(t)) { setVisible(false); return; }
+      if (!t || !(t instanceof Element) || !isInsideEu(t)) {
+        releaseOsCursor();
+        setVisible(false);
+        return;
+      }
       var cs = getComputedStyle(t);
-      setVisible(!!INTERACTIVE[cs.cursor]);
+      if (INTERACTIVE[cs.cursor]) {
+        hideOsCursorOn(t);
+        setVisible(true);
+      } else {
+        releaseOsCursor();
+        setVisible(false);
+      }
     }, { passive: true });
 
     document.addEventListener('mouseleave', function () { setVisible(false); }, { passive: true });
