@@ -33,14 +33,13 @@
   /* Typsnitt */
   --mono: 'ABC Schengen Mono', 'Courier New', monospace;
 
-  /* Custom EU hover cursor — 70×70 gif. Lives in _shared/ so every module's
-     relative URL (../_shared/tokens.css) resolves to the same file. */
-  --eu-cursor: url("cursor.gif") 16 16, pointer;
+  /* Custom EU hover cursor — handled by _shared/cursor.js (JS-driven img
+     follower so the gif actually animates; CSS cursor URLs only ever show
+     a single frame). The CSS value `none` hides the OS cursor on elements
+     that opt in via `cursor: var(--eu-cursor)`. */
+  --eu-cursor: none;
 
   color: var(--ink);
   background: var(--cream);
   position: relative;
-  /* Apply the EU cursor to the whole module by default — individual elements
-     (canvas crosshair, draggable grab, etc.) still override where needed. */
-  cursor: var(--eu-cursor, default);
 }
