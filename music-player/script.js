@@ -17,7 +17,7 @@
     { name: 'BASELOAD',    uri: 'spotify:track:6W0PqAtbW7fkTRBtmwOwfM' }, // Pino D'Angiò — Okay Okay
     { name: 'MERIT ORDER', uri: 'spotify:track:2eQomd6Smp8EGRjvvkIs56' }, // Ryan Paris — Dolce Vita
     { name: '50 HERTZ',    uri: 'spotify:track:0Ytxje4D5iXTHN3MOCC5jS' }, // Phil Oakey — Together In Electric Dreams
-    { name: 'PEAK DEMAND', uri: 'spotify:track:48vDCZIRmrFO33fH4QU4ij' }  // The Prodigy — Smack My Bitch Up
+    { name: 'PEAK DEMAND', uri: 'spotify:track:1qIhCupn4tcJWCQWoomnv7' }  // Leila K — Electric
   ];
 
   var ci = 0;
