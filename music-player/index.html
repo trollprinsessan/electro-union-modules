@@ -64,8 +64,11 @@
   </div>
 
   <!-- Hidden Spotify iframe — controlled by script.js via the IFrame API.
-       Visually hidden but kept in the DOM (display:none won't load audio). -->
-  <div id="euSpotifyEmbed" class="eu-player__spotify-embed" aria-hidden="true"></div>
+       The IFrameAPI replaces the inner #euSpotifyEmbed div with its own
+       iframe, so we wrap it in an outer div we own to keep the hiding CSS. -->
+  <div class="eu-player__spotify-wrap" aria-hidden="true">
+    <div id="euSpotifyEmbed"></div>
+  </div>
 
 </div>
 
