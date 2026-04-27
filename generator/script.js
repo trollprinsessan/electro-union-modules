@@ -808,14 +808,19 @@
     tmpCanvas.toBlob(cb, 'image/png');
   }
 
-  // Render current composition to an animated GIF blob (4:5). Reuses the
-  // same encoder as the GIF download button.
+  // Render current composition to an animated GIF blob.
+  // SHARE-specific: smaller (720×1280) and 24 frames so encoding finishes
+  // inside iOS's user-gesture window (~1s on phone). Quality is fine for
+  // social previews; full-size 1080×1920 is reserved for the download path.
   function renderToGifBlob() {
-    var dims = getExportDims(), ew = dims.w, eh = dims.h;
+    var dims = getExportDims();
+    // Cap share GIF to 720px wide regardless of platform — keeps encode <1s on phone
+    var ew = Math.min(720, dims.w);
+    var eh = Math.round(ew * dims.h / dims.w);
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
     var tmpCtx = tmpCanvas.getContext('2d');
-    var numFrames = 36, cycleDur = 2;
+    var numFrames = 24, cycleDur = 2;
     var savedMode = animMode;
     renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
     var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
@@ -851,21 +856,21 @@
       });
       return;
     }
-    // Animated — encode GIF synchronously inside the user-gesture window.
+    // Animated — encode INLINE (no setTimeout) so the iOS user-gesture
+    // window stays alive through to navigator.share. UI will freeze briefly
+    // (~0.5–1s on phone with 720×1280 / 24 frames) but the share sheet
+    // actually opens.
     btn.classList.add('is-busy');
     var origText = btn.textContent;
     btn.textContent = 'encoding…';
-    // Defer one tick so UI can paint busy state
-    setTimeout(function () {
-      try {
-        var gifBlob = renderToGifBlob();
-        var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
-        shareFile(btn, file);
-      } finally {
-        btn.classList.remove('is-busy');
-        btn.textContent = origText;
-      }
-    }, 30);
+    try {
+      var gifBlob = renderToGifBlob();
+      var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
+      shareFile(btn, file);
+    } finally {
+      btn.classList.remove('is-busy');
+      btn.textContent = origText;
+    }
   }
 
   // Copy button behaviour:
