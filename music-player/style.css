@@ -198,17 +198,24 @@
   .eu-player__track{font-size:clamp(7px,2vw,10px)}
 }
 
-/* Hidden Spotify iframe — has to be in the DOM (display:none won't load
-   audio in some browsers). The IFrame API replaces our mount element with
-   its own iframe, so we wrap it and shove both wrapper + iframe off-screen. */
-.eu-player__spotify-wrap,
-.eu-player__spotify-wrap iframe {
+/* Hidden Spotify iframe — has to stay in-viewport (Chrome throttles audio
+   on off-screen iframes), so we render it at 1×1px in the corner with
+   opacity 0.01 (full 0 also gets throttled). The IFrame API replaces our
+   mount div with its iframe, so the wrapper holds the styles. */
+.eu-player__spotify-wrap {
   position: fixed !important;
-  left: -10000px !important;
-  top: -10000px !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  opacity: 0.01 !important;
+}
+.eu-player__spotify-wrap iframe {
   width: 300px !important;
   height: 80px !important;
+  border: 0 !important;
   pointer-events: none !important;
-  opacity: 0 !important;
-  z-index: -1 !important;
 }
