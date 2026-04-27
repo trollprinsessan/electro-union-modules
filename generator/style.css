@@ -14,7 +14,7 @@
  *
  * Breakpoints:
  *   ≥768px : A(50%) | B(50%), C below both
- *   <768   : stacked — A fixed top (≤50vh), B scrollable (≤55vh), C pinned (≤5vh)
+ *   <768   : stacked — A fixed top (≤50vh), B scrollable (≤44vh), C pinned (≤5vh)
  *   Thumbs always 1:1.
  */
 
@@ -962,7 +962,7 @@ html.is-embed .eu-gen2 {
 
 /* ═══════════════════════════════════════════════════════════
    UNDER 768px — stacked. A fixed top (≤50vh, no scroll),
-   B scrollable (≤55vh), C pinned bottom (≤5vh, min 44px).
+   B scrollable (≤44vh), C pinned bottom (≤5vh, min 44px).
    Whole module still locked to 100vh.
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 767.98px) {
@@ -993,7 +993,7 @@ html.is-embed .eu-gen2 {
   .eu-gen2__canvas-col {
     flex: 0 0 auto;
     width: 100%;
-    max-height: 55vh;
+    max-height: 44vh;
     overflow: visible;
     justify-content: center;
     align-items: center;
@@ -1002,8 +1002,8 @@ html.is-embed .eu-gen2 {
      the container is sized to the lace frame's actual aspect — width: auto
      on a flex column child otherwise expands to 100%. */
   .eu-gen2__framed {
-    height: 55vh;
-    width: calc(55vh * 1063 / 1742);
+    height: 44vh;
+    width: calc(44vh * 1063 / 1742);
     max-width: 100%;
     margin: 0 auto;
   }
@@ -1065,8 +1065,8 @@ html.is-embed .eu-gen2 {
   .eu-gen2__tile-grid::-webkit-scrollbar { display: none; }
   .eu-gen2__tile-grid > .eu-gen2__tile {
     flex: 0 0 auto;
-    width: 64px;
-    height: 64px;
+    width: 54px;
+    height: 54px;
     aspect-ratio: 1 / 1;
     scroll-snap-align: start;
   }
