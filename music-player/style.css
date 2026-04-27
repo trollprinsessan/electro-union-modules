@@ -197,3 +197,15 @@
   }
   .eu-player__track{font-size:clamp(7px,2vw,10px)}
 }
+
+/* Hidden Spotify iframe — needs to be in the DOM (display:none won't load audio)
+   so we render it off-screen but at full size for the IFrame API to work. */
+.eu-player__spotify-embed {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 300px;
+  height: 80px;
+  pointer-events: none;
+  opacity: 0;
+}

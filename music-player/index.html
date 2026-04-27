@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="style.css">
 
   <script src="../_shared/embed.js"></script>
+  <!-- Spotify IFrame API — handles all music licensing.
+       Free users get 30s previews per track; Premium users (logged in) get full tracks.
+       No client ID/secret required for embed playback. -->
+  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 </head>
 <body>
 
@@ -58,6 +62,10 @@
       </div>
     </div>
   </div>
+
+  <!-- Hidden Spotify iframe — controlled by script.js via the IFrame API.
+       Visually hidden but kept in the DOM (display:none won't load audio). -->
+  <div id="euSpotifyEmbed" class="eu-player__spotify-embed" aria-hidden="true"></div>
 
 </div>
 
