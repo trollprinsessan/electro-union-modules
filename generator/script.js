@@ -683,9 +683,65 @@
   // Records `cycleDur` seconds of the animation at `numFrames` frames,
   // returns a Promise<Blob> of an MP4 (H.264). Falls back to null if
   // WebCodecs isn't available (older browsers).
+  // MediaRecorder MP4 encoder — fallback for iOS Safari < 17.4 (no WebCodecs).
+  // iOS Safari supports MediaRecorder with mimeType 'video/mp4' since 14.5.
+  // Records canvas in real-time so duration ≈ wall-clock duration.
+  function renderToMp4ViaMediaRecorder(animModeForExport, ew, eh, cycleDur) {
+    return new Promise(function (resolve, reject) {
+      if (typeof MediaRecorder === 'undefined') {
+        return reject(new Error('MediaRecorder not supported'));
+      }
+      // Find a supported mp4 mime; reject if only webm is available (webm
+      // doesn't help — IG/LinkedIn won't accept it either).
+      var mp4Mimes = [
+        'video/mp4;codecs=avc1.42E01E',
+        'video/mp4;codecs=avc1',
+        'video/mp4'
+      ];
+      var mime = null;
+      for (var i = 0; i < mp4Mimes.length; i++) {
+        if (MediaRecorder.isTypeSupported(mp4Mimes[i])) { mime = mp4Mimes[i]; break; }
+      }
+      if (!mime) return reject(new Error('No MP4 mime supported by MediaRecorder'));
+
+      var c = document.createElement('canvas');
+      c.width = ew; c.height = eh;
+      var cx = c.getContext('2d');
+      // Initial frame so the stream has something
+      renderExportFrame(cx, animModeForExport, 0, ew, eh);
+      var stream = c.captureStream(24);
+      var rec;
+      try {
+        rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4000000 });
+      } catch (e) { return reject(e); }
+      var chunks = [];
+      rec.ondataavailable = function (e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
+      rec.onerror = function (e) { reject(e.error || new Error('MediaRecorder error')); };
+      rec.onstop = function () {
+        resolve(new Blob(chunks, { type: 'video/mp4' }));
+      };
+
+      var totalMs = cycleDur * 1000;
+      var startTime = performance.now();
+      function tick() {
+        var elapsed = performance.now() - startTime;
+        var t = (elapsed % totalMs) / 1000;
+        renderExportFrame(cx, animModeForExport, t, ew, eh);
+        if (elapsed < totalMs) {
+          requestAnimationFrame(tick);
+        } else {
+          try { rec.stop(); } catch (e) { reject(e); }
+        }
+      }
+      rec.start();
+      requestAnimationFrame(tick);
+    });
+  }
+
   function renderToMp4Blob(animModeForExport, ew, eh, numFrames, cycleDur) {
     if (typeof window.VideoEncoder === 'undefined' || typeof window.Mp4Muxer === 'undefined') {
-      return Promise.reject(new Error('MP4 encoding not supported in this browser'));
+      // WebCodecs missing — try MediaRecorder
+      return renderToMp4ViaMediaRecorder(animModeForExport, ew, eh, cycleDur);
     }
     return new Promise(function (resolve, reject) {
       try {
@@ -760,16 +816,24 @@
     var savedMode = animMode;
     var numFrames = 60, cycleDur = 2;
 
+    function downloadBlob(blob, filename) {
+      var link = document.createElement('a');
+      link.download = filename;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
+    }
+
+    // 1) WebCodecs MP4 (fastest, modern browsers + iOS 17.4+)
+    // 2) MediaRecorder MP4 (iOS Safari 14.5+)
+    // 3) GIF (last resort — IG flattens to a still)
     renderToMp4Blob(savedMode, ew, eh, numFrames, cycleDur)
+      .catch(function () { return renderToMp4ViaMediaRecorder(savedMode, ew, eh, cycleDur); })
       .then(function (blob) {
-        var link = document.createElement('a');
-        link.download = 'electro-union-generator.mp4';
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
+        downloadBlob(blob, 'electro-union-generator.mp4');
       })
-      .catch(function (err) {
-        // Fallback to GIF for browsers without WebCodecs (older Safari, etc.)
+      .catch(function () {
+        // Both MP4 paths failed — fall back to GIF
         try {
           renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
           var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
@@ -780,11 +844,7 @@
             gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
           }
           var blob = buildGIF(gifFrames, ew, eh, Math.round(cycleDur / 36 * 100), palette);
-          var link = document.createElement('a');
-          link.download = 'electro-union-generator.gif';
-          link.href = URL.createObjectURL(blob);
-          link.click();
-          setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
+          downloadBlob(blob, 'electro-union-generator.gif');
         } catch (e2) {
           flashBtn(btn, 'encode failed');
         }
