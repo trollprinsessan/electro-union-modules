@@ -928,9 +928,10 @@ html.is-embed .eu-gen2 {
   white-space: nowrap;
   cursor: var(--eu-cursor, pointer);
   line-height: 1;
-  padding: 8px 16px;
-  height: 35px;
-  min-height: 35px;
+  padding: 0 16px;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
   transition: opacity 0.15s ease;
   border: none;
   color: #fff;
@@ -1186,7 +1187,7 @@ html.is-embed .eu-gen2 {
 
   /* Share/Download — full-width, never faded, caps; spaced from undo/clear above */
   .eu-gen2__actions { gap: 8px; margin-top: 50px; }
-  .eu-gen2__share-btn { height: 35px; min-height: 35px; padding: 8px 14px; font-size: 11px; }
+  .eu-gen2__share-btn { height: 44px; min-height: 44px; max-height: 44px; padding: 0 14px; font-size: 11px; }
 
   /* C — PINNED BOTTOM (share|download) — wider on mobile so buttons stay tappable */
   .eu-gen2__actions {
@@ -1203,8 +1204,10 @@ html.is-embed .eu-gen2 {
   .eu-gen2__dl-label { display: none; }
 
   .eu-gen2__dl-btn, .eu-gen2__share-btn {
-    min-height: 40px;
-    padding: 6px 8px;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 0 8px;
     font-size: 11px;
     letter-spacing: 0.03em;
   }
