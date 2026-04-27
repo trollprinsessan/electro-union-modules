@@ -677,6 +677,62 @@
   }
 
   // ═══ DOWNLOAD GIF ═══
+  // ─── MP4 encoder via WebCodecs + mp4-muxer ───
+  // Records `cycleDur` seconds of the animation at `numFrames` frames,
+  // returns a Promise<Blob> of an MP4 (H.264). Falls back to null if
+  // WebCodecs isn't available (older browsers).
+  function renderToMp4Blob(animModeForExport, ew, eh, numFrames, cycleDur) {
+    if (typeof window.VideoEncoder === 'undefined' || typeof window.Mp4Muxer === 'undefined') {
+      return Promise.reject(new Error('MP4 encoding not supported in this browser'));
+    }
+    return new Promise(function (resolve, reject) {
+      try {
+        var Muxer = window.Mp4Muxer.Muxer;
+        var ArrayBufferTarget = window.Mp4Muxer.ArrayBufferTarget;
+        var fps = numFrames / cycleDur;
+        var muxer = new Muxer({
+          target: new ArrayBufferTarget(),
+          video: { codec: 'avc', width: ew, height: eh, frameRate: fps },
+          fastStart: 'in-memory'
+        });
+        var encoder = new VideoEncoder({
+          output: function (chunk, meta) { muxer.addVideoChunk(chunk, meta); },
+          error: function (e) { reject(e); }
+        });
+        // avc1.42E01E = H.264 Baseline 3.0 — broadest playback compatibility
+        encoder.configure({
+          codec: 'avc1.42E01E',
+          width: ew,
+          height: eh,
+          bitrate: 4_000_000,
+          framerate: fps
+        });
+
+        var tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = ew; tmpCanvas.height = eh;
+        var tmpCtx = tmpCanvas.getContext('2d');
+        var frameDurationUs = Math.round(1_000_000 / fps);
+
+        for (var f = 0; f < numFrames; f++) {
+          var t = f * (cycleDur / numFrames);
+          renderExportFrame(tmpCtx, animModeForExport, t, ew, eh);
+          var frame = new VideoFrame(tmpCanvas, {
+            timestamp: f * frameDurationUs,
+            duration: frameDurationUs
+          });
+          // Force keyframe every 30 frames so seeking works
+          encoder.encode(frame, { keyFrame: f % 30 === 0 });
+          frame.close();
+        }
+        encoder.flush().then(function () {
+          muxer.finalize();
+          var buf = muxer.target.buffer;
+          resolve(new Blob([buf], { type: 'video/mp4' }));
+        }).catch(reject);
+      } catch (e) { reject(e); }
+    });
+  }
+
   dlGifBtn.onclick = function () {
     if (!gatePass(this, GIF_COOLDOWN_MS)) return;
     var btn = this;
@@ -698,31 +754,43 @@
     btn.classList.add('is-busy');
     var origText = btn.textContent;
     btn.textContent = 'encoding…';
-    // Defer heavy work so UI can paint
-    setTimeout(function () {
-      try {
-        var numFrames = 36, cycleDur = 2;
-        var savedMode = animMode;
-        renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
-        var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
-        var gifFrames = [];
-        for (var f = 0; f < numFrames; f++) {
-          var t = f * (cycleDur / numFrames);
-          renderExportFrame(tmpCtx, savedMode, t, ew, eh);
-          gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
-        }
-        var delay = Math.round(cycleDur / numFrames * 100);
-        var blob = buildGIF(gifFrames, ew, eh, delay, palette);
+
+    var savedMode = animMode;
+    var numFrames = 60, cycleDur = 2;
+
+    renderToMp4Blob(savedMode, ew, eh, numFrames, cycleDur)
+      .then(function (blob) {
         var link = document.createElement('a');
-        link.download = 'electro-union-generator.gif';
+        link.download = 'electro-union-generator.mp4';
         link.href = URL.createObjectURL(blob);
         link.click();
         setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
-      } finally {
+      })
+      .catch(function (err) {
+        // Fallback to GIF for browsers without WebCodecs (older Safari, etc.)
+        try {
+          renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
+          var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
+          var gifFrames = [];
+          for (var f = 0; f < 36; f++) {
+            var t = f * (cycleDur / 36);
+            renderExportFrame(tmpCtx, savedMode, t, ew, eh);
+            gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
+          }
+          var blob = buildGIF(gifFrames, ew, eh, Math.round(cycleDur / 36 * 100), palette);
+          var link = document.createElement('a');
+          link.download = 'electro-union-generator.gif';
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
+        } catch (e2) {
+          flashBtn(btn, 'encode failed');
+        }
+      })
+      .then(function () {
         btn.classList.remove('is-busy');
         btn.textContent = origText;
-      }
-    }, 30);
+      });
   };
 
   // ═══ SHARE / COPY HELPERS ═══
