@@ -33,9 +33,9 @@
   /* Typsnitt */
   --mono: 'ABC Schengen Mono', 'Courier New', monospace;
 
-  /* Custom hover indicator — yellow/white spinning ball gif (159×119).
-     Lives in _shared/ so every module's relative URL resolves to the same file. */
-  --eu-cursor: url("67VNHCP5WYYBCARAO2YC32XRMYQ3S2UK.gif") 16 16, pointer;
+  /* Custom EU hover cursor — 70×70 gif. Lives in _shared/ so every module's
+     relative URL (../_shared/tokens.css) resolves to the same file. */
+  --eu-cursor: url("cursor.gif") 16 16, pointer;
 
   color: var(--ink);
   background: var(--cream);
