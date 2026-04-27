@@ -107,12 +107,16 @@
   width:100%;
   display:block;
   background:transparent;
+  /* Lock all card visuals to the same 4:5 portrait aspect so the grid lines up,
+     regardless of whether the asset is a feed image, story image, or video. */
+  aspect-ratio:4/5;
+  object-fit:cover;
 }
 .eu-pap-card__video{
   width:100%;
   display:block;
   aspect-ratio:4/5;
-  object-fit:contain;
+  object-fit:cover;
   background:#fff;
   pointer-events:none;
 }
