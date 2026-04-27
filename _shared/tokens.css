@@ -40,4 +40,7 @@
   color: var(--ink);
   background: var(--cream);
   position: relative;
+  /* Apply the EU cursor to the whole module by default — individual elements
+     (canvas crosshair, draggable grab, etc.) still override where needed. */
+  cursor: var(--eu-cursor, default);
 }
