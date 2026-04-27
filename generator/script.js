@@ -845,8 +845,10 @@
     }
   }
 
-  // Share current composition. If animated: encode GIF and share GIF file.
-  // If static: share PNG.
+  // Share current composition. Static → PNG. Animated → MP4 via WebCodecs
+  // (hardware-accelerated, ~300ms on phone; lands as animated content on
+  // IG Stories/WhatsApp/etc — GIF gets flattened to a still by IG).
+  // Falls back to GIF on browsers without WebCodecs.
   function sharePostcard(btn) {
     if (animMode === 'none') {
       renderToPngBlob(function (blob) {
@@ -856,21 +858,39 @@
       });
       return;
     }
-    // Animated — encode INLINE (no setTimeout) so the iOS user-gesture
-    // window stays alive through to navigator.share. UI will freeze briefly
-    // (~0.5–1s on phone with 720×1280 / 24 frames) but the share sheet
-    // actually opens.
     btn.classList.add('is-busy');
     var origText = btn.textContent;
     btn.textContent = 'encoding…';
-    try {
-      var gifBlob = renderToGifBlob();
-      var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
-      shareFile(btn, file);
-    } finally {
+
+    var dims = getExportDims();
+    // Smaller share size keeps encode <500ms on phone, well inside iOS's
+    // user-gesture window for navigator.share
+    var sw = Math.min(720, dims.w);
+    var sh = Math.round(sw * dims.h / dims.w);
+    var savedMode = animMode;
+
+    function done() {
       btn.classList.remove('is-busy');
       btn.textContent = origText;
     }
+
+    // Single Promise chain from the user-gesture click handler — iOS Safari
+    // 17.4+ preserves gesture across this. Older iOS may still break.
+    renderToMp4Blob(savedMode, sw, sh, 24, 2).then(function (blob) {
+      var file = new File([blob], 'electro-union-generator.mp4', { type: 'video/mp4' });
+      shareFile(btn, file);
+      done();
+    }).catch(function () {
+      // Fallback: GIF (slower, lands as still on IG Stories but works on browsers without WebCodecs)
+      try {
+        var gifBlob = renderToGifBlob();
+        var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
+        shareFile(btn, file);
+      } catch (e) {
+        flashBtn(btn, 'encode failed');
+      }
+      done();
+    });
   }
 
   // Copy button behaviour:
