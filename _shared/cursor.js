@@ -18,6 +18,11 @@
   if (window.__euCursorInit) return;
   window.__euCursorInit = true;
 
+  // Skip on touch-only devices — there's no cursor to follow.
+  // matchMedia('(hover: none)') matches phones and tablets; desktops with
+  // touchscreens still report 'hover: hover' so they keep the EU cursor.
+  if (window.matchMedia && window.matchMedia('(hover: none)').matches) return;
+
   // Resolve the gif path from this script's own src so it works no matter
   // which module loads it (../_shared/cursor.js, /_shared/cursor.js, etc.).
   var thisScript = document.currentScript ||

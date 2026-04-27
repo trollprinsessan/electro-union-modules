@@ -14,7 +14,7 @@
  *
  * Breakpoints:
  *   ≥768px : A(50%) | B(50%), C below both
- *   <768   : stacked — A fixed top (≤50vh), B scrollable (≤45vh), C pinned (≤5vh)
+ *   <768   : stacked — A fixed top (≤50vh), B scrollable (≤55vh), C pinned (≤5vh)
  *   Thumbs always 1:1.
  */
 
@@ -962,7 +962,7 @@ html.is-embed .eu-gen2 {
 
 /* ═══════════════════════════════════════════════════════════
    UNDER 768px — stacked. A fixed top (≤50vh, no scroll),
-   B scrollable (≤45vh), C pinned bottom (≤5vh, min 44px).
+   B scrollable (≤55vh), C pinned bottom (≤5vh, min 44px).
    Whole module still locked to 100vh.
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 767.98px) {
@@ -993,7 +993,7 @@ html.is-embed .eu-gen2 {
   .eu-gen2__canvas-col {
     flex: 0 0 auto;
     width: 100%;
-    max-height: 45vh;
+    max-height: 55vh;
     overflow: visible;
     justify-content: center;
     align-items: center;
@@ -1002,8 +1002,8 @@ html.is-embed .eu-gen2 {
      the container is sized to the lace frame's actual aspect — width: auto
      on a flex column child otherwise expands to 100%. */
   .eu-gen2__framed {
-    height: 45vh;
-    width: calc(45vh * 1063 / 1742);
+    height: 55vh;
+    width: calc(55vh * 1063 / 1742);
     max-width: 100%;
     margin: 0 auto;
   }
@@ -1050,10 +1050,14 @@ html.is-embed .eu-gen2 {
     display: flex;
     flex-direction: row;
     grid-template-columns: none;
-    gap: 4px;
+    gap: 6px;
     overflow-x: auto;
     overflow-y: visible;
-    padding: 4px 2px;
+    /* Bleed past the .eu-gen2 horizontal padding (10px each side) so the
+       strip touches the viewport edge — signals "scroll for more". */
+    margin-left: -10px;
+    margin-right: -10px;
+    padding: 6px 10px;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -1061,11 +1065,13 @@ html.is-embed .eu-gen2 {
   .eu-gen2__tile-grid::-webkit-scrollbar { display: none; }
   .eu-gen2__tile-grid > .eu-gen2__tile {
     flex: 0 0 auto;
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     aspect-ratio: 1 / 1;
     scroll-snap-align: start;
   }
+  /* Stickers: smaller scale-up on mobile so they don't overflow into neighbours */
+  .eu-gen2__sticker-opt > img { transform: scale(1.2); }
 
   /* ANIMATE row — outlined rectangular buttons, above the BG strip on mobile. */
   .eu-gen2__right-col { display: flex; flex-direction: column; }

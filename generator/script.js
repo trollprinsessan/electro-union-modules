@@ -108,9 +108,14 @@
   BG_SRCS.forEach(function (src) { var i = new Image(); i.src = src; });
 
   // ═══ CANVAS RESIZE ═══
+  // Scale internal pixel size by devicePixelRatio so retina/high-DPR screens
+  // get crisp rendering instead of blurry upscaled pixels. CSS still sizes
+  // the canvas at the wrap's clientWidth/Height; the DPR multiplier only
+  // affects the pixel buffer.
   function resizeCanvas() {
-    canvas.width  = canvasWrap.clientWidth;
-    canvas.height = canvasWrap.clientHeight;
+    var dpr = Math.max(1, window.devicePixelRatio || 1);
+    canvas.width  = Math.round(canvasWrap.clientWidth  * dpr);
+    canvas.height = Math.round(canvasWrap.clientHeight * dpr);
     renderAll();
   }
 
