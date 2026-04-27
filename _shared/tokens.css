@@ -36,8 +36,13 @@
   /* Custom EU hover cursor — handled by _shared/cursor.js (JS-driven img
      follower so the gif actually animates; CSS cursor URLs only ever show
      a single frame). The CSS value `none` hides the OS cursor on elements
-     that opt in via `cursor: var(--eu-cursor)`. */
+     that opt in via `cursor: var(--eu-cursor)`. On touch-only devices we
+     fall back to the regular pointer (no follower needed, no cursor to hide). */
   --eu-cursor: none;
+}
+
+@media (hover: none) {
+  .eu { --eu-cursor: pointer; }
 
   color: var(--ink);
   background: var(--cream);
