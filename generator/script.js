@@ -845,10 +845,10 @@
     }
   }
 
-  // Share current composition. Static → PNG. Animated → MP4 via WebCodecs
-  // (hardware-accelerated, ~300ms on phone; lands as animated content on
-  // IG Stories/WhatsApp/etc — GIF gets flattened to a still by IG).
-  // Falls back to GIF on browsers without WebCodecs.
+  // Share current composition. Static → PNG. Animated → GIF, encoded inline
+  // so the iOS user-gesture window stays alive (any await/Promise chain
+  // breaks it and navigator.share silently rejects). Tradeoff: IG Stories
+  // flattens GIFs to a still — for animated Stories use Download → MP4.
   function sharePostcard(btn) {
     if (animMode === 'none') {
       renderToPngBlob(function (blob) {
@@ -861,36 +861,14 @@
     btn.classList.add('is-busy');
     var origText = btn.textContent;
     btn.textContent = 'encoding…';
-
-    var dims = getExportDims();
-    // Smaller share size keeps encode <500ms on phone, well inside iOS's
-    // user-gesture window for navigator.share
-    var sw = Math.min(720, dims.w);
-    var sh = Math.round(sw * dims.h / dims.w);
-    var savedMode = animMode;
-
-    function done() {
+    try {
+      var gifBlob = renderToGifBlob();
+      var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
+      shareFile(btn, file);
+    } finally {
       btn.classList.remove('is-busy');
       btn.textContent = origText;
     }
-
-    // Single Promise chain from the user-gesture click handler — iOS Safari
-    // 17.4+ preserves gesture across this. Older iOS may still break.
-    renderToMp4Blob(savedMode, sw, sh, 24, 2).then(function (blob) {
-      var file = new File([blob], 'electro-union-generator.mp4', { type: 'video/mp4' });
-      shareFile(btn, file);
-      done();
-    }).catch(function () {
-      // Fallback: GIF (slower, lands as still on IG Stories but works on browsers without WebCodecs)
-      try {
-        var gifBlob = renderToGifBlob();
-        var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
-        shareFile(btn, file);
-      } catch (e) {
-        flashBtn(btn, 'encode failed');
-      }
-      done();
-    });
   }
 
   // Copy button behaviour:
