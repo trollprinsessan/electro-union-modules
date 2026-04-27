@@ -777,12 +777,12 @@
           renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
           var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
           var gifFrames = [];
-          for (var f = 0; f < 36; f++) {
-            var t = f * (cycleDur / 36);
+          for (var f = 0; f < 24; f++) {
+            var t = f * (cycleDur / 24);
             renderExportFrame(tmpCtx, savedMode, t, ew, eh);
             gifFrames.push(quantizeFrameAdaptive(tmpCtx, ew, eh, palette));
           }
-          var blob = buildGIF(gifFrames, ew, eh, Math.round(cycleDur / 36 * 100), palette);
+          var blob = buildGIF(gifFrames, ew, eh, Math.round(cycleDur / 24 * 100), palette);
           var link = document.createElement('a');
           link.download = 'electro-union-generator.gif';
           link.href = URL.createObjectURL(blob);
@@ -820,7 +820,7 @@
     var tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = ew; tmpCanvas.height = eh;
     var tmpCtx = tmpCanvas.getContext('2d');
-    var numFrames = 36, cycleDur = 2;
+    var numFrames = 24, cycleDur = 2;
     var savedMode = animMode;
     renderExportFrame(tmpCtx, savedMode, 0, ew, eh);
     var palette = buildAdaptivePalette(tmpCtx.getImageData(0, 0, ew, eh), 256);
