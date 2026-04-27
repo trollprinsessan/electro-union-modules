@@ -52,16 +52,29 @@
       img.style.display = v ? 'block' : 'none';
     }
 
+    // Cursor types that mean "this is interactive" — show the EU follower.
+    // 'none' = explicit opt-in via var(--eu-cursor). 'pointer'/'grab'/'grabbing'
+    // = anything else clickable/draggable in any module.
+    var INTERACTIVE = { none: 1, pointer: 1, grab: 1, grabbing: 1 };
+
+    // The follower must only appear inside an .eu container — not on the
+    // host page's chrome, scrollbars, or other widgets.
+    function isInsideEu(el) {
+      while (el && el !== document) {
+        if (el.classList && el.classList.contains('eu')) return true;
+        el = el.parentNode;
+      }
+      return false;
+    }
+
     document.addEventListener('mousemove', function (e) {
       // Position centered on the pointer
       img.style.transform = 'translate(' + (e.clientX - 16) + 'px,' + (e.clientY - 16) + 'px)';
 
-      // Show only when the element under the pointer has opted in
-      // (its computed cursor resolves to `none` from --eu-cursor).
       var t = e.target;
-      if (!t || !(t instanceof Element)) { setVisible(false); return; }
+      if (!t || !(t instanceof Element) || !isInsideEu(t)) { setVisible(false); return; }
       var cs = getComputedStyle(t);
-      setVisible(cs.cursor === 'none');
+      setVisible(!!INTERACTIVE[cs.cursor]);
     }, { passive: true });
 
     document.addEventListener('mouseleave', function () { setVisible(false); }, { passive: true });
