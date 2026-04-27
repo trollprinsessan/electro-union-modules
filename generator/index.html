@@ -187,11 +187,15 @@
             </button>
           </div>
 
-          <!-- Share / Download — caption + outlined pill pair -->
-          <p class="eu-gen2__actions-caption"><strong>Share</strong> opens your phone's share sheet — Instagram, WhatsApp, Stories. <strong>Download</strong> saves the file to your device.</p>
+          <!-- Share / Download — two distinct paths, one per platform.
+               LinkedIn accepts animated GIF in the feed → Share opens the
+               native share sheet with a GIF. Instagram Stories flattens
+               GIF to a still, so we download an MP4 the user uploads
+               manually to IG. -->
+          <p class="eu-gen2__actions-caption"><strong>Share on LinkedIn</strong> opens your phone's share sheet with an animated GIF. <strong>Download for Instagram</strong> saves an MP4 to your device — upload it from there to Stories.</p>
           <div class="eu-gen2__actions">
-            <button class="eu-gen2__share-btn eu-gen2__share-btn--ig" id="euGen2ShareIg">share</button>
-            <button class="eu-gen2__share-btn eu-gen2__share-btn--dl" id="euGen2DlGif">download</button>
+            <button class="eu-gen2__share-btn eu-gen2__share-btn--ig" id="euGen2ShareIg">Share on LinkedIn</button>
+            <button class="eu-gen2__share-btn eu-gen2__share-btn--dl" id="euGen2DlGif">Download for Instagram</button>
           </div>
 
       </div><!-- /.eu-gen2__right-col -->
