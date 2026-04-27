@@ -240,7 +240,10 @@
     bgPhotoActive = true;
     bgPhotoImg    = new Image();
     bgPhotoImg.src = src;
-    bgPhotoImg.onload = function () { renderAll(); };
+    bgPhotoImg.onload = function () {
+      renderAll();
+      if (typeof scheduleSharePreEncode === 'function') scheduleSharePreEncode();
+    };
   }
 
   if (bgShow) bgShow.onclick = openBgModal;
@@ -268,6 +271,7 @@
       clearAllBgActive();
       if (bgColorEl) bgColorEl.classList.add('is-active');
       renderAll();
+      if (typeof scheduleSharePreEncode === 'function') scheduleSharePreEncode();
     });
   }
 
@@ -307,6 +311,7 @@
         animRAF = null;
         renderAll();
       }
+      if (typeof scheduleSharePreEncode === 'function') scheduleSharePreEncode();
     };
   });
 
@@ -331,6 +336,7 @@
     drawing = false;
     var count = placements.length - strokeStartIdx;
     if (count > 0) undoStack.push(count);
+    if (typeof scheduleSharePreEncode === 'function') scheduleSharePreEncode();
   }
 
   canvas.addEventListener('mousedown', function (e) {
@@ -417,12 +423,14 @@
       var count = undoStack.pop();
       placements.splice(placements.length - count, count);
       renderAll();
+      if (typeof scheduleSharePreEncode === 'function') scheduleSharePreEncode();
       return;
     }
     // No strokes left — step back through background state
     if (bgPhotoActive || bgColor !== DEFAULT_BG_COLOR) {
       resetBackground();
       renderAll();
+      if (typeof scheduleSharePreEncode === 'function') scheduleSharePreEncode();
     }
   };
 
@@ -431,6 +439,8 @@
     undoStack  = [];
     resetBackground();
     renderAll();
+    shareCache = null;
+    if (encodeTimer) { clearTimeout(encodeTimer); encodeTimer = null; }
   };
 
   // ═══ UPLOAD VALIDATION ═══
@@ -733,6 +743,52 @@
     });
   }
 
+  // ═══ BACKGROUND MP4 PRE-ENCODER ═══
+  // iOS Safari rejects navigator.share() called after any await/Promise (the
+  // user-gesture context is lost). To get an animated MP4 onto IG Stories,
+  // we encode in the background as the user edits, cache the blob, and the
+  // share button uses the cached file → instant share, gesture preserved.
+  var shareCache = null;        // { hash, blob }
+  var encodeTimer = null;
+  var encodeInProgress = false;
+
+  function shareSceneHash() {
+    var p = '';
+    for (var i = 0; i < placements.length; i++) {
+      var pl = placements[i];
+      p += pl.x.toFixed(0) + ',' + pl.y.toFixed(0) + ',' + pl.sz.toFixed(0) + ',' + pl.si + ';';
+    }
+    return animMode + '|' + bgColor + '|' + bgPhotoSrc + '|' + p;
+  }
+
+  function scheduleSharePreEncode() {
+    if (encodeTimer) clearTimeout(encodeTimer);
+    if (animMode === 'none') { shareCache = null; return; }
+    if (typeof window.VideoEncoder === 'undefined' || typeof window.Mp4Muxer === 'undefined') return;
+    encodeTimer = setTimeout(runSharePreEncode, 700);
+  }
+
+  function runSharePreEncode() {
+    if (encodeInProgress) return;
+    if (placements.length === 0 && !bgPhotoActive) return; // nothing to encode yet
+    encodeInProgress = true;
+    var hash = shareSceneHash();
+    var dims = getExportDims();
+    var sw = Math.min(720, dims.w);
+    var sh = Math.round(sw * dims.h / dims.w);
+    var savedMode = animMode;
+    renderToMp4Blob(savedMode, sw, sh, 24, 2).then(function (blob) {
+      // Only cache if scene didn't change while encoding
+      if (shareSceneHash() === hash) {
+        shareCache = { hash: hash, blob: blob };
+      }
+    }).catch(function () {
+      // ignore — fallback to GIF on share
+    }).then(function () {
+      encodeInProgress = false;
+    });
+  }
+
   dlGifBtn.onclick = function () {
     if (!gatePass(this, GIF_COOLDOWN_MS)) return;
     var btn = this;
@@ -845,10 +901,11 @@
     }
   }
 
-  // Share current composition. Static → PNG. Animated → GIF, encoded inline
-  // so the iOS user-gesture window stays alive (any await/Promise chain
-  // breaks it and navigator.share silently rejects). Tradeoff: IG Stories
-  // flattens GIFs to a still — for animated Stories use Download → MP4.
+  // Share current composition.
+  //  Static → PNG (sync — gesture preserved).
+  //  Animated → cached MP4 if available (instant — gesture preserved, lands
+  //              animated on IG Stories). Otherwise inline GIF fallback
+  //              (works but IG flattens to a still).
   function sharePostcard(btn) {
     if (animMode === 'none') {
       renderToPngBlob(function (blob) {
@@ -858,6 +915,15 @@
       });
       return;
     }
+
+    // Best path — use the pre-encoded MP4 if it matches the current scene
+    if (shareCache && shareCache.hash === shareSceneHash()) {
+      var mp4File = new File([shareCache.blob], 'electro-union-generator.mp4', { type: 'video/mp4' });
+      shareFile(btn, mp4File);
+      return;
+    }
+
+    // Fallback — inline GIF encode (IG flattens but at least it shares)
     btn.classList.add('is-busy');
     var origText = btn.textContent;
     btn.textContent = 'encoding…';
@@ -869,6 +935,9 @@
       btn.classList.remove('is-busy');
       btn.textContent = origText;
     }
+
+    // Kick off MP4 pre-encode so the next share gets the fast path
+    scheduleSharePreEncode();
   }
 
   // Copy button behaviour:
