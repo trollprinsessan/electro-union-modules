@@ -845,8 +845,9 @@
     }
   }
 
-  // Share current composition. If animated: encode GIF and share GIF file.
-  // If static: share PNG.
+  // Share current composition. Static → PNG. Animated → MP4 via WebCodecs
+  // (much faster than GIF, fits inside the iOS user-gesture window so the
+  // share sheet actually opens). Falls back to GIF if WebCodecs missing.
   function sharePostcard(btn) {
     if (animMode === 'none') {
       renderToPngBlob(function (blob) {
@@ -856,23 +857,35 @@
       });
       return;
     }
-    // Animated — encode GIF synchronously inside the user-gesture window.
-    // GIF encoding at 4:5 1080x1350 / 36 frames takes ~1-3s on desktop,
-    // longer on mobile. Show busy state.
     btn.classList.add('is-busy');
     var origText = btn.textContent;
     btn.textContent = 'encoding…';
-    // Defer one tick so UI can paint busy state
-    setTimeout(function () {
-      try {
-        var gifBlob = renderToGifBlob();
-        var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
+
+    var dims = getExportDims();
+    var savedMode = animMode;
+
+    function done() {
+      btn.classList.remove('is-busy');
+      btn.textContent = origText;
+    }
+
+    renderToMp4Blob(savedMode, dims.w, dims.h, 48, 2)
+      .then(function (blob) {
+        var file = new File([blob], 'electro-union-generator.mp4', { type: 'video/mp4' });
         shareFile(btn, file);
-      } finally {
-        btn.classList.remove('is-busy');
-        btn.textContent = origText;
-      }
-    }, 30);
+        done();
+      })
+      .catch(function () {
+        // Fallback: GIF (slower but works on browsers without WebCodecs)
+        try {
+          var gifBlob = renderToGifBlob();
+          var file = new File([gifBlob], 'electro-union-generator.gif', { type: 'image/gif' });
+          shareFile(btn, file);
+        } catch (e) {
+          flashBtn(btn, 'encode failed');
+        }
+        done();
+      });
   }
 
   // Copy button behaviour:
