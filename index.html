@@ -327,6 +327,49 @@
     </details>
   </div>
 
+  <!-- ─────────── POSTCARD GENERATOR V2 (merged) ─────────── -->
+  <div class="mod">
+    <div class="mod__head">
+      <h2 class="mod__title"><span class="mod__num">03b</span>Postcard generator (v2)</h2>
+      <div class="mod__links">
+        <a href="postcard-generator-v2/">Open standalone</a>
+        <a href="postcard-generator-v2/?embed=1" target="_blank">Open ?embed=1</a>
+        <button class="mod__copy" data-copy="snip-pgv2">Copy iframe</button>
+      </div>
+    </div>
+    <p class="mod__desc">Frame + lightswitch (rewired as "Push for a Treat") + draw-with-pencil pastry/sticker stamping + grab the latest stroke + bg (image/color) + animations. MP4 (3 loops) for IG, GIF for LinkedIn.</p>
+    <iframe class="mod__frame" src="postcard-generator-v2/?embed=1" loading="lazy" scrolling="no" style="height:900px" allow="clipboard-write; web-share" data-mod="postcard-generator-v2"></iframe>
+    <details class="snippet">
+      <summary>▸ Embed-kod (för Webflow)</summary>
+      <pre id="snip-pgv2">&lt;iframe
+  src="https://trollprinsessan.github.io/electro-union-modules/postcard-generator-v2/?embed=1"
+  title="Electro Union — Postcard Generator"
+  style="width:100%;border:none;display:block;overflow:hidden"
+  scrolling="no"
+  height="1000"
+  loading="lazy"
+  allow="clipboard-write; web-share"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+(function(){
+  window.addEventListener('message', function(e){
+    if(!e.data || e.data.type !== 'eu-resize' || !e.data.height) return;
+    var frames = document.querySelectorAll('iframe[src*="/electro-union-modules/postcard-generator-v2/"]');
+    for (var i = 0; i &lt; frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        if (frames[i].style.height !== e.data.height + 'px') {
+          frames[i].style.height = e.data.height + 'px';
+          if (typeof ScrollTrigger !== 'undefined' &amp;&amp; ScrollTrigger.refresh) ScrollTrigger.refresh();
+        }
+        return;
+      }
+    }
+  });
+})();
+&lt;/script&gt;</pre>
+      <button class="copy" data-copy="snip-pgv2">Copy</button>
+    </details>
+  </div>
+
   <!-- ─────────── MUSIC PLAYER ─────────── -->
   <div class="mod">
     <div class="mod__head">
@@ -508,7 +551,7 @@
       </div>
     </div>
     <p class="mod__desc">Combined drawing + postcard: stamps, stickers, animate, background library, color picker, upload, byline — MP4/PNG export + share.</p>
-    <iframe class="mod__frame" src="generator/?embed=1" loading="lazy" scrolling="no" style="height:900px" allow="clipboard-write" data-mod="generator"></iframe>
+    <iframe class="mod__frame" src="generator/?embed=1" loading="lazy" scrolling="no" style="height:900px" allow="clipboard-write; web-share" data-mod="generator"></iframe>
     <details class="snippet">
       <summary>▸ Embed-kod (för Webflow)</summary>
       <pre id="snip-generator">&lt;iframe
