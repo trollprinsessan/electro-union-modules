@@ -1,68 +1,82 @@
 /*
  * Electro Union — Postcard Generator (v2)
  *
- * Merge of postcard-generator (frame, lightswitch shuffle) and generator
- * (drawing/sticker workspace, MP4/GIF export).
+ * "Greetings from the Electro Union" — a postcard generator that lives
+ * in a Webflow article calling on the EU to become the world's first
+ * electro-continent. Every postcard sent = a campaign impression.
  *
- * Behaviour summary:
- *   - Click a pastry/sticker → it becomes the active pencil stamp.
- *   - Drag on the photo area → drops stamps along the path (one stroke).
- *   - Toggle Grab → pointerdown/up on the photo drags the LATEST stroke
- *     as a unit (no per-item selection).
- *   - Push for a Treat (lightswitch) → 10 rapid swaps of bg + a single
- *     full-bleed centred EU sticker, then settles. No animation. Treat
- *     stickers are tagged .is-treat and never animate.
- *   - Animations apply only to user-drawn stamps. Periods are tuned to
- *     match the generator's sin-based canvas animations.
- *   - EU stickers (indices 9-17) get a 1.4× display boost to compensate
- *     for the transparent margin in their PNGs. Treat sticker stays 100%.
- *   - Download → MP4 (3 full animation loops at 30fps).
- *   - Share → GIF (NETSCAPE2.0 loop=0, infinite native looping).
+ * THE FLOW
+ *   1. Boot rack — full-bleed image cycler (~4s). Hard cut to generator.
+ *   2. Pick a pastry/sticker → stamp the postcard front.
+ *   3. Auto-tagline ("SAME BAGUETTE. OWN POWER.") renders on the card;
+ *      user can override via the input below the workspace.
+ *   4. SEND or SAVE → export carries the tagline + a non-removable
+ *      campaign footer line ("MAKE EUROPE THE ELECTRO UNION · …").
+ *      Counter increments via Supabase.
+ *
+ * IFRAME CONSTRAINT
+ *   This module embeds cross-origin in Webflow. Chrome kills CSS
+ *   `transition` and `@keyframes` inside cross-origin iframes. So:
+ *     - No CSS transitions anywhere — every state change is instant.
+ *     - The sticker @keyframes survive only as a non-iframe enhancement
+ *       (the export uses canvas-rendered animations driven by JS, so
+ *       iframe consumers still get the right exported MP4/GIF).
+ *     - The boot rack swaps `<img>.src` instantly; the ticker swaps
+ *       `textContent`; the multilingual switch label swaps `textContent`.
+ *       All instant. None of them need transitions to feel right —
+ *       per the brief, "every state change is instant, like flipping
+ *       through postcards in a rack."
  */
 (function(){
 
-  // ═══ UNION IDENTITY ═══
-  // The Electro Union was founded 9 November 1989. Union Year is the
-  // chronological count from that date — so 2026 is Union Year 37.
-  // Every postcard the citizen dispatches carries:
-  //   - their stable per-session member number (EU-XXXXXX)
-  //   - the current Union Year
-  //   - a microprinted founding statement
-  //   - a circular postmark — the cancellation that marks the card as posted
-  // The masthead/footer also bind to these values.
-  var UNION_FOUNDED_YEAR = 1989;
-  function getUnionYear(){
-    return new Date().getFullYear() - UNION_FOUNDED_YEAR;
-  }
-  function getMemberNumber(){
-    var k = 'eu_member_no';
-    var n = null;
-    try { n = sessionStorage.getItem(k); } catch(_){}
-    if (!n){
-      // 6-digit, doesn't start with 0 — reads like a real cooperative ID
-      n = String(Math.floor(Math.random() * 900000) + 100000);
-      try { sessionStorage.setItem(k, n); } catch(_){}
-    }
-    return 'EU-' + n;
-  }
-  var MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var MONTHS_ABBR = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  function formatUnionDate(){
-    var d = new Date();
-    return d.getDate() + ' ' + MONTHS_FULL[d.getMonth()] + ' ' + d.getFullYear() +
-           ' / Union Year ' + getUnionYear();
-  }
-  var UNION_YEAR = getUnionYear();
-  var MEMBER_NO  = getMemberNumber();
+  // ═══ CAMPAIGN METADATA ═══
+  var CAMPAIGN_URL_LABEL = 'norrsken.org/goodnews';
+  var CAMPAIGN_FOOTER    = 'MAKE EUROPE THE ELECTRO UNION · ' + CAMPAIGN_URL_LABEL.toUpperCase();
 
-  // Bind into masthead + footer once DOM is parsed (script tag is at body end,
-  // so DOM is already available — but keep the null-check for safety).
-  (function bindUnionChrome(){
-    var dateEl   = document.getElementById('euPg2Date');
-    var memberEl = document.getElementById('euPg2Member');
-    if (dateEl)   dateEl.textContent   = formatUnionDate();
-    if (memberEl) memberEl.textContent = 'Member ' + MEMBER_NO;
-  })();
+  // Auto-taglines per pastry index. Mixed-case display, but the canvas
+  // export forces uppercase to read like a poster.
+  var PASTRY_TAGLINES = [
+    'SAME BAGUETTE.\nOWN POWER.',
+    'SAME STROOPWAFEL.\nOWN POWER.',
+    'SAME FIKA.\nOWN POWER.',
+    'SAME BAKLAVA.\nOWN POWER.',
+    'SAME KÜRTŐS.\nOWN POWER.',
+    'SAME CROISSANT.\nOWN POWER.',
+    'SAME DANISH.\nOWN POWER.',
+    'SAME PASTEL.\nOWN POWER.',
+    'SAME SERNIK.\nOWN POWER.'
+  ];
+
+  // Lines for the bottom ticker — campaign manifesto fragments mixed with
+  // classic postcard language. Rotates every ~3 seconds via instant swap.
+  var TICKER_LINES = [
+    'Greetings from the Electro Union',
+    'Same pasta, own power',
+    'Wish you were here',
+    'The good life deserves to be resilient',
+    'From Lisbon to Tallinn',
+    'Weather: sunny, 50 Hz, grid stable',
+    'Sending postcards since 1957',
+    'Plug it in',
+    'Having a wonderful time'
+  ];
+
+  // Multilingual translations of the lightswitch label. Cycles every
+  // few seconds — postcard-rack souvenir-shop detail.
+  var SWITCH_LABELS = [
+    'Push for a treat',
+    'Premi per una sorpresa',
+    'Tryck för en överraskning',
+    'Appuyez pour une surprise',
+    'Drück für eine Überraschung',
+    'Pulsa para una sorpresa',
+    'Naciśnij na niespodziankę'
+  ];
+
+  // Tagline state — drawn by drawPostcardTagline on every export.
+  // Auto-set on pastry pick, overridable via the input below the workspace.
+  var currentTagline = '';
+  var taglineUserOverridden = false;
 
   // ═══ ASSETS ═══
   // Indices 0-8 = pastries, 9-17 = EU stickers. data-sticker on each tile
@@ -134,11 +148,18 @@
   var clearBtn   = document.getElementById('euPg2Clear');
   var shareBtn   = document.getElementById('euPg2Share');
   var dlBtn      = document.getElementById('euPg2Download');
-  // Verb spans inside each action button — the busy-state text swaps the
-  // headline word ("Broadcast" → "Encoding…") while the target descriptor
-  // stays put. Falls back to the button itself if structure changes.
-  var shareVerb  = shareBtn.querySelector('.eu-pg2__action-verb') || shareBtn;
-  var dlVerb     = dlBtn.querySelector('.eu-pg2__action-verb')    || dlBtn;
+  // Boot, tagline, ticker, switch label, counter, approve refs.
+  var bootEl     = document.getElementById('euPg2Boot');
+  var bootImg    = document.getElementById('euBootImg');
+  var mainEl     = document.getElementById('euPg2Main');
+  var tagInput   = document.getElementById('euPg2TaglineInput');
+  var tagOverlay = document.getElementById('euPg2TaglineOverlay');
+  var switchLbl  = document.getElementById('euPg2SwitchLabel');
+  var tickerEl   = document.getElementById('euPg2TickerLine');
+  var counterEl  = document.getElementById('euPg2CounterNum');
+  var approveBox = document.getElementById('euPg2ApproveBox');
+  var approveLbl = document.getElementById('euPg2Approve');
+  var approveMark= approveLbl ? approveLbl.querySelector('.eu-pg2__approve-mark') : null;
 
   // ═══ STATE ═══
   // each placement: { el, si, xPct, yPct, sizePct, rot, strokeId, isTreat }
@@ -485,83 +506,65 @@
       c.drawImage(img, -dw/2, -dh/2, dw, dh);
       c.restore();
     }
-    drawUnionStamp(c, ew, eh);
+    drawPostcardTagline(c, ew, eh);
+    drawCampaignFooter(c, ew, eh);
   }
 
-  // ═══ UNION STAMP ═══
-  // Drawn over every exported card — still or animated. Two pieces:
-  //   1. Bottom microprint strip (white-on-black) — like the regulatory line
-  //      on a 1989 cigarette pack: service code, member number, Union Year,
-  //      founding statement. Polyglot, slightly absurd, very civic.
-  //   2. Top-right circular postmark — concentric red rings with stacked
-  //      horizontal text (ELECTRO UNION / EU·01 / date / UY NN). The
-  //      cancellation that marks the card as posted.
-  // Both scale relative to canvas dimensions so they stay legible at any
-  // export size (1080×1350 desktop / 1080×1920 mobile).
-  function drawUnionStamp(c, ew, eh){
+  // ═══ POSTCARD TAGLINE ═══
+  // Renders the active tagline as a Times Eighteen Bold overlay near the
+  // bottom of the postcard. Auto-set by pastry pick, overridable by the
+  // user input. Two-line max ("SAME BAGUETTE.\nOWN POWER."). White with a
+  // text-shadow drop so it stays legible over any background.
+  function drawPostcardTagline(c, ew, eh){
+    var line = (currentTagline || '').toString().trim();
+    if (!line) return;
     c.save();
-
-    // ─── Bottom microprint strip ───
-    // Polyglot regulatory line in white-on-black, like the bottom of a 1989
-    // cigarette pack. Service code, member number, Union Year, founding
-    // statement. Font shrinks until the line fits the canvas — no truncation.
-    var stripH = Math.max(28, Math.round(eh * 0.034));
-    c.fillStyle = '#1a1a1a';
-    c.fillRect(0, eh - stripH, ew, stripH);
-
-    var stripText = 'ELECTRO UNION ★ EU-01 EUROPA POST · UY ' + UNION_YEAR +
-                    ' · MEMBER ' + MEMBER_NO +
-                    ' · THE GOOD LIFE DOESN’T CHANGE. ONLY THE POWER SOURCE DOES.';
-    var stripPad  = Math.round(ew * 0.022);
-    var maxWidth  = ew - stripPad * 2;
-    var stripFont = Math.round(stripH * 0.42);
     c.fillStyle = '#fff';
     c.textBaseline = 'middle';
-    c.textAlign = 'left';
-    while (stripFont > 9){
-      c.font = '500 ' + stripFont + 'px "ABC Schengen Mono", "Courier New", monospace';
-      if (c.measureText(stripText).width <= maxWidth) break;
-      stripFont -= 1;
-    }
-    c.fillText(stripText, stripPad, eh - stripH/2);
-
-    // ─── Top-right circular postmark ───
-    var postR = Math.round(ew * 0.085);
-    var postX = ew - postR - Math.round(ew * 0.045);
-    var postY = postR + Math.round(eh * 0.040);
-
-    c.strokeStyle = 'rgba(204, 0, 0, 0.82)';
-    c.fillStyle   = 'rgba(204, 0, 0, 0.82)';
-    c.lineWidth   = Math.max(1.5, postR * 0.045);
-
-    c.beginPath();
-    c.arc(postX, postY, postR, 0, Math.PI*2);
-    c.stroke();
-    c.beginPath();
-    c.arc(postX, postY, postR * 0.82, 0, Math.PI*2);
-    c.stroke();
-
     c.textAlign = 'center';
-    c.textBaseline = 'middle';
+    c.shadowColor = 'rgba(0,0,0,.55)';
+    c.shadowBlur = Math.max(2, Math.round(ew * 0.005));
+    c.shadowOffsetY = Math.max(1, Math.round(ew * 0.001));
+    var lines = line.toUpperCase().split('\n');
+    // Auto-size to fit the longest line within 88% of card width.
+    var maxLineWidth = ew * 0.88;
+    var fs = Math.round(eh * 0.075);
+    while (fs > 14){
+      c.font = 'bold ' + fs + 'px "Times Eighteen", Georgia, serif';
+      var w = 0;
+      for (var i=0; i<lines.length; i++){
+        var lw = c.measureText(lines[i]).width;
+        if (lw > w) w = lw;
+      }
+      if (w <= maxLineWidth) break;
+      fs -= 2;
+    }
+    var lh = fs * 1.02;
+    var blockH = lh * lines.length;
+    // Sit ~10% up from the bottom edge of the card (above the campaign strip).
+    var bottomMargin = Math.round(eh * 0.10);
+    var startY = eh - bottomMargin - blockH/2 + lh/2;
+    for (var j=0; j<lines.length; j++){
+      c.fillText(lines[j], ew/2, startY + lh*j - lh/2);
+    }
+    c.restore();
+  }
 
-    // Top label
-    c.font = '700 ' + Math.round(postR * 0.16) + 'px "ABC Schengen Mono", "Courier New", monospace';
-    c.fillText('ELECTRO UNION', postX, postY - postR * 0.42);
-
-    // Center service code (display serif)
-    c.font = '400 ' + Math.round(postR * 0.34) + 'px "Times Eighteen", Georgia, serif';
-    c.fillText('EU·01', postX, postY - postR * 0.05);
-
-    // Date band
-    c.font = '700 ' + Math.round(postR * 0.13) + 'px "ABC Schengen Mono", "Courier New", monospace';
-    var d = new Date();
-    var dateLabel = (d.getDate() < 10 ? '0' : '') + d.getDate() + ' ' + MONTHS_ABBR[d.getMonth()] + ' ' + String(d.getFullYear()).slice(2);
-    c.fillText(dateLabel, postX, postY + postR * 0.30);
-
-    // Bottom label — Union Year
-    c.font = '700 ' + Math.round(postR * 0.13) + 'px "ABC Schengen Mono", "Courier New", monospace';
-    c.fillText('UY ' + UNION_YEAR, postX, postY + postR * 0.52);
-
+  // ═══ CAMPAIGN FOOTER ═══
+  // A single non-removable line at the bottom edge — turns every export
+  // into a campaign asset. No band, no microprint, no postmark; the brief
+  // is explicit: one line, mono, white at 70% opacity.
+  function drawCampaignFooter(c, ew, eh){
+    c.save();
+    var fs = Math.max(13, Math.round(eh * 0.013));
+    c.fillStyle = 'rgba(255,255,255,.78)';
+    c.shadowColor = 'rgba(0,0,0,.45)';
+    c.shadowBlur = Math.max(2, Math.round(ew * 0.004));
+    c.font = '500 ' + fs + 'px "ABC Schengen Mono", "Courier New", monospace';
+    c.textBaseline = 'bottom';
+    c.textAlign = 'center';
+    var pad = Math.round(eh * 0.022);
+    c.fillText(CAMPAIGN_FOOTER, ew/2, eh - pad);
     c.restore();
   }
 
@@ -804,12 +807,17 @@
     c.toBlob(cb, 'image/png');
   }
 
-  // Download: animated → MP4 (3 loops); still → PNG.
+  // SAVE POSTCARD: animated → MP4 (3 loops); still → PNG.
+  // Counter ticks on every successful export — every postcard sent is a
+  // campaign impression.
   dlBtn.addEventListener('click', function(){
     if (dlBtn.classList.contains('is-disabled') || dlBtn.classList.contains('is-busy')) return;
     if (animMode === 'none'){
       renderStillPng(function(blob){
-        if (blob) downloadBlob(blob, 'europa-post-' + MEMBER_NO + '.png');
+        if (blob){
+          downloadBlob(blob, 'electro-union-postcard.png');
+          incrementCounter();
+        }
       });
       return;
     }
@@ -817,56 +825,219 @@
     var cycleDur = animationPeriod(animMode) * EXPORT_LOOPS;
     var numFrames = Math.round(cycleDur * EXPORT_FPS);
     dlBtn.classList.add('is-busy');
-    var orig = dlVerb.textContent;
-    dlVerb.textContent = 'Encoding…';
+    var orig = dlBtn.textContent;
+    dlBtn.textContent = 'ENCODING…';
     renderToMp4Blob(animMode, ew, eh, numFrames, cycleDur)
       .catch(function(){ return renderToMp4ViaMediaRecorder(animMode, ew, eh, cycleDur); })
       .then(function(blob){
-        downloadBlob(blob, 'europa-post-' + MEMBER_NO + '.mp4');
+        downloadBlob(blob, 'electro-union-postcard.mp4');
+        incrementCounter();
       })
       .catch(function(){
-        dlVerb.textContent = 'Encode failed';
+        dlBtn.textContent = 'SAVE FAILED';
       })
       .then(function(){
         dlBtn.classList.remove('is-busy');
-        if (dlVerb.textContent === 'Encoding…') dlVerb.textContent = orig;
-        setTimeout(function(){ dlVerb.textContent = orig; }, 2200);
+        if (dlBtn.textContent === 'ENCODING…') dlBtn.textContent = orig;
+        setTimeout(function(){ dlBtn.textContent = orig; }, 2200);
       });
   });
 
-  // Share: animated → GIF (loops natively in feed); still → PNG.
+  // SEND POSTCARD: animated → GIF (loops natively); still → PNG. Web Share
+  // API on mobile, downloadBlob fallback on desktop.
   shareBtn.addEventListener('click', function(){
     if (shareBtn.classList.contains('is-disabled') || shareBtn.classList.contains('is-busy')) return;
     function share(file){
+      var shareData = { files:[file] };
+      // Best-effort: include a text payload so the share sheet pre-fills
+      // a caption when the target supports it (iOS Messages, WhatsApp,
+      // some browsers' LinkedIn share). Many platforms ignore it.
+      try {
+        var line = (currentTagline || '').replace(/\n/g, ' ').trim();
+        shareData.text = 'Greetings from the Electro Union. 🇪🇺' +
+                         (line ? ' ' + line : '') +
+                         '\nnorrsken.org/goodnews/make-europe-the-electro-union';
+      } catch(_){}
       if (navigator.canShare && navigator.canShare({ files:[file] })){
-        navigator.share({ files:[file] }).catch(function(){});
+        navigator.share(shareData).then(incrementCounter).catch(function(){});
       } else {
         downloadBlob(file, file.name);
+        incrementCounter();
       }
     }
     if (animMode === 'none'){
       renderStillPng(function(blob){
         if (!blob) return;
-        share(new File([blob], 'europa-post-' + MEMBER_NO + '.png', { type:'image/png' }));
+        share(new File([blob], 'electro-union-postcard.png', { type:'image/png' }));
       });
       return;
     }
     shareBtn.classList.add('is-busy');
-    var orig = shareVerb.textContent;
-    shareVerb.textContent = 'Encoding…';
+    var orig = shareBtn.textContent;
+    shareBtn.textContent = 'ENCODING…';
     setTimeout(function(){
       try {
         var gif = renderToGifBlob(animMode);
-        share(new File([gif], 'europa-post-' + MEMBER_NO + '.gif', { type:'image/gif' }));
+        share(new File([gif], 'electro-union-postcard.gif', { type:'image/gif' }));
       } catch(e){
-        shareVerb.textContent = 'Broadcast failed';
+        shareBtn.textContent = 'SEND FAILED';
       }
       shareBtn.classList.remove('is-busy');
-      setTimeout(function(){ shareVerb.textContent = orig; }, 2200);
+      setTimeout(function(){ shareBtn.textContent = orig; }, 2200);
     }, 30);
   });
 
-  // Pre-select the baguette pastry (matches the .is-active in HTML).
+  // Pre-select the baguette pastry and seed its tagline.
   setActiveTile(0);
+  setTagline(PASTRY_TAGLINES[0]);
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // BOOT RACK — image cycler that runs on every load.
+  // Preload first, swap src instantly every ~350ms, hard-cut to the
+  // generator after ~4 seconds.
+  // ═══════════════════════════════════════════════════════════════════════
+  var BOOT_IMAGES = [
+    '../postcard-generator/BACKGROUNDS/Plage 1 copy.jpg',
+    '../postcard-generator/BACKGROUNDS/original_4bdc51e802b02410cc5d4aa472900c38.jpg',
+    '../postcard-generator/BACKGROUNDS/original_24386db4bdc673a8e2c127178587ce68.jpg',
+    '../postcard-generator/BACKGROUNDS/butter.jpg',
+    '../postcard-generator/BACKGROUNDS/fc7c5841b4c129d0408f9ba2e7c46c1e.jpg',
+    '../drawing/STICKERS/EU_Stickers_1080x1350_01.png',
+    '../postcard-generator/BACKGROUNDS/original_370d3cb96067f4e231797ed5beb3a6cf.jpg',
+    '../postcard-generator/BACKGROUNDS/original_8d84e36822d69f3babb8a64f86366b97.jpg',
+    '../postcard-generator/BACKGROUNDS/original_2402ef13beb9b704f676c00af5eb7d72 (1).jpg',
+    '../drawing/STICKERS/EU_Stickers_1080x1350_09.png',
+    '../postcard-generator/BACKGROUNDS/original_da6863c3bb938276289d0e850bb17375.jpg',
+    '../postcard-generator/BACKGROUNDS/original_7ca01b4f8b02fa3ab601c9341bfd60d6.jpg'
+  ];
+  (function bootRack(){
+    if (!bootEl || !bootImg || !mainEl) return;
+    // Preload so swaps don't flash white.
+    BOOT_IMAGES.forEach(function(src){ var im = new Image(); im.src = src; });
+    // Random start so refresh feels different each time.
+    var idx = Math.floor(Math.random() * BOOT_IMAGES.length);
+    bootImg.src = BOOT_IMAGES[idx];
+    var BOOT_INTERVAL = 350;
+    var BOOT_DURATION = 4000;
+    var ticker = setInterval(function(){
+      idx = (idx + 1) % BOOT_IMAGES.length;
+      bootImg.src = BOOT_IMAGES[idx];
+    }, BOOT_INTERVAL);
+    setTimeout(function(){
+      clearInterval(ticker);
+      bootEl.style.display = 'none';
+      bootEl.setAttribute('aria-hidden', 'true');
+      mainEl.style.visibility = '';
+    }, BOOT_DURATION);
+  })();
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // TICKER — instant line swap every ~3 seconds.
+  // ═══════════════════════════════════════════════════════════════════════
+  (function tickerRotation(){
+    if (!tickerEl) return;
+    var i = 0;
+    tickerEl.textContent = TICKER_LINES[0];
+    setInterval(function(){
+      i = (i + 1) % TICKER_LINES.length;
+      tickerEl.textContent = TICKER_LINES[i];
+    }, 3000);
+  })();
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // MULTILINGUAL SWITCH LABEL — instant translation swap every 5 seconds.
+  // ═══════════════════════════════════════════════════════════════════════
+  (function switchLabelRotation(){
+    if (!switchLbl) return;
+    var i = 0;
+    setInterval(function(){
+      i = (i + 1) % SWITCH_LABELS.length;
+      switchLbl.textContent = SWITCH_LABELS[i];
+    }, 5000);
+  })();
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // TAGLINE — auto-set from active pastry, override via input.
+  // The DOM overlay shows it live on the postcard; the canvas export
+  // draws it on every PNG/GIF/MP4 via drawPostcardTagline().
+  // ═══════════════════════════════════════════════════════════════════════
+  function setTagline(text){
+    currentTagline = (text || '').toString();
+    if (tagOverlay) tagOverlay.textContent = currentTagline.toUpperCase();
+  }
+  // Wrap setActiveTile so picking a pastry seeds its tagline (unless the
+  // user has already typed a custom one).
+  var origSetActiveTile = setActiveTile;
+  setActiveTile = function(idx){
+    origSetActiveTile(idx);
+    if (idx >= 0 && idx < EU_STICKER_OFFSET && !taglineUserOverridden){
+      setTagline(PASTRY_TAGLINES[idx]);
+      if (tagInput) tagInput.value = PASTRY_TAGLINES[idx].replace(/\n/g, ' ');
+    }
+  };
+  // Re-bind tile click handlers to the wrapped fn (the originals were
+  // bound earlier, so we attach again — duplicate listener is fine, both
+  // call setActiveTile and the wrapped version handles tagline).
+  document.querySelectorAll('.eu-pg2__sticker-tile').forEach(function(tile){
+    var idx = parseInt(tile.getAttribute('data-sticker'),10) || 0;
+    tile.addEventListener('click', function(){ setActiveTile(idx); });
+  });
+  // Custom override
+  if (tagInput){
+    tagInput.value = PASTRY_TAGLINES[0].replace(/\n/g, ' ');
+    tagInput.addEventListener('input', function(){
+      taglineUserOverridden = tagInput.value.trim().length > 0 &&
+                              tagInput.value.trim() !== PASTRY_TAGLINES[activeSticker].replace(/\n/g, ' ');
+      // Treat user input as one or two lines: split on " . " or full stop
+      // followed by space, otherwise show as one line.
+      var v = tagInput.value;
+      var parts = v.split(/\.\s+/);
+      if (parts.length === 2 && parts[0] && parts[1]){
+        setTagline(parts[0].trim() + '.\n' + parts[1].trim());
+      } else {
+        setTagline(v);
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // I APPROVE checkbox — visual checkmark only. The brief leaves the
+  // counter increment on actual export, not on this checkbox.
+  // ═══════════════════════════════════════════════════════════════════════
+  if (approveBox && approveLbl && approveMark){
+    approveBox.addEventListener('change', function(){
+      var on = approveBox.checked;
+      approveLbl.classList.toggle('is-checked', on);
+      approveMark.textContent = on ? '☑' : '☐';
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // POSTCARD COUNTER — pulls count from Supabase on load and increments
+  // on every successful export. Reuses the same `get_approval_count` /
+  // `increment_and_get_count` RPCs the gate module uses, so a postcard
+  // sent counts as a public approval of the open letter.
+  // ═══════════════════════════════════════════════════════════════════════
+  var counterValue = 0;
+  function setCounterDisplay(n){
+    counterValue = n || 0;
+    if (counterEl) counterEl.textContent = counterValue.toLocaleString();
+  }
+  (function loadCounter(){
+    if (!window.EU_SUPABASE) return;
+    window.EU_SUPABASE.rpc('get_approval_count').then(function(count){
+      var n = parseInt(count) || 0;
+      setCounterDisplay(n);
+    }).catch(function(){ setCounterDisplay(0); });
+  })();
+  function incrementCounter(){
+    // Optimistic update — bump local counter immediately, then sync.
+    setCounterDisplay(counterValue + 1);
+    if (!window.EU_SUPABASE) return;
+    window.EU_SUPABASE.rpc('increment_and_get_count').then(function(count){
+      var n = parseInt(count);
+      if (!isNaN(n) && n > 0) setCounterDisplay(n);
+    }).catch(function(){});
+  }
 
 })();

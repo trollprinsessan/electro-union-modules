@@ -1,116 +1,27 @@
 /*
  * Electro Union — Postcard Generator (v2)
  *
- * Merge of postcard-generator (frame + lightswitch shuffle) and generator
- * (drawing/sticker workspace, MP4/GIF export). NWK-inspired:
- *   - lightswitch is rewired as "Push for a Treat" (postcard-style 10-step shuffle)
- *   - draw with a stamp pencil; placed strokes can be grabbed as a unit
- *   - animations apply only to user-drawn stamps, never the treat sticker
+ * Concept: it's a postcard generator. You're sending a postcard from the
+ * Electro Union. Pick a pastry, stick it on the front, write a tagline,
+ * send it.
  *
- * Brand chrome: Times Eighteen serif throughout, EU red + EU blue + black + white,
- * no gold, no offset shadows. Reads like commercial European print signage.
+ * The module embeds in a Webflow article via cross-origin iframe, which
+ * kills CSS `transition` and `@keyframes` in Chrome. So:
+ *   - NO `transition` on any property — every state change is instant.
+ *   - @keyframes survive only as a non-iframe enhancement (the sticker
+ *     animations preview in non-iframe contexts; in iframe they're still
+ *     correct because export rendering is canvas-based, not DOM-based).
+ *
+ * Palette: white + EU blue. The cream café-app warmth is gone — pastries
+ * and backgrounds carry the warmth, the chrome stays cold and institutional.
  */
 
 .eu-pg2{
-  padding:clamp(20px,3vw,40px) clamp(16px,3vw,40px) clamp(28px,3vw,44px);
+  padding:clamp(20px,3vw,40px) clamp(16px,3vw,40px) clamp(24px,3vw,36px);
   display:flex;
   flex-direction:column;
   align-items:center;
   background:#fff;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   MASTHEAD — Electro Union service header.
-   This is the chrome that ties Europa Post (EU-01) to every future
-   department (FM Continental, Edicola, Tabacchi). Reads like the front
-   of a 1989 European public-service brochure — Bundespost / La Poste /
-   RAI register. Print-native: rules, regulatory codes, polyglot subhead.
-   ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__masthead{
-  width:100%;
-  max-width:1200px;
-  margin:0 auto clamp(28px,3vw,44px);
-  padding:0;
-  color:var(--ink,#1a1a1a);
-}
-.eu-pg2__masthead-rule{
-  height:2px;
-  background:var(--ink,#1a1a1a);
-  width:100%;
-}
-.eu-pg2__masthead-rule--thin{
-  height:1px;
-}
-.eu-pg2__masthead-row{
-  display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:clamp(12px,2vw,32px);
-  padding:8px 0;
-  flex-wrap:wrap;
-}
-.eu-pg2__masthead-row--top{
-  padding:10px 0 8px;
-}
-.eu-pg2__masthead-row--mid{
-  padding:14px 0 4px;
-  align-items:flex-end;
-}
-.eu-pg2__topmark{
-  display:inline-flex;
-  align-items:baseline;
-  gap:8px;
-  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--ink,#1a1a1a);
-}
-.eu-pg2__topmark-name{
-  font-weight:400;
-}
-.eu-pg2__topmark-star{
-  color:var(--blue,#003399);
-  font-size:13px;
-  line-height:1;
-}
-.eu-pg2__service-code{
-  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--ink,#1a1a1a);
-}
-.eu-pg2__service-name{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-weight:400;
-  font-size:clamp(36px,5.6vw,64px);
-  line-height:.95;
-  letter-spacing:-.01em;
-  color:var(--blue,#003399);
-  margin:0;
-}
-.eu-pg2__masthead-date{
-  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
-  font-size:11px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:var(--ink,#1a1a1a);
-  white-space:nowrap;
-}
-.eu-pg2__service-descriptor{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic;
-  font-size:14px;
-  line-height:1.5;
-  color:var(--dim,#777);
-  margin:6px 0 12px;
-  max-width:760px;
-}
-@media(max-width:760px){
-  .eu-pg2__service-name{font-size:clamp(34px,9vw,48px)}
-  .eu-pg2__masthead-row{flex-wrap:wrap}
-  .eu-pg2__masthead-date{width:100%;padding-top:6px}
 }
 
 .eu-pg2__workspace{
@@ -128,8 +39,96 @@
   }
 }
 
-/* ─── shared section title ───
-   Times Eighteen tracked caps — like a price tag stamped on a vintage pack. */
+/* ═══════════════════════════════════════════════════════════════════════
+   BOOT RACK — full-bleed image cycler that runs on every load.
+   Looks like spinning a postcard rack. Hard cut to generator after ~4s.
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-boot{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#000;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.eu-boot[hidden]{display:none}
+.eu-boot__img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+.eu-boot__mark{
+  position:absolute;
+  bottom:clamp(20px,4vw,40px);
+  left:clamp(20px,4vw,40px);
+  font-family:'Times Eighteen',Georgia,serif;
+  font-style:italic;
+  font-size:clamp(22px,3.4vw,38px);
+  line-height:1.05;
+  color:#fff;
+  text-shadow:0 1px 8px rgba(0,0,0,.5),0 0 1px rgba(0,0,0,.4);
+  pointer-events:none;
+  z-index:1;
+  max-width:80%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GREETING HEADER — slim italic line + postcard counter.
+   Replaces the bureaucratic masthead. The chrome is light; the postcard
+   is the loud thing.
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__header{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto clamp(24px,2.6vw,36px);
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:clamp(16px,3vw,32px);
+  padding-bottom:clamp(14px,1.6vw,20px);
+  border-bottom:1px solid var(--ink,#1a1a1a);
+}
+.eu-pg2__greeting{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-style:italic;
+  font-weight:400;
+  font-size:clamp(28px,4.2vw,48px);
+  line-height:1;
+  letter-spacing:-.005em;
+  color:var(--blue,#003399);
+  margin:0;
+}
+.eu-pg2__counter{
+  display:inline-flex;
+  align-items:baseline;
+  gap:8px;
+  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
+  white-space:nowrap;
+}
+.eu-pg2__counter-num{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(18px,2.4vw,28px);
+  color:var(--ink,#1a1a1a);
+  letter-spacing:.01em;
+  font-variant-numeric:tabular-nums;
+}
+.eu-pg2__counter-label{
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--dim,#888);
+}
+@media(max-width:520px){
+  .eu-pg2__header{flex-direction:column;align-items:flex-start;gap:6px}
+}
+
+/* ═══ Section titles — keep terse, monospace caps for restraint. ═══ */
 .eu-pg2__section-title{
   font-family:'Times Eighteen',Georgia,serif;
   font-size:13px;
@@ -162,7 +161,6 @@
   align-items:center;
   justify-content:center;
   cursor:var(--eu-cursor);
-  transition:transform .12s, box-shadow .12s;
   overflow:hidden;
   user-select:none;
   -webkit-user-drag:none;
@@ -174,14 +172,9 @@
   pointer-events:none;
   -webkit-user-drag:none;
 }
-/* EU stickers carry transparent margin around the artwork — scale the
-   palette thumbs up so they read at the same optical size as pastries. */
 #euPg2StickerGrid .eu-pg2__sticker-tile img{
   width:150%;
   height:150%;
-}
-.eu-pg2__sticker-tile:hover{
-  transform:translateY(-1px);
 }
 .eu-pg2__sticker-tile.is-active{
   box-shadow:inset 0 0 0 2.5px var(--red,#CC0000);
@@ -219,7 +212,7 @@
   font-style:italic;
   font-size:13px;
   line-height:1.5;
-  color:var(--dim,#777);
+  color:var(--dim,#888);
   margin:18px 0 0;
 }
 .eu-pg2__hint strong{
@@ -279,8 +272,28 @@
   z-index:2;
 }
 
-/* placed sticker — outer is positioned + draggable; inner-anim carries
-   the keyframe transform so it doesn't fight the centering translate. */
+/* Tagline overlay — Times Eighteen Bold, white, text-shadow for legibility
+   over any background. Lives inside the photo so it sits ABOVE bg + items
+   in the live preview. The canvas export draws it as Times Eighteen Bold. */
+.eu-pg2__overlay-tagline{
+  position:absolute;
+  left:0;right:0;
+  bottom:6%;
+  z-index:3;
+  pointer-events:none;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(18px,4cqw,42px);
+  line-height:1;
+  letter-spacing:-.005em;
+  text-align:center;
+  color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.5),0 0 1px rgba(0,0,0,.6);
+  white-space:pre-line;
+  padding:0 6%;
+}
+.eu-pg2__photo{container-type:inline-size}
+
 .eu-pg2__item{
   position:absolute;
   width:30%;
@@ -305,11 +318,10 @@
   -webkit-user-drag:none;
 }
 
-/* animations — applied to non-treat items only.
-   Treat-stickers (.is-treat) stay anchored regardless of mode.
-   Bounce/beat oscillate both directions in one cycle (sin-style, not single
-   peak), with ease-in-out so the motion feels like a sine wave rather than
-   a metronome. Periods + amplitudes match the generator's intensity. */
+/* @keyframes are kept for non-iframe preview only. The export uses
+   canvas-rendered animations driven by JS, so iframe consumers see the
+   right export even though the live DOM doesn't animate inside the
+   cross-origin frame. (Brief exception: this is allowed.) */
 .eu-pg2__items.is-anim-bounce .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{
   animation:euPg2Bounce 1.2s ease-in-out infinite;
 }
@@ -329,7 +341,6 @@
   animation-delay:calc(var(--i,0) * -0.1s);
 }
 
-/* Five-keyframe oscillation = full sin cycle (up + back + down + back). */
 @keyframes euPg2Bounce{
   0%   {transform:translateY(0)}
   25%  {transform:translateY(-22%)}
@@ -359,9 +370,8 @@
   100%{transform:translate(0,0) rotate(360deg)}
 }
 
-/* ─── Lightswitch — copied from postcard-generator,
-       wrapper sits absolutely outside the frame; the .panel is scaled,
-       the label is a sibling so it stays at normal size. */
+/* Lightswitch — copied from postcard-generator. Sits absolutely outside
+   the frame. */
 .eu-pg2__switch-mount{
   position:absolute;
   left:-30px;
@@ -374,8 +384,8 @@
   z-index:10;
 }
 .eu-pg2__switch-wrap{
-  width:76px;        /* 270 * 0.28 */
-  height:118px;      /* 420 * 0.28 */
+  width:76px;
+  height:118px;
   position:relative;
   cursor:var(--eu-cursor);
   user-select:none;
@@ -430,22 +440,21 @@
   background-color:#eee;
   box-shadow:inset 0 0 6px rgba(0,0,0,.05),inset 0 0 24px rgba(0,0,0,.025),inset -16px -16px 36px rgba(0,0,0,.1);
   height:50%;left:0;position:absolute;top:0;
-  transition:background .25s ease,box-shadow .25s ease;width:100%;z-index:2;
+  width:100%;z-index:2;
 }
 .eu-pg2__switch-wrap .switch__top-outset{
   background:linear-gradient(90deg,#fff,#f7f7f7);height:10px;
-  transition:height .25s ease;
 }
 .eu-pg2__switch-wrap .switch__bottom{
   background-color:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
   height:50%;left:0;position:absolute;top:50%;
-  transition:background .25s ease,box-shadow .25s ease;width:100%;z-index:2;
+  width:100%;z-index:2;
 }
 .eu-pg2__switch-wrap .switch__bottom-outset{
   bottom:0;background:linear-gradient(90deg,#e7e7e7,#d7d7d7);
   box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
-  height:0;position:absolute;transition:height .25s ease;width:100%;
+  height:0;position:absolute;width:100%;
 }
 .eu-pg2__switch-wrap .switch__shadow-box{
   height:208px;left:104px;overflow:hidden;position:absolute;width:100px;z-index:1;
@@ -455,12 +464,10 @@
 .eu-pg2__switch-wrap .switch__shadow.top{
   background-color:rgba(0,0,0,.33);height:90px;position:absolute;bottom:20px;
   filter:blur(10px);left:-70px;opacity:1;transform:rotate(20deg);width:90px;
-  transition:left .25s ease,filter .25s ease,opacity .25s ease,transform .25s ease;
 }
 .eu-pg2__switch-wrap .switch__shadow.bottom{
   background-color:rgba(0,0,0,.33);height:90px;position:absolute;bottom:0;
   left:-90px;filter:blur(0);opacity:.5;transform:rotate(0deg);width:90px;
-  transition:left .25s ease,filter .25s ease,opacity .25s ease,transform .25s ease;
 }
 .eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__top{
   background-color:#fff;box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
@@ -495,7 +502,7 @@
   }
 }
 
-/* ═══ RIGHT — bg controls + tools + animate ═══ */
+/* ═══ RIGHT — postcard front + tools + animate ═══ */
 .eu-pg2__right{
   display:flex;
   flex-direction:column;
@@ -522,10 +529,6 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:transform .12s, box-shadow .12s;
-}
-.eu-pg2__bg-tile:hover{
-  transform:translateY(-1px);
 }
 .eu-pg2__bg-tile.is-active{
   border-color:var(--red,#CC0000);
@@ -560,7 +563,6 @@
   color:var(--ink,#1a1a1a);
 }
 
-/* image picker modal */
 .eu-pg2__bg-modal{
   position:fixed;
   inset:0;
@@ -610,11 +612,9 @@
   overflow:hidden;
   cursor:var(--eu-cursor);
   border:2px solid transparent;
-  transition:border-color .12s, transform .12s;
 }
 .eu-pg2__bg-source-item:hover{
   border-color:var(--red,#CC0000);
-  transform:scale(1.02);
 }
 .eu-pg2__bg-source-item img{
   width:100%;height:100%;object-fit:cover;
@@ -622,7 +622,6 @@
   -webkit-user-drag:none;
 }
 
-/* tools */
 .eu-pg2__tools-row{
   display:flex;
   gap:8px;
@@ -639,10 +638,6 @@
   justify-content:center;
   cursor:var(--eu-cursor);
   color:var(--ink,#1a1a1a);
-  transition:background .12s, color .12s, border-color .12s;
-}
-.eu-pg2__tool-btn:hover{
-  background:#f4f0e8;
 }
 .eu-pg2__tool-btn.is-active{
   background:var(--blue,#003399);
@@ -653,7 +648,6 @@
   width:50%;height:50%;
 }
 
-/* animate pills */
 .eu-pg2__anim-grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -671,10 +665,6 @@
   border-radius:999px;
   cursor:var(--eu-cursor);
   color:var(--ink,#1a1a1a);
-  transition:background .12s, color .12s, border-color .12s;
-}
-.eu-pg2__anim-pill:hover{
-  background:#f4f0e8;
 }
 .eu-pg2__anim-pill.is-active{
   background:var(--red,#CC0000);
@@ -682,28 +672,72 @@
   border-color:var(--red,#CC0000);
 }
 
-/* ═══ SHARE BAND — sits below the workspace as its own row ═══ */
+/* ═══════════════════════════════════════════════════════════════════════
+   TAGLINE STRIP — auto-fills "SAME [PASTRY]. OWN POWER." when a pastry
+   is picked, user can override. The value renders on every export.
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__tagline-strip{
+  width:100%;
+  max-width:1200px;
+  margin:clamp(24px,3vw,40px) auto 0;
+  text-align:center;
+}
+.eu-pg2__tagline-input{
+  width:min(560px,100%);
+  background:transparent;
+  border:none;
+  border-bottom:2px solid var(--ink,#1a1a1a);
+  padding:8px 6px;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(18px,2.6vw,26px);
+  letter-spacing:.005em;
+  text-align:center;
+  color:var(--ink,#1a1a1a);
+  outline:none;
+  cursor:var(--eu-cursor);
+}
+.eu-pg2__tagline-input::placeholder{
+  color:var(--dim,#888);
+  font-weight:400;
+  font-style:italic;
+}
+.eu-pg2__tagline-input:focus{
+  border-bottom-color:var(--blue,#003399);
+  color:var(--blue,#003399);
+}
+.eu-pg2__tagline-hint{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-style:italic;
+  font-size:12px;
+  color:var(--dim,#888);
+  margin:8px 0 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SEND BAND — civic copy, approve checkbox, two action buttons.
+   ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__share-band{
   width:100%;
   max-width:1200px;
   margin:clamp(24px,3vw,40px) auto 0;
   padding-top:clamp(20px,2.5vw,32px);
-  border-top:1px solid rgba(0,0,0,.08);
+  border-top:1px solid rgba(0,0,0,.1);
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
-  gap:clamp(16px,3vw,32px);
-  align-items:center;
+  grid-template-areas:
+    "caption actions"
+    "approve actions";
+  gap:clamp(10px,2vw,24px) clamp(16px,3vw,32px);
+  align-items:start;
 }
-.eu-pg2__share-band .eu-pg2__caption{
-  margin:0;
-  max-width:520px;
-}
+.eu-pg2__share-band .eu-pg2__caption{grid-area:caption;margin:0;max-width:540px}
 .eu-pg2__caption{
   font-family:'Times Eighteen',Georgia,serif;
   font-style:italic;
   font-size:13px;
-  line-height:1.5;
-  color:var(--dim,#777);
+  line-height:1.55;
+  color:var(--dim,#888);
 }
 .eu-pg2__caption strong{
   color:var(--ink,#1a1a1a);
@@ -712,133 +746,130 @@
   text-transform:uppercase;
   letter-spacing:.08em;
 }
-.eu-pg2__actions{
-  display:flex;
-  flex-direction:row;
+.eu-pg2__approve{
+  grid-area:approve;
+  display:inline-flex;
+  align-items:center;
   gap:10px;
-}
-@media(max-width:760px){
-  .eu-pg2__share-band{
-    grid-template-columns:1fr;
-  }
-  .eu-pg2__actions{
-    flex-direction:column;
-  }
-}
-/* Civic action buttons — verb on top (Times Eighteen), target on bottom
-   (monospace, smaller). Mirrors the masthead's typographic rhythm. */
-.eu-pg2__action-btn{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  justify-content:center;
-  height:60px;
-  padding:0 22px;
-  min-width:220px;
-  border:none;
-  cursor:var(--eu-cursor);
-  color:#fff;
-  text-align:left;
-  transition:opacity .12s;
-}
-.eu-pg2__action-btn:hover{opacity:.88}
-.eu-pg2__action-btn--share{background:var(--blue,#003399)}
-.eu-pg2__action-btn--dl{background:var(--red,#CC0000)}
-.eu-pg2__action-btn.is-disabled{
-  background:#e6e0d3;
-  color:var(--dim,#777);
-  pointer-events:none;
-}
-.eu-pg2__action-btn.is-busy{
-  opacity:.6;
-  pointer-events:none;
-}
-.eu-pg2__action-verb{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-size:18px;
-  font-weight:400;
-  letter-spacing:.02em;
-  line-height:1.05;
-}
-.eu-pg2__action-target{
   font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
-  font-size:9px;
-  letter-spacing:.2em;
-  text-transform:uppercase;
-  opacity:.85;
-  margin-top:3px;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   FOOTER — Union charter, polyglot stamp, founding mark, SV disclaimer.
-   This is the regulatory tail that appears at the bottom of every Union
-   leaflet. Reads like the back of a Deutsche Bundespost service brochure
-   or the legal panel on a 1989 cigarette pack. Microprinted, polyglot.
-   ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__footer{
-  width:100%;
-  max-width:1200px;
-  margin:clamp(32px,4vw,56px) auto 0;
-  padding:0;
-  color:var(--ink,#1a1a1a);
-}
-.eu-pg2__footer-rule{
-  height:2px;
-  background:var(--ink,#1a1a1a);
-  width:100%;
-  margin-bottom:clamp(16px,2vw,24px);
-}
-.eu-pg2__charter{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic;
-  font-size:clamp(15px,1.6vw,18px);
-  line-height:1.4;
-  color:var(--blue,#003399);
-  margin:0 0 clamp(14px,1.6vw,20px);
-  max-width:680px;
-}
-.eu-pg2__multilingual{
-  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
-  font-size:10px;
-  line-height:1.7;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--ink,#1a1a1a);
-  margin:0 0 clamp(14px,1.6vw,20px);
-  max-width:880px;
-}
-.eu-pg2__footer-bar{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:baseline;
-  gap:clamp(12px,2vw,28px);
-  padding:10px 0;
-  border-top:1px solid rgba(0,0,0,.12);
-  border-bottom:1px solid rgba(0,0,0,.12);
-  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
-  font-size:10px;
+  font-size:11px;
   letter-spacing:.18em;
   text-transform:uppercase;
   color:var(--ink,#1a1a1a);
-  margin-bottom:clamp(12px,1.6vw,18px);
+  cursor:var(--eu-cursor);
+  user-select:none;
 }
-.eu-pg2__footer-mark{
+.eu-pg2__approve input{
+  position:absolute;opacity:0;pointer-events:none;
+}
+.eu-pg2__approve-mark{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;height:18px;
+  border:1.5px solid var(--ink,#1a1a1a);
+  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
+  font-size:14px;
+  line-height:1;
   color:var(--blue,#003399);
 }
-.eu-pg2__footer-member{
-  margin-left:auto;
-  color:var(--dim,#777);
+.eu-pg2__approve.is-checked .eu-pg2__approve-mark{
+  background:var(--blue,#003399);
+  color:#fff;
+  border-color:var(--blue,#003399);
 }
-.eu-pg2__sv-disclaimer{
-  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
-  font-size:9px;
-  line-height:1.6;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:var(--dim,#777);
-  max-width:680px;
-  margin:0;
+.eu-pg2__actions{
+  grid-area:actions;
+  display:flex;
+  flex-direction:row;
+  gap:10px;
+  align-self:start;
 }
 @media(max-width:760px){
-  .eu-pg2__footer-member{margin-left:0;width:100%}
+  .eu-pg2__share-band{grid-template-columns:1fr;grid-template-areas:"caption" "approve" "actions"}
+  .eu-pg2__actions{flex-direction:column}
+}
+.eu-pg2__action-btn{
+  height:54px;
+  padding:0 22px;
+  min-width:200px;
+  border:none;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:16px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  cursor:var(--eu-cursor);
+  color:#fff;
+}
+.eu-pg2__action-btn--share{background:var(--blue,#003399)}
+.eu-pg2__action-btn--dl{background:var(--red,#CC0000)}
+.eu-pg2__action-btn.is-disabled{
+  background:#e0e0e0;
+  color:var(--dim,#888);
+  pointer-events:none;
+}
+.eu-pg2__action-btn.is-busy{
+  opacity:.7;
+  pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TICKER — lines rotate every ~3s. Instant swap, no marquee, no fade.
+   That's the iframe-safe behaviour and on-brief: "every state change is
+   instant, like flipping through postcards in a rack."
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__ticker{
+  width:100%;
+  max-width:1200px;
+  margin:clamp(28px,3vw,40px) auto 0;
+  padding:clamp(10px,1.4vw,16px) 0;
+  border-top:1px solid var(--ink,#1a1a1a);
+  border-bottom:1px solid var(--ink,#1a1a1a);
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
+  font-size:12px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--ink,#1a1a1a);
+  overflow:hidden;
+}
+.eu-pg2__ticker-mark{
+  color:var(--blue,#003399);
+  font-size:14px;
+  flex:0 0 auto;
+}
+.eu-pg2__ticker-line{
+  white-space:nowrap;
+  flex:1 1 auto;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MINI FOOTER — non-removable campaign URL + tiny SV disclaimer.
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__mini-footer{
+  width:100%;
+  max-width:1200px;
+  margin:clamp(14px,1.6vw,20px) auto 0;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:12px;
+  font-family:var(--mono,'ABC Schengen Mono','Courier New',monospace);
+  font-size:9px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--dim,#888);
+}
+.eu-pg2__mini-footer a{
+  color:var(--ink,#1a1a1a);
+  text-decoration:none;
+  border-bottom:1px solid currentColor;
+}
+.eu-pg2__mini-footer-sv{
+  opacity:.7;
 }
