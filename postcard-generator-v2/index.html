@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Electro Union — EU-01 / Europa Post</title>
+  <title>Greetings from the Electro Union — Postcard Generator</title>
 
   <link rel="stylesheet" href="../_shared/fonts.css">
   <link rel="stylesheet" href="../_shared/tokens.css">
@@ -11,35 +11,33 @@
   <link rel="stylesheet" href="style.css">
 
   <script src="../_shared/embed.js"></script>
+  <script src="../_shared/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.4/build/mp4-muxer.min.js"></script>
 </head>
 <body>
 
-<div class="eu" id="eu">
-  <div class="eu-pg2">
+<!-- ═══════════════════════════════════════════════════════════════════════
+     BOOT RACK — full-bleed image cycler that runs on every load.
+     Looks like spinning a wire postcard rack at a souvenir shop. After
+     ~4s, hard-cuts to the generator. No transitions — every frame is an
+     instant swap, which is exactly the iframe-safe behaviour we want.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="eu-boot" id="euPg2Boot" aria-hidden="false">
+  <img class="eu-boot__img" id="euBootImg" alt="">
+  <div class="eu-boot__mark">Greetings from the Electro Union</div>
+</div>
 
-    <!-- ═══ MASTHEAD — Union top-mark, service code, dual date ═══
-         Reads like the header of a 1989 European public-service brochure.
-         The shell is what makes Europa Post belong to the Electro Union;
-         every future module (FM Continental, Edicola) sits inside the same. -->
-    <header class="eu-pg2__masthead">
-      <div class="eu-pg2__masthead-rule"></div>
-      <div class="eu-pg2__masthead-row eu-pg2__masthead-row--top">
-        <div class="eu-pg2__topmark">
-          <span class="eu-pg2__topmark-name">ELECTRO UNION</span>
-          <span class="eu-pg2__topmark-star" aria-hidden="true">★</span>
-        </div>
-        <div class="eu-pg2__service-code">EU-01 / EUROPA POST</div>
+<div class="eu" id="eu">
+  <div class="eu-pg2" id="euPg2Main" style="visibility:hidden">
+
+    <!-- Slim greeting header. Times Eighteen italic for the headline,
+         monospace counter on the right. Postcard front, not station chrome. -->
+    <header class="eu-pg2__header">
+      <h1 class="eu-pg2__greeting">Greetings from the Electro Union</h1>
+      <div class="eu-pg2__counter" id="euPg2Counter" aria-live="polite">
+        <span class="eu-pg2__counter-num" id="euPg2CounterNum">—</span>
+        <span class="eu-pg2__counter-label">postcards sent</span>
       </div>
-      <div class="eu-pg2__masthead-rule eu-pg2__masthead-rule--thin"></div>
-      <div class="eu-pg2__masthead-row eu-pg2__masthead-row--mid">
-        <h1 class="eu-pg2__service-name">Europa Post</h1>
-        <div class="eu-pg2__masthead-date" id="euPg2Date" aria-live="polite">— / Union Year —</div>
-      </div>
-      <p class="eu-pg2__service-descriptor">
-        Cartoline · Postcards · Cartes Postales · Postkarten · Vykort · Pocztówki · Открытки. Mark the card. Dispatch it across the continent.
-      </p>
-      <div class="eu-pg2__masthead-rule"></div>
     </header>
 
     <div class="eu-pg2__workspace">
@@ -59,7 +57,7 @@
           <div class="eu-pg2__sticker-tile" data-sticker="8"><img src="../drawing/Updated Imagery/sernik.png" alt="Sernik"></div>
         </div>
 
-        <div class="eu-pg2__section-title">Sticker</div>
+        <div class="eu-pg2__section-title">Stickers</div>
         <div class="eu-pg2__sticker-grid" id="euPg2StickerGrid">
           <div class="eu-pg2__sticker-tile" data-sticker="9"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_01.png" alt=""></div>
           <div class="eu-pg2__sticker-tile" data-sticker="10"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_02.png" alt=""></div>
@@ -75,10 +73,10 @@
         <div class="eu-pg2__section-title">Size</div>
         <input type="range" class="eu-pg2__size-slider" id="euPg2Size" min="22" max="65" step="1" value="44" aria-label="Sticker size">
 
-        <p class="eu-pg2__hint">Select a stamp from the palette. Mark the card with your finger or pointer. Switch to <strong>grab</strong> to relocate a placement before dispatch.</p>
+        <p class="eu-pg2__hint">Pick a pastry or sticker. Stamp the postcard with your finger or pointer. Switch to <strong>grab</strong> to slide a placement around before sending.</p>
       </div>
 
-      <!-- CENTER — framed stage with lightswitch -->
+      <!-- CENTER — framed stage with lightswitch + live tagline overlay -->
       <div class="eu-pg2__center">
         <div class="eu-pg2__stage" id="euPg2Stage">
 
@@ -100,7 +98,7 @@
                 <div class="screw bottom"><div class="screw__slot"></div></div>
               </div>
             </label>
-            <span class="eu-pg2__switch-label">Push for a treat</span>
+            <span class="eu-pg2__switch-label" id="euPg2SwitchLabel">Push for a treat</span>
           </div>
 
           <div class="eu-pg2__framed" id="euPg2Framed">
@@ -108,19 +106,20 @@
             <div class="eu-pg2__photo" id="euPg2Photo">
               <div class="eu-pg2__bg" id="euPg2Bg"></div>
               <div class="eu-pg2__items" id="euPg2Items"></div>
+              <div class="eu-pg2__overlay-tagline" id="euPg2TaglineOverlay" aria-hidden="true"></div>
             </div>
           </div>
 
         </div>
       </div>
 
-      <!-- RIGHT — background + tools + animate -->
+      <!-- RIGHT — postcard front + tools + animate -->
       <div class="eu-pg2__right">
 
-        <div class="eu-pg2__section-title">Background</div>
+        <div class="eu-pg2__section-title">Postcard front</div>
         <div class="eu-pg2__bg-row">
           <div class="eu-pg2__bg-tile-wrap">
-            <div class="eu-pg2__bg-tile eu-pg2__bg-tile--image" id="euPg2BgShow" role="button" aria-label="Choose background image">
+            <div class="eu-pg2__bg-tile eu-pg2__bg-tile--image" id="euPg2BgShow" role="button" aria-label="Choose postcard image">
               <img src="../postcard-generator/BACKGROUNDS/original_827931d0025519cb087cb567ddbc1e31.png" alt="">
             </div>
             <div class="eu-pg2__bg-label">Image</div>
@@ -136,9 +135,9 @@
 
         <div class="eu-pg2__bg-modal" id="euPg2BgModal" hidden>
           <div class="eu-pg2__bg-modal-backdrop" data-close></div>
-          <div class="eu-pg2__bg-modal-panel" role="dialog" aria-label="Choose background image">
+          <div class="eu-pg2__bg-modal-panel" role="dialog" aria-label="Choose postcard front">
             <button type="button" class="eu-pg2__bg-modal-close" data-close aria-label="Close">&#215;</button>
-            <div class="eu-pg2__bg-modal-title">Choose a background</div>
+            <div class="eu-pg2__bg-modal-title">Choose a postcard front</div>
             <div class="eu-pg2__bg-source" id="euPg2BgSource">
               <div class="eu-pg2__bg-source-item" data-bg="../postcard-generator/BACKGROUNDS/Image_1.png"><img src="../postcard-generator/BACKGROUNDS/Image_1.png" alt="" loading="lazy"></div>
               <div class="eu-pg2__bg-source-item" data-bg="../postcard-generator/BACKGROUNDS/Image_3.png"><img src="../postcard-generator/BACKGROUNDS/Image_3.png" alt="" loading="lazy"></div>
@@ -179,7 +178,7 @@
           </button>
         </div>
 
-        <div class="eu-pg2__section-title">Animate</div>
+        <div class="eu-pg2__section-title">Make it move</div>
         <div class="eu-pg2__anim-grid">
           <button type="button" class="eu-pg2__anim-pill is-active" data-anim="none">None</button>
           <button type="button" class="eu-pg2__anim-pill" data-anim="bounce">Bounce</button>
@@ -193,47 +192,48 @@
 
     </div>
 
-    <!-- ═══ DISPATCH BAND ═══ Civic verbs as the headline. Caption keeps
-         the platform information that users need to choose between targets. -->
+    <!-- ═══ TAGLINE STRIP ═══ Auto-fills based on the active pastry. User
+         can type to override. Whatever is in this input renders on the
+         postcard exports as a Times Eighteen Bold overlay near the bottom. -->
+    <div class="eu-pg2__tagline-strip">
+      <input type="text" id="euPg2TaglineInput" class="eu-pg2__tagline-input" placeholder="SAME ___. OWN POWER." maxlength="50" autocomplete="off" spellcheck="false">
+      <p class="eu-pg2__tagline-hint">Auto-set when you pick a pastry. Type your own to override.</p>
+    </div>
+
+    <!-- ═══ SEND BAND ═══ -->
     <div class="eu-pg2__share-band">
       <p class="eu-pg2__caption">
-        <strong>Broadcast</strong> dispatches your card to LinkedIn — animated GIF, loops natively in the feed.
-        <strong>Dispatch</strong> saves an MP4 to your device — upload to Instagram Stories from there.
-        <em>The Union retains no transit copies.</em>
+        Send your postcard to the world.
+        <strong>Send</strong> opens the share sheet with an animated GIF — loops natively in the feed.
+        <strong>Save</strong> downloads an MP4 you can post to Instagram Stories.
       </p>
+      <label class="eu-pg2__approve" id="euPg2Approve">
+        <input type="checkbox" id="euPg2ApproveBox">
+        <span class="eu-pg2__approve-mark" aria-hidden="true">☐</span>
+        <span class="eu-pg2__approve-label">I approve this message</span>
+      </label>
       <div class="eu-pg2__actions">
-        <button class="eu-pg2__action-btn eu-pg2__action-btn--share is-disabled" id="euPg2Share">
-          <span class="eu-pg2__action-verb">Broadcast</span>
-          <span class="eu-pg2__action-target">→ LinkedIn · GIF</span>
-        </button>
-        <button class="eu-pg2__action-btn eu-pg2__action-btn--dl is-disabled" id="euPg2Download">
-          <span class="eu-pg2__action-verb">Dispatch</span>
-          <span class="eu-pg2__action-target">→ Instagram · MP4</span>
-        </button>
+        <button class="eu-pg2__action-btn eu-pg2__action-btn--share is-disabled" id="euPg2Share">SEND POSTCARD</button>
+        <button class="eu-pg2__action-btn eu-pg2__action-btn--dl is-disabled" id="euPg2Download">SAVE POSTCARD</button>
       </div>
     </div>
 
-    <!-- ═══ FOOTER — Union charter, multilingual stamp, founding mark,
-         Silicon Valley disclaimer. Every module ends with this block. ═══ -->
-    <footer class="eu-pg2__footer">
-      <div class="eu-pg2__footer-rule"></div>
-      <p class="eu-pg2__charter">"The good life doesn't change. Only the power source does."</p>
-      <p class="eu-pg2__multilingual">
-        Made in the Electro Union · Hergestellt in der Elektro-Union · Fait dans l'Union Électro · Fatto nell'Unione Elettrica · Hecho en la Unión Eléctrica · Tillverkad i Elektro-Unionen · Wyprodukowano w Unii Elektrycznej.
-      </p>
-      <div class="eu-pg2__footer-bar">
-        <span class="eu-pg2__footer-mark">★ Founded 9 November 1989</span>
-        <span class="eu-pg2__footer-hq">Headquartered Trieste · P.O. Box 1989</span>
-        <span class="eu-pg2__footer-member" id="euPg2Member">Member —</span>
-      </div>
-      <p class="eu-pg2__sv-disclaimer">
-        Not affiliated with Silicon Valley. We have nothing they don't already have. They have nothing we want.
-      </p>
+    <!-- ═══ TICKER ═══ Postcard-language + manifesto fragments. Lines
+         rotate every ~3s — instant swap, no transitions, iframe-safe. -->
+    <div class="eu-pg2__ticker" aria-hidden="true">
+      <span class="eu-pg2__ticker-mark">★</span>
+      <span class="eu-pg2__ticker-line" id="euPg2TickerLine">Greetings from the Electro Union</span>
+    </div>
+
+    <!-- ═══ TINY FOOTER ═══ -->
+    <footer class="eu-pg2__mini-footer">
+      <span>Make Europe the Electro Union — <a href="https://norrsken.org/goodnews/make-europe-the-electro-union" target="_blank" rel="noopener">norrsken.org/goodnews</a></span>
+      <span class="eu-pg2__mini-footer-sv">Not affiliated with Silicon Valley.</span>
     </footer>
 
   </div>
 </div>
 
-<script src="script.js?v=10"></script>
+<script src="script.js?v=11"></script>
 </body>
 </html>
