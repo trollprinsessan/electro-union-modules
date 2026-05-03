@@ -21,6 +21,49 @@
  */
 (function(){
 
+  // ═══ UNION IDENTITY ═══
+  // The Electro Union was founded 9 November 1989. Union Year is the
+  // chronological count from that date — so 2026 is Union Year 37.
+  // Every postcard the citizen dispatches carries:
+  //   - their stable per-session member number (EU-XXXXXX)
+  //   - the current Union Year
+  //   - a microprinted founding statement
+  //   - a circular postmark — the cancellation that marks the card as posted
+  // The masthead/footer also bind to these values.
+  var UNION_FOUNDED_YEAR = 1989;
+  function getUnionYear(){
+    return new Date().getFullYear() - UNION_FOUNDED_YEAR;
+  }
+  function getMemberNumber(){
+    var k = 'eu_member_no';
+    var n = null;
+    try { n = sessionStorage.getItem(k); } catch(_){}
+    if (!n){
+      // 6-digit, doesn't start with 0 — reads like a real cooperative ID
+      n = String(Math.floor(Math.random() * 900000) + 100000);
+      try { sessionStorage.setItem(k, n); } catch(_){}
+    }
+    return 'EU-' + n;
+  }
+  var MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var MONTHS_ABBR = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function formatUnionDate(){
+    var d = new Date();
+    return d.getDate() + ' ' + MONTHS_FULL[d.getMonth()] + ' ' + d.getFullYear() +
+           ' / Union Year ' + getUnionYear();
+  }
+  var UNION_YEAR = getUnionYear();
+  var MEMBER_NO  = getMemberNumber();
+
+  // Bind into masthead + footer once DOM is parsed (script tag is at body end,
+  // so DOM is already available — but keep the null-check for safety).
+  (function bindUnionChrome(){
+    var dateEl   = document.getElementById('euPg2Date');
+    var memberEl = document.getElementById('euPg2Member');
+    if (dateEl)   dateEl.textContent   = formatUnionDate();
+    if (memberEl) memberEl.textContent = 'Member ' + MEMBER_NO;
+  })();
+
   // ═══ ASSETS ═══
   // Indices 0-8 = pastries, 9-17 = EU stickers. data-sticker on each tile
   // matches this combined index.
@@ -91,6 +134,11 @@
   var clearBtn   = document.getElementById('euPg2Clear');
   var shareBtn   = document.getElementById('euPg2Share');
   var dlBtn      = document.getElementById('euPg2Download');
+  // Verb spans inside each action button — the busy-state text swaps the
+  // headline word ("Broadcast" → "Encoding…") while the target descriptor
+  // stays put. Falls back to the button itself if structure changes.
+  var shareVerb  = shareBtn.querySelector('.eu-pg2__action-verb') || shareBtn;
+  var dlVerb     = dlBtn.querySelector('.eu-pg2__action-verb')    || dlBtn;
 
   // ═══ STATE ═══
   // each placement: { el, si, xPct, yPct, sizePct, rot, strokeId, isTreat }
@@ -437,6 +485,84 @@
       c.drawImage(img, -dw/2, -dh/2, dw, dh);
       c.restore();
     }
+    drawUnionStamp(c, ew, eh);
+  }
+
+  // ═══ UNION STAMP ═══
+  // Drawn over every exported card — still or animated. Two pieces:
+  //   1. Bottom microprint strip (white-on-black) — like the regulatory line
+  //      on a 1989 cigarette pack: service code, member number, Union Year,
+  //      founding statement. Polyglot, slightly absurd, very civic.
+  //   2. Top-right circular postmark — concentric red rings with stacked
+  //      horizontal text (ELECTRO UNION / EU·01 / date / UY NN). The
+  //      cancellation that marks the card as posted.
+  // Both scale relative to canvas dimensions so they stay legible at any
+  // export size (1080×1350 desktop / 1080×1920 mobile).
+  function drawUnionStamp(c, ew, eh){
+    c.save();
+
+    // ─── Bottom microprint strip ───
+    // Polyglot regulatory line in white-on-black, like the bottom of a 1989
+    // cigarette pack. Service code, member number, Union Year, founding
+    // statement. Font shrinks until the line fits the canvas — no truncation.
+    var stripH = Math.max(28, Math.round(eh * 0.034));
+    c.fillStyle = '#1a1a1a';
+    c.fillRect(0, eh - stripH, ew, stripH);
+
+    var stripText = 'ELECTRO UNION ★ EU-01 EUROPA POST · UY ' + UNION_YEAR +
+                    ' · MEMBER ' + MEMBER_NO +
+                    ' · THE GOOD LIFE DOESN’T CHANGE. ONLY THE POWER SOURCE DOES.';
+    var stripPad  = Math.round(ew * 0.022);
+    var maxWidth  = ew - stripPad * 2;
+    var stripFont = Math.round(stripH * 0.42);
+    c.fillStyle = '#fff';
+    c.textBaseline = 'middle';
+    c.textAlign = 'left';
+    while (stripFont > 9){
+      c.font = '500 ' + stripFont + 'px "ABC Schengen Mono", "Courier New", monospace';
+      if (c.measureText(stripText).width <= maxWidth) break;
+      stripFont -= 1;
+    }
+    c.fillText(stripText, stripPad, eh - stripH/2);
+
+    // ─── Top-right circular postmark ───
+    var postR = Math.round(ew * 0.085);
+    var postX = ew - postR - Math.round(ew * 0.045);
+    var postY = postR + Math.round(eh * 0.040);
+
+    c.strokeStyle = 'rgba(204, 0, 0, 0.82)';
+    c.fillStyle   = 'rgba(204, 0, 0, 0.82)';
+    c.lineWidth   = Math.max(1.5, postR * 0.045);
+
+    c.beginPath();
+    c.arc(postX, postY, postR, 0, Math.PI*2);
+    c.stroke();
+    c.beginPath();
+    c.arc(postX, postY, postR * 0.82, 0, Math.PI*2);
+    c.stroke();
+
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+
+    // Top label
+    c.font = '700 ' + Math.round(postR * 0.16) + 'px "ABC Schengen Mono", "Courier New", monospace';
+    c.fillText('ELECTRO UNION', postX, postY - postR * 0.42);
+
+    // Center service code (display serif)
+    c.font = '400 ' + Math.round(postR * 0.34) + 'px "Times Eighteen", Georgia, serif';
+    c.fillText('EU·01', postX, postY - postR * 0.05);
+
+    // Date band
+    c.font = '700 ' + Math.round(postR * 0.13) + 'px "ABC Schengen Mono", "Courier New", monospace';
+    var d = new Date();
+    var dateLabel = (d.getDate() < 10 ? '0' : '') + d.getDate() + ' ' + MONTHS_ABBR[d.getMonth()] + ' ' + String(d.getFullYear()).slice(2);
+    c.fillText(dateLabel, postX, postY + postR * 0.30);
+
+    // Bottom label — Union Year
+    c.font = '700 ' + Math.round(postR * 0.13) + 'px "ABC Schengen Mono", "Courier New", monospace';
+    c.fillText('UY ' + UNION_YEAR, postX, postY + postR * 0.52);
+
+    c.restore();
   }
 
   // Animation period in seconds — must match the CSS animation durations
@@ -683,7 +809,7 @@
     if (dlBtn.classList.contains('is-disabled') || dlBtn.classList.contains('is-busy')) return;
     if (animMode === 'none'){
       renderStillPng(function(blob){
-        if (blob) downloadBlob(blob, 'electro-union-postcard.png');
+        if (blob) downloadBlob(blob, 'europa-post-' + MEMBER_NO + '.png');
       });
       return;
     }
@@ -691,20 +817,20 @@
     var cycleDur = animationPeriod(animMode) * EXPORT_LOOPS;
     var numFrames = Math.round(cycleDur * EXPORT_FPS);
     dlBtn.classList.add('is-busy');
-    var orig = dlBtn.textContent;
-    dlBtn.textContent = 'Encoding…';
+    var orig = dlVerb.textContent;
+    dlVerb.textContent = 'Encoding…';
     renderToMp4Blob(animMode, ew, eh, numFrames, cycleDur)
       .catch(function(){ return renderToMp4ViaMediaRecorder(animMode, ew, eh, cycleDur); })
       .then(function(blob){
-        downloadBlob(blob, 'electro-union-postcard.mp4');
+        downloadBlob(blob, 'europa-post-' + MEMBER_NO + '.mp4');
       })
       .catch(function(){
-        dlBtn.textContent = 'Encode failed';
+        dlVerb.textContent = 'Encode failed';
       })
       .then(function(){
         dlBtn.classList.remove('is-busy');
-        if (dlBtn.textContent === 'Encoding…') dlBtn.textContent = orig;
-        setTimeout(function(){ dlBtn.textContent = orig; }, 2200);
+        if (dlVerb.textContent === 'Encoding…') dlVerb.textContent = orig;
+        setTimeout(function(){ dlVerb.textContent = orig; }, 2200);
       });
   });
 
@@ -721,22 +847,22 @@
     if (animMode === 'none'){
       renderStillPng(function(blob){
         if (!blob) return;
-        share(new File([blob], 'electro-union-postcard.png', { type:'image/png' }));
+        share(new File([blob], 'europa-post-' + MEMBER_NO + '.png', { type:'image/png' }));
       });
       return;
     }
     shareBtn.classList.add('is-busy');
-    var orig = shareBtn.textContent;
-    shareBtn.textContent = 'Encoding…';
+    var orig = shareVerb.textContent;
+    shareVerb.textContent = 'Encoding…';
     setTimeout(function(){
       try {
         var gif = renderToGifBlob(animMode);
-        share(new File([gif], 'electro-union-postcard.gif', { type:'image/gif' }));
+        share(new File([gif], 'europa-post-' + MEMBER_NO + '.gif', { type:'image/gif' }));
       } catch(e){
-        shareBtn.textContent = 'Share failed';
+        shareVerb.textContent = 'Broadcast failed';
       }
       shareBtn.classList.remove('is-busy');
-      setTimeout(function(){ shareBtn.textContent = orig; }, 2200);
+      setTimeout(function(){ shareVerb.textContent = orig; }, 2200);
     }, 30);
   });
 
