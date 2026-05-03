@@ -212,15 +212,18 @@
 }
 
 /* animations — applied to non-treat items only.
-   Treat-stickers (.is-treat) stay anchored regardless of mode. */
+   Treat-stickers (.is-treat) stay anchored regardless of mode.
+   Bounce/beat oscillate both directions in one cycle (sin-style, not single
+   peak), with ease-in-out so the motion feels like a sine wave rather than
+   a metronome. Periods + amplitudes match the generator's intensity. */
 .eu-pg2__items.is-anim-bounce .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{
-  animation:euPg2Bounce 1.57s linear infinite;
+  animation:euPg2Bounce 1.2s ease-in-out infinite;
 }
 .eu-pg2__items.is-anim-beat .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{
-  animation:euPg2Beat 1.26s linear infinite;
+  animation:euPg2Beat 1.0s ease-in-out infinite;
 }
 .eu-pg2__items.is-anim-rotate .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{
-  animation:euPg2Spin 2.09s ease-in-out infinite;
+  animation:euPg2Spin 1.6s linear infinite;
 }
 .eu-pg2__items.is-anim-wiggle .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{
   animation:euPg2Wiggle 0.5s ease-in-out infinite;
@@ -232,13 +235,20 @@
   animation-delay:calc(var(--i,0) * -0.1s);
 }
 
+/* Five-keyframe oscillation = full sin cycle (up + back + down + back). */
 @keyframes euPg2Bounce{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-12%)}
+  0%   {transform:translateY(0)}
+  25%  {transform:translateY(-22%)}
+  50%  {transform:translateY(0)}
+  75%  {transform:translateY(22%)}
+  100% {transform:translateY(0)}
 }
 @keyframes euPg2Beat{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.18)}
+  0%   {transform:scale(1)}
+  25%  {transform:scale(1.20)}
+  50%  {transform:scale(1)}
+  75%  {transform:scale(0.85)}
+  100% {transform:scale(1)}
 }
 @keyframes euPg2Spin{
   to{transform:rotate(360deg)}
