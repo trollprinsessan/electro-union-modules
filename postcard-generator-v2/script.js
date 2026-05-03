@@ -409,18 +409,22 @@
       // Treat stickers never animate — they were dropped by Push for a Treat
       // and stay anchored regardless of animation mode.
       var effectiveMode = p.isTreat ? 'none' : mode;
+      // Frequencies derived from animationPeriod() so MP4/GIF match the
+      // live CSS preview exactly. Amplitudes match the CSS keyframes.
+      var TWO_PI = Math.PI * 2;
       if (effectiveMode === 'bounce'){
-        dy = Math.sin(t * 4 + phase) * s * 0.18;
+        dy = Math.sin(t * (TWO_PI / 1.2) + phase) * s * 0.22;
       } else if (effectiveMode === 'beat'){
-        sc = 1 + Math.sin(t * 5 + phase) * 0.18;
+        sc = 1 + Math.sin(t * (TWO_PI / 1.0) + phase) * 0.18;
       } else if (effectiveMode === 'rotate'){
-        rot += (t * 1.6 + phase) % (Math.PI * 2);
+        // Continuous full rotation, period 1.6s
+        rot += (t / 1.6) * TWO_PI + phase;
       } else if (effectiveMode === 'wiggle'){
-        rot += Math.sin(t * 4 + phase) * 0.25;
+        rot += Math.sin(t * (TWO_PI / 0.5) + phase) * 0.21; // ~12°
       } else if (effectiveMode === 'orbit'){
-        dx = Math.cos(t * 2 + phase) * s * 0.25;
-        dy = Math.sin(t * 2 + phase) * s * 0.25;
-        rot += (t * 2 + phase) % (Math.PI * 2);
+        dx = Math.cos(t * (TWO_PI / 1.4) + phase) * s * 0.25;
+        dy = Math.sin(t * (TWO_PI / 1.4) + phase) * s * 0.25;
+        rot += (t / 1.4) * TWO_PI + phase;
       }
       c.save();
       c.translate(cx + dx, cy + dy);
@@ -435,16 +439,15 @@
     }
   }
 
-  // Animation period in seconds — must match the sin frequencies above so
-  // the exported video loops cleanly. IG needs 3 full periods to feel
-  // continuous on autoplay.
+  // Animation period in seconds — must match the CSS animation durations
+  // above so the exported MP4/GIF loops the same as the live preview.
   function animationPeriod(mode){
     switch(mode){
-      case 'bounce': return (Math.PI * 2) / 4;
-      case 'beat':   return (Math.PI * 2) / 5;
-      case 'rotate': return (Math.PI * 2) / 3;
-      case 'wiggle': return (Math.PI * 2) / 4;
-      case 'orbit':  return Math.PI;
+      case 'bounce': return 1.2;
+      case 'beat':   return 1.0;
+      case 'rotate': return 1.6;
+      case 'wiggle': return 0.5;
+      case 'orbit':  return 1.4;
       default:       return 2;
     }
   }
