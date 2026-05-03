@@ -133,7 +133,7 @@
   var photo      = document.getElementById('euPg2Photo');
   var bgEl       = document.getElementById('euPg2Bg');
   var itemsEl    = document.getElementById('euPg2Items');
-  var animBtns   = document.querySelectorAll('.eu-pg2__anim-pill');
+  var animBtns   = document.querySelectorAll('[data-anim]');
   var bgShow     = document.getElementById('euPg2BgShow');
   var bgShowImg  = bgShow.querySelector('img');
   var bgModal    = document.getElementById('euPg2BgModal');
@@ -168,10 +168,11 @@
   var counterEl  = document.getElementById('euPg2CounterNum');
   var approveBox = document.getElementById('euPg2ApproveBox');
   var approveLbl = document.getElementById('euPg2Approve');
-  var approveMark= approveLbl ? approveLbl.querySelector('.eu-pg2__approve-mark') : null;
+  var approveMark= approveLbl ? approveLbl.querySelector('.eu-pg2__chip-mark') : null;
   var closeBtn   = document.querySelector('.eu-os__window-close');
 
   // ═══ STATE ═══
+  var currentFormat = 'feed'; // 'feed' (4:5) | 'story' (9:16)
   // each placement: { el, si, xPct, yPct, sizePct, rot, strokeId, isTreat }
   // A "stroke" is a group of stamps placed in one continuous draw action,
   // OR a single treat-dropped sticker. Grab mode drags the entire latest
@@ -191,11 +192,11 @@
   // ═══ STICKER PALETTE ═══
   function setActiveTile(idx){
     activeSticker = idx;
-    document.querySelectorAll('.eu-pg2__sticker-tile').forEach(function(t){
+    document.querySelectorAll('[data-sticker]').forEach(function(t){
       t.classList.toggle('is-active', parseInt(t.getAttribute('data-sticker'),10)===idx);
     });
   }
-  document.querySelectorAll('.eu-pg2__sticker-tile').forEach(function(tile){
+  document.querySelectorAll('[data-sticker]').forEach(function(tile){
     var idx = parseInt(tile.getAttribute('data-sticker'),10) || 0;
     tile.addEventListener('click', function(){ setActiveTile(idx); });
   });
@@ -460,10 +461,7 @@
 
   // ═══ EXPORT ═══
   function getExportDims(){
-    if (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767.98px)').matches){
-      return { w:1080, h:1920 };
-    }
-    return { w:1080, h:1350 };
+    return currentFormat === 'story' ? { w:1080, h:1920 } : { w:1080, h:1350 };
   }
 
   function renderExportFrame(c, mode, t, ew, eh){
@@ -1174,7 +1172,7 @@
   // Re-bind tile click handlers to the wrapped fn (the originals were
   // bound earlier, so we attach again — duplicate listener is fine, both
   // call setActiveTile and the wrapped version handles tagline).
-  document.querySelectorAll('.eu-pg2__sticker-tile').forEach(function(tile){
+  document.querySelectorAll('[data-sticker]').forEach(function(tile){
     var idx = parseInt(tile.getAttribute('data-sticker'),10) || 0;
     tile.addEventListener('click', function(){ setActiveTile(idx); });
   });
@@ -1235,5 +1233,158 @@
       if (!isNaN(n) && n > 0) setCounterDisplay(n);
     }).catch(function(){});
   }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // FM PLAYER — new behaviours for the Poolsuite-style layout.
+  // All instant (no CSS transitions — iframe constraint).
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ─── FM TAB SWITCHING ────────────────────────────────────────────────
+  (function fmTabs(){
+    var tabs = document.querySelectorAll('[data-fm-tab]');
+    var panels = document.querySelectorAll('[data-fm-panel]');
+    if (!tabs.length) return;
+    tabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        var target = tab.getAttribute('data-fm-tab');
+        tabs.forEach(function(t){
+          t.classList.toggle('is-active', t.getAttribute('data-fm-tab') === target);
+          t.setAttribute('aria-selected', String(t.getAttribute('data-fm-tab') === target));
+        });
+        panels.forEach(function(p){
+          p.hidden = p.getAttribute('data-fm-panel') !== target;
+        });
+      });
+    });
+  })();
+
+  // ─── SUB-TABS (Pastry / Stickers) ────────────────────────────────────
+  (function subTabs(){
+    var tabs = document.querySelectorAll('[data-tab]');
+    if (!tabs.length) return;
+    tabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        var target = tab.getAttribute('data-tab');
+        var parent = tab.closest('[data-fm-panel]') || document;
+        parent.querySelectorAll('[data-tab]').forEach(function(t){
+          t.classList.toggle('is-active', t.getAttribute('data-tab') === target);
+        });
+        parent.querySelectorAll('[data-tab-panel]').forEach(function(p){
+          p.hidden = p.getAttribute('data-tab-panel') !== target;
+        });
+      });
+    });
+  })();
+
+  // ─── HEART FAVOURITE ─────────────────────────────────────────────────
+  (function heartFav(){
+    var heartBtn = document.getElementById('euFmHeart');
+    if (!heartBtn) return;
+    var key = 'eu_heart_fav';
+    var on = (function(){ try { return localStorage.getItem(key) === '1'; } catch(_){ return false; } })();
+    function applyHeart(){
+      heartBtn.setAttribute('aria-pressed', String(on));
+      heartBtn.textContent = on ? '♥' : '♡';
+      heartBtn.classList.toggle('is-active', on);
+    }
+    applyHeart();
+    heartBtn.addEventListener('click', function(){
+      on = !on;
+      try { localStorage.setItem(key, on ? '1' : '0'); } catch(_){}
+      applyHeart();
+    });
+  })();
+
+  // ─── FM TRACK TITLE SYNC ─────────────────────────────────────────────
+  // Mirrors the postcard tagline into the FM track-title element.
+  (function trackTitleSync(){
+    var trackTitleEl = document.getElementById('euFmTrackTitle');
+    if (!trackTitleEl) return;
+    var origSetTagline = setTagline;
+    setTagline = function(text){
+      origSetTagline(text);
+      var display = (text || '').toUpperCase().replace(/\n/g, ' ');
+      trackTitleEl.textContent = display || 'GREETINGS FROM THE ELECTRO UNION';
+    };
+    // Seed on init
+    var t = (currentTagline || '').toUpperCase().replace(/\n/g, ' · ');
+    if (t) trackTitleEl.textContent = t;
+  })();
+
+  // ─── SIZE SLIDER — halftone fill + readout ────────────────────────────
+  (function sizeSliderUI(){
+    var slider  = document.getElementById('euPg2Size');
+    var fill    = document.getElementById('euPg2SizeFill');
+    var readout = document.getElementById('euPg2SizeReadout');
+    if (!slider) return;
+    function update(){
+      var pct = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+      if (fill)    fill.style.width = pct + '%';
+      if (readout) readout.textContent = slider.value;
+    }
+    update();
+    slider.addEventListener('input', update);
+  })();
+
+  // ─── FORMAT TOGGLE ────────────────────────────────────────────────────
+  (function formatToggle(){
+    var btns       = document.querySelectorAll('[data-format]');
+    var fileDimsEl = document.getElementById('euFmFileDims');
+    var fileRatioEl= document.getElementById('euFmFileRatio');
+    var framedEl   = document.getElementById('euPg2Framed');
+    if (!btns.length) return;
+    function applyFormat(fmt){
+      currentFormat = fmt;
+      btns.forEach(function(b){
+        b.classList.toggle('is-active', b.getAttribute('data-format') === fmt);
+      });
+      if (fileDimsEl)  fileDimsEl.textContent  = fmt === 'story' ? '1080 × 1920' : '1080 × 1350';
+      if (fileRatioEl) fileRatioEl.textContent = fmt === 'story' ? '9:16' : '4:5';
+      if (framedEl)    framedEl.style.aspectRatio = fmt === 'story' ? '1080/1920' : '';
+    }
+    btns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        applyFormat(btn.getAttribute('data-format'));
+      });
+    });
+  })();
+
+  // ─── DISPLAY MODE (Normal / Invert) ──────────────────────────────────
+  (function displayMode(){
+    var btns    = document.querySelectorAll('[data-display]');
+    var photoEl = document.getElementById('euPg2Photo');
+    if (!btns.length || !photoEl) return;
+    btns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var mode = btn.getAttribute('data-display');
+        btns.forEach(function(b){
+          b.classList.toggle('is-active', b.getAttribute('data-display') === mode);
+        });
+        photoEl.classList.toggle('is-inverted', mode === 'invert');
+      });
+    });
+  })();
+
+  // ─── CURSOR / POINTER SWAP ───────────────────────────────────────────
+  (function cursorSwap(){
+    var btns = document.querySelectorAll('[data-pointer]');
+    if (!btns.length) return;
+    var CURSORS = {
+      bolt:   'default',
+      pencil: 'crosshair',
+      stamp:  'copy'
+    };
+    btns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var p = btn.getAttribute('data-pointer');
+        btns.forEach(function(b){
+          b.classList.toggle('is-active', b.getAttribute('data-pointer') === p);
+        });
+        try {
+          document.documentElement.style.setProperty('--eu-cursor', CURSORS[p] || 'auto');
+        } catch(_){}
+      });
+    });
+  })();
 
 })();

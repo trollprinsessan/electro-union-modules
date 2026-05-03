@@ -1,28 +1,23 @@
 /*
  * Electro Union OS — Postcard Generator (v2)
  *
- * Structurally cribbed from late-90s OS pastiche pieces (Poolsuite is the
- * archetype). The whole module reads as a fake operating system whose only
- * application is the postcard generator: peachy desktop, fixed top menubar,
- * floating window panel with a title bar, boot loader that announces an
- * "EU Postal Service" version + fictional credits, and a thin status
- * strip at the bottom.
+ * Poolsuite FM pastiche: peachy desktop, fixed top menubar, floating
+ * window panel. The postcard generator runs as an FM-player layout
+ * inside the window: dark video hero → file row → track row → tab strip
+ * → tab content → transport bar → channel strip → ticker.
  *
  * IFRAME CONSTRAINT
  *   Cross-origin iframes (Webflow embed) kill CSS `transition` and
  *   `@keyframes`. So:
  *     - No `transition` on any property — every state change is instant.
- *     - The progress bar fill, clock tick, ticker swap, label rotation
- *       are all JS-driven (textContent / style.width assignments).
- *     - Sticker @keyframes survive only as a non-iframe enhancement; the
- *       export is canvas-rendered so iframe consumers still get correct
- *       MP4/GIF output.
+ *     - Progress bar, clock, ticker: JS-driven (style.width / textContent).
+ *     - Sticker @keyframes survive only as non-iframe enhancement; the
+ *       export is canvas-rendered via JS, so iframe consumers still get
+ *       correct output.
  */
 
 /* ═══════════════════════════════════════════════════════════════════════
-   DESKTOP — page background, body chrome.
-   Pale peach is the OS-pastiche move; the window sits on top with a
-   thin black border so the contrast reads "1990s consumer OS."
+   DESKTOP
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os-body{
   margin:0;
@@ -34,19 +29,14 @@
 .eu-os{
   position:relative;
   min-height:100vh;
-  padding-top:42px;        /* room for menubar */
-  padding-bottom:34px;     /* room for OS-info strip */
+  padding-top:42px;
+  padding-bottom:34px;
 }
-
-/* When Konami unlocks the golden-hour palette, the desktop tints gold.
-   Toggled by a body class on key match — instant, no transition. */
 .eu-os-body.is-golden{ background:#f3e2a8; }
 .eu-os-body.is-aperitivo{ background:#f2d4b8; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   BOOT LOADER — full-page overlay on every load.
-   Photo + wordmark + version + credits + segmented progress bar.
-   Hard-cuts after ~3.2s to reveal the desktop.
+   BOOT LOADER
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__boot{
   position:fixed;
@@ -67,7 +57,7 @@
   background:#fdfaf4;
   border:1.5px solid #1a1a1a;
   border-radius:3px;
-  box-shadow:4px 4px 0 rgba(0,0,0,.06), 0 12px 36px rgba(0,0,0,.18);
+  box-shadow:4px 4px 0 rgba(0,0,0,.06),0 12px 36px rgba(0,0,0,.18);
   overflow:hidden;
 }
 .eu-os__boot-photo{
@@ -77,12 +67,9 @@
   min-height:240px;
 }
 .eu-os__boot-photo img{
-  width:100%;
-  height:100%;
+  width:100%;height:100%;
   object-fit:cover;
   display:block;
-  /* slight halftone-ish desaturation so the photo reads more "system splash"
-     than "stock hero image." */
   filter:contrast(1.05) saturate(.92);
 }
 .eu-os__boot-info{
@@ -102,50 +89,28 @@
   gap:10px;
   margin:0 0 4px;
 }
-.eu-os__boot-mark-bolt{
-  font-size:.7em;
-  color:#003399;
-}
+.eu-os__boot-mark-bolt{ font-size:.7em; color:#003399; }
 .eu-os__boot-version{
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:11px;
-  letter-spacing:.04em;
-  color:#1a1a1a;
-  margin:0;
-  font-weight:600;
+  font-size:11px;letter-spacing:.04em;color:#1a1a1a;margin:0;font-weight:600;
 }
 .eu-os__boot-credits{
   font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic;
-  font-size:13px;
-  line-height:1.5;
-  color:#3a3a3a;
-  margin:6px 0 0;
+  font-style:italic;font-size:13px;line-height:1.5;color:#3a3a3a;margin:6px 0 0;
 }
 .eu-os__boot-copyright{
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:10px;
-  letter-spacing:.04em;
-  color:#777;
-  margin:0 0 14px;
+  font-size:10px;letter-spacing:.04em;color:#777;margin:0 0 14px;
 }
 .eu-os__boot-progress-row{
   display:flex;
-  justify-content:space-between;
-  align-items:baseline;
+  justify-content:space-between;align-items:baseline;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:11px;
-  letter-spacing:.04em;
-  color:#1a1a1a;
-  margin-top:auto;
+  font-size:11px;letter-spacing:.04em;color:#1a1a1a;margin-top:auto;
 }
-.eu-os__boot-progress-pct{
-  font-weight:700;
-}
+.eu-os__boot-progress-pct{ font-weight:700; }
 .eu-os__boot-progress{
   margin-top:8px;
-  /* Segmented progress bar — vertical bars rendered via repeating
-     gradient inside a bordered track. The fill clips the segments. */
   position:relative;
   height:18px;
   border:1.5px solid #1a1a1a;
@@ -164,9 +129,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   MENUBAR — fixed at the top of the desktop.
-   Lightning bolt + member CTA on the left, sound toggle + live CET
-   date/clock on the right. Pixel-styled letterspacing across.
+   MENUBAR
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__menubar{
   position:fixed;
@@ -175,86 +138,52 @@
   height:34px;
   background:#fdfaf4;
   border-bottom:1.5px solid #1a1a1a;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex;align-items:center;justify-content:space-between;
   padding:0 14px;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:10px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:#1a1a1a;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#1a1a1a;
 }
 .eu-os__menubar[hidden]{display:none}
-.eu-os__menubar-cell{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-}
+.eu-os__menubar-cell{ display:inline-flex;align-items:center;gap:10px; }
 .eu-os__menubar-cell--brand{
   border:1.5px solid #1a1a1a;
   padding:5px 10px 5px 8px;
   background:#fff;
 }
 .eu-os__menubar-bolt{
-  display:inline-block;
-  font-size:13px;
-  line-height:1;
-  color:#003399;
-  transform:translateY(-1px);
+  display:inline-block;font-size:13px;line-height:1;
+  color:#003399;transform:translateY(-1px);
 }
-.eu-os__menubar-link{
-  color:#1a1a1a;
-  text-decoration:none;
-  letter-spacing:.18em;
-}
+.eu-os__menubar-link{ color:#1a1a1a;text-decoration:none;letter-spacing:.18em; }
 .eu-os__menubar-link:hover{ color:#003399; }
-.eu-os__menubar-cell--right{
-  gap:14px;
-}
+.eu-os__menubar-cell--right{ gap:14px; }
 .eu-os__menubar-sound{
-  background:none;
-  border:none;
-  cursor:var(--eu-cursor);
-  font-size:14px;
-  line-height:1;
-  padding:0 2px;
-  color:#1a1a1a;
+  background:none;border:none;cursor:var(--eu-cursor);
+  font-size:14px;line-height:1;padding:0 2px;color:#1a1a1a;
 }
-.eu-os__menubar-sound[aria-pressed="true"]{
-  opacity:.5;
-}
+.eu-os__menubar-sound[aria-pressed="true"]{ opacity:.5; }
 .eu-os__menubar-clock-dot{
   width:9px;height:9px;
-  display:inline-block;
-  border-radius:50%;
-  border:1.5px solid #CC0000;
-  background:#fff;
-  text-indent:-9999px;
-  overflow:hidden;
-  margin-right:-2px;
+  display:inline-block;border-radius:50%;
+  border:1.5px solid #CC0000;background:#fff;
+  text-indent:-9999px;overflow:hidden;margin-right:-2px;
 }
-.eu-os__menubar-clock,
-.eu-os__menubar-date{
-  font-variant-numeric:tabular-nums;
-}
+.eu-os__menubar-clock,.eu-os__menubar-date{ font-variant-numeric:tabular-nums; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   WINDOW PANEL — the postcard generator runs inside this.
-   Thin black border, slight rounded corners, drop shadow on the peach
-   desktop. Title bar at top.
+   WINDOW PANEL
+   Narrower than before — 900px max-width keeps it window-like.
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__window{
-  width:min(1240px, calc(100% - 32px));
+  width:min(900px,calc(100% - 32px));
   margin:24px auto 16px;
   background:#fdfaf4;
   border:1.5px solid #1a1a1a;
   border-radius:3px;
-  box-shadow:5px 5px 0 rgba(0,0,0,.05), 0 16px 44px rgba(0,0,0,.18);
+  box-shadow:5px 5px 0 rgba(0,0,0,.05),0 16px 44px rgba(0,0,0,.18);
   overflow:hidden;
 }
 .eu-os__window[hidden]{display:none}
-
 .eu-os__window-titlebar{
   position:relative;
   display:grid;
@@ -267,60 +196,34 @@
   border-bottom:1.5px solid #1a1a1a;
 }
 .eu-os__window-close{
-  width:22px;
-  height:22px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  background:#fff;
-  border:1.5px solid #1a1a1a;
-  border-radius:2px;
+  width:22px;height:22px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#fff;border:1.5px solid #1a1a1a;border-radius:2px;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:18px;
-  line-height:1;
-  color:#1a1a1a;
-  cursor:var(--eu-cursor);
-  padding:0;
+  font-size:18px;line-height:1;color:#1a1a1a;cursor:var(--eu-cursor);padding:0;
 }
-.eu-os__window-close:hover{ background:#1a1a1a; color:#fff; }
+.eu-os__window-close:hover{ background:#1a1a1a;color:#fff; }
 .eu-os__window-title{
   text-align:center;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:11px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  color:#1a1a1a;
-  font-weight:700;
-  /* Faux-pixel weight via text-shadow micro-stroke. */
-  text-shadow:.5px 0 0 currentColor;
+  font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+  color:#1a1a1a;font-weight:700;text-shadow:.5px 0 0 currentColor;
 }
 .eu-os__window-counter{
-  display:inline-flex;
-  align-items:baseline;
-  gap:6px;
+  display:inline-flex;align-items:baseline;gap:6px;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:10px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:#1a1a1a;
-  white-space:nowrap;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:#1a1a1a;white-space:nowrap;
 }
 .eu-os__window-counter-num{
   font-family:'Times Eighteen',Georgia,serif;
-  font-weight:bold;
-  font-size:18px;
-  letter-spacing:.005em;
-  font-variant-numeric:tabular-nums;
-  color:#1a1a1a;
+  font-weight:bold;font-size:18px;letter-spacing:.005em;
+  font-variant-numeric:tabular-nums;color:#1a1a1a;
 }
-
-.eu-os__window-body{
-  background:#fdfaf4;
-}
+.eu-os__window-body{ background:#fdfaf4; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   OS-INFO STRIP — fixed at the bottom of the desktop.
-   Three small cells, divided by border lines. Faux-OS metadata.
+   OS-INFO STRIP
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__os-info{
   position:fixed;
@@ -333,238 +236,483 @@
   grid-template-columns:1fr 1fr 1fr;
   align-items:center;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:9px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:#1a1a1a;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#1a1a1a;
 }
 .eu-os__os-info[hidden]{display:none}
 .eu-os__os-info-cell{
-  padding:0 14px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  padding:0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.eu-os__os-info-cell + .eu-os__os-info-cell{
-  border-left:1.5px solid #1a1a1a;
-}
+.eu-os__os-info-cell + .eu-os__os-info-cell{ border-left:1.5px solid #1a1a1a; }
 @media(max-width:760px){
-  .eu-os__os-info{ grid-template-columns:1fr 1fr; height:auto; padding:6px 0; }
+  .eu-os__os-info{ grid-template-columns:1fr 1fr;height:auto;padding:6px 0; }
   .eu-os__os-info-cell:nth-child(3){ display:none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   POSTCARD GENERATOR (existing engine, now the body of the window).
-   Visual register: white interior, structural typography.
+   FM PLAYER — main layout container inside the window body.
+   Every section is a horizontal stripe, full window width.
    ═══════════════════════════════════════════════════════════════════════ */
-
-.eu-pg2{
-  padding:clamp(20px,3vw,40px) clamp(16px,3vw,40px) clamp(20px,2.4vw,32px);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  background:#fdfaf4;
-}
-
-.eu-pg2__workspace{
-  display:grid;
-  grid-template-columns:240px minmax(0,1fr) 280px;
-  gap:clamp(16px,2.5vw,32px);
-  width:100%;
-  max-width:1180px;
-  align-items:start;
-}
-
-@media(max-width:960px){
-  .eu-pg2__workspace{
-    grid-template-columns:1fr;
-  }
-}
-
-/* Section titles — terse, structural caps. */
-.eu-pg2__section-title{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:10px;
-  letter-spacing:.24em;
-  font-weight:700;
-  text-transform:uppercase;
-  color:#1a1a1a;
-  margin:0 0 10px;
-}
-.eu-pg2__section-title:not(:first-child){
-  margin-top:22px;
-}
-
-/* ═══ LEFT — sticker palette ═══ */
-.eu-pg2__left{
+.eu-fm{
   display:flex;
   flex-direction:column;
 }
-.eu-pg2__sticker-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-}
-.eu-pg2__sticker-tile{
-  aspect-ratio:1;
-  background:#fff;
-  border:none;
-  border-radius:50%;
+
+/* ─── HERO ───────────────────────────────────────────────────────────── */
+.eu-fm__hero{
+  background:#111;
+  border-bottom:1.5px solid #1a1a1a;
   display:flex;
   align-items:center;
   justify-content:center;
-  cursor:var(--eu-cursor);
-  overflow:hidden;
-  user-select:none;
-  -webkit-user-drag:none;
+  padding:28px 80px 28px 80px;
+  position:relative;
+  min-height:300px;
 }
-.eu-pg2__sticker-tile img{
-  width:94%;
-  height:94%;
-  object-fit:contain;
-  pointer-events:none;
-  -webkit-user-drag:none;
-}
-#euPg2StickerGrid .eu-pg2__sticker-tile img{
-  width:150%;
-  height:150%;
-}
-.eu-pg2__sticker-tile.is-active{
-  box-shadow:inset 0 0 0 2.5px #CC0000;
-}
-
-.eu-pg2__size-slider{
-  width:100%;
-  -webkit-appearance:none;
-  appearance:none;
-  height:2px;
-  background:#1a1a1a;
-  outline:none;
-  cursor:var(--eu-cursor);
-  margin-bottom:4px;
-}
-.eu-pg2__size-slider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  appearance:none;
-  width:16px;height:16px;
-  border-radius:50%;
-  background:#CC0000;
-  border:none;
-  cursor:var(--eu-cursor);
-}
-.eu-pg2__size-slider::-moz-range-thumb{
-  width:16px;height:16px;
-  border-radius:50%;
-  border:none;
-  background:#CC0000;
-  cursor:var(--eu-cursor);
-}
-
-.eu-pg2__hint{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic;
-  font-size:13px;
-  line-height:1.5;
-  color:#777;
-  margin:18px 0 0;
-}
-.eu-pg2__hint strong{
-  color:#1a1a1a;
-  font-style:normal;
-  font-weight:400;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-
-/* ═══ CENTER — frame stage ═══ */
-.eu-pg2__center{
-  display:flex;
-  justify-content:center;
-}
-.eu-pg2__stage{
+/* The stage is a positioned container so the absolute switch-mount
+   doesn't overflow the hero unexpectedly */
+.eu-fm .eu-pg2__stage{
   position:relative;
   width:100%;
-  max-width:560px;
+  max-width:300px;
 }
-
-.eu-pg2__framed{
+.eu-fm .eu-pg2__framed{
   position:relative;
   width:100%;
   aspect-ratio:1063/1270;
   margin:0 auto;
 }
-.eu-pg2__frame{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:fill;
-  pointer-events:none;
-  z-index:0;
+.eu-fm .eu-pg2__frame{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:fill;pointer-events:none;z-index:0;
 }
-.eu-pg2__photo{
+.eu-fm .eu-pg2__photo{
   position:absolute;
-  top:49.4%;
-  left:48.7%;
+  top:49.4%;left:48.7%;
   transform:translate(-50%,-50%);
   width:82%;
   aspect-ratio:1080/1350;
   overflow:hidden;
   background:#fff;
   z-index:1;
-  box-shadow:2px 4px 16px rgba(0,0,0,.15);
+  box-shadow:2px 4px 16px rgba(0,0,0,.3);
   container-type:inline-size;
 }
+
+/* ─── FILE ROW ──────────────────────────────────────────────────────── */
+.eu-fm__file-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:#1a1a1a;
+  overflow:hidden;
+}
+.eu-fm__filename{ font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.eu-fm__file-sep{ color:#bbb;flex:0 0 auto; }
+.eu-fm__file-dims,.eu-fm__file-ratio{ color:#888;flex:0 0 auto; }
+
+/* ─── TRACK ROW ─────────────────────────────────────────────────────── */
+.eu-fm__track-row{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:14px 16px 12px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+}
+.eu-fm__track-info{ flex:1;min-width:0; }
+.eu-fm__track-title{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(16px,2.2vw,22px);
+  color:#1a1a1a;
+  line-height:1.1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.eu-fm__track-sub{
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#aaa;
+  margin-top:5px;
+}
+.eu-fm__heart{
+  flex:0 0 auto;
+  width:34px;height:34px;
+  border:1.5px solid #1a1a1a;
+  border-radius:4px;
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;line-height:1;
+  cursor:var(--eu-cursor);color:#1a1a1a;
+  padding:0;
+}
+.eu-fm__heart[aria-pressed="true"],.eu-fm__heart.is-active{
+  background:#CC0000;border-color:#CC0000;color:#fff;
+}
+
+/* ─── TAB STRIP ─────────────────────────────────────────────────────── */
+.eu-fm__tabs{
+  display:flex;
+  gap:6px;
+  padding:10px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.eu-fm__tab{
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 14px;
+  border:1.5px solid #1a1a1a;
+  border-radius:999px;
+  background:transparent;
+  cursor:var(--eu-cursor);
+  color:#1a1a1a;
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+.eu-fm__tab.is-active{
+  background:#1a1a1a;color:#fdfaf4;
+}
+
+/* ─── TAB CONTENT ───────────────────────────────────────────────────── */
+.eu-fm__content{
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  max-height:220px;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+.eu-fm__panel{
+  padding:14px 16px 16px;
+}
+.eu-fm__panel[hidden]{display:none}
+.eu-fm__panel-section{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid #e8e8e8;
+}
+.eu-fm__panel-section-title{
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:#aaa;margin-bottom:9px;
+}
+.eu-fm__settings-footer{
+  margin-top:22px;
+  padding-top:12px;
+  border-top:1px solid #e8e8e8;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#bbb;
+}
+
+/* ─── OS-CELL GRID ──────────────────────────────────────────────────── */
+.eu-pg2__cell-grid{
+  display:grid;
+  /* auto-fill keeps cells small regardless of panel width */
+  grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
+  gap:6px;
+}
+/* These override to specific column counts where layout is fixed */
+.eu-pg2__cell-grid--front{   grid-template-columns:repeat(2,1fr); }
+.eu-pg2__cell-grid--tools{   grid-template-columns:repeat(4,minmax(0,1fr)); }
+.eu-pg2__cell-grid--pointer{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.eu-pg2__cell-grid--motion{  grid-template-columns:repeat(3,minmax(0,1fr)); }
+
+.eu-pg2__cell{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:10px 6px 8px;
+  background:#fff;
+  border:1.5px solid #e0e0e0;
+  border-radius:5px;
+  cursor:var(--eu-cursor);
+  color:#1a1a1a;
+  aspect-ratio:1;
+  user-select:none;
+}
+.eu-pg2__cell--motion{ aspect-ratio:auto;padding:10px 6px; }
+.eu-pg2__cell.is-active{
+  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
+}
+.eu-pg2__cell-img{
+  width:60%;aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;flex:0 0 auto;
+}
+.eu-pg2__cell-img img{
+  width:100%;height:100%;object-fit:contain;
+  pointer-events:none;-webkit-user-drag:none;
+}
+/* EU sticker images are designed to overflow the cell area */
+.eu-pg2__cell-img--eu img{
+  width:150%;height:150%;
+}
+.eu-pg2__cell-img--photo{ border-radius:2px;overflow:hidden; }
+.eu-pg2__cell-img--photo img{ object-fit:cover; }
+.eu-pg2__cell-img--glyph{
+  font-size:22px;width:auto;aspect-ratio:auto;
+}
+.eu-pg2__cell-img--swatch{
+  width:60%;aspect-ratio:1;
+  position:relative;border-radius:3px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.eu-pg2__bg-swatch{
+  width:72%;aspect-ratio:1;border-radius:50%;
+  background:#fff;box-shadow:inset 0 2px 6px rgba(0,0,0,.1);
+}
+input[type=color]{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:0;border:none;cursor:var(--eu-cursor);
+}
+.eu-pg2__cell-label{
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:8px;letter-spacing:.12em;text-transform:uppercase;
+  text-align:center;
+  line-height:1.2;
+}
+.eu-pg2__cell svg{
+  width:55%;height:55%;display:block;
+}
+
+/* ─── SUB-TABS (Pastry / Stickers) ─────────────────────────────────── */
+.eu-pg2__tabs{
+  display:flex;gap:5px;
+  margin-bottom:11px;
+}
+.eu-pg2__tab{
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 12px;
+  border:1.5px solid #e0e0e0;border-radius:999px;
+  background:transparent;cursor:var(--eu-cursor);color:#1a1a1a;
+}
+.eu-pg2__tab.is-active{
+  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
+}
+.eu-pg2__tab-panel[hidden]{display:none}
+
+/* ─── APPROVE CHIP ──────────────────────────────────────────────────── */
+.eu-pg2__chip{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:13px;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:#1a1a1a;cursor:var(--eu-cursor);user-select:none;
+}
+.eu-pg2__chip input{ position:absolute;opacity:0;pointer-events:none; }
+.eu-pg2__chip-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;
+  border:1.5px solid #1a1a1a;
+  font-size:12px;color:#1a1a1a;background:#fff;
+  flex:0 0 auto;
+}
+.eu-pg2__chip.is-checked .eu-pg2__chip-mark{
+  background:#003399;border-color:#003399;color:#fff;
+}
+
+/* ─── FORMAT / DISPLAY TOGGLES ──────────────────────────────────────── */
+.eu-pg2__toggle-row{ display:flex;gap:5px; }
+.eu-pg2__toggle{
+  flex:1;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:7px 10px;
+  border:1.5px solid #e0e0e0;border-radius:5px;
+  background:#fff;cursor:var(--eu-cursor);color:#1a1a1a;
+  text-align:center;
+}
+.eu-pg2__toggle.is-active{
+  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
+}
+
+/* ─── TRANSPORT BAR ─────────────────────────────────────────────────── */
+.eu-fm__transport{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  padding:12px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  align-items:center;
+}
+.eu-fm__tagline-input{
+  width:100%;
+  background:#fff;
+  border:1.5px solid #e0e0e0;
+  border-radius:4px;
+  padding:9px 12px;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:15px;letter-spacing:.005em;
+  color:#1a1a1a;outline:none;
+  cursor:var(--eu-cursor);
+  box-sizing:border-box;
+}
+.eu-fm__tagline-input:focus{ border-color:#003399;color:#003399; }
+.eu-fm__tagline-input::placeholder{
+  font-weight:400;font-style:italic;color:#bbb;
+}
+.eu-fm__transport-actions{
+  display:flex;gap:8px;flex:0 0 auto;
+}
+.eu-fm__action-btn{
+  height:40px;
+  padding:0 16px;
+  border:none;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  cursor:var(--eu-cursor);color:#fff;
+  border-radius:4px;
+  white-space:nowrap;
+}
+.eu-fm__action-btn--send{ background:#003399; }
+.eu-fm__action-btn--save{ background:#CC0000; }
+.eu-fm__action-btn.is-disabled{
+  background:#e0e0e0;color:#aaa;pointer-events:none;
+}
+.eu-fm__action-btn.is-busy{ opacity:.7;pointer-events:none; }
+
+/* ─── CHANNEL STRIP ─────────────────────────────────────────────────── */
+.eu-fm__channel{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding:8px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#aaa;
+}
+.eu-fm__channel-name{
+  flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.eu-fm__channel-size{
+  display:flex;align-items:center;gap:10px;flex:0 0 auto;
+}
+.eu-fm__channel-label{ color:#1a1a1a;font-weight:700; }
+.eu-fm__channel-readout{
+  color:#1a1a1a;font-weight:700;min-width:22px;text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ─── HALFTONE SLIDER ───────────────────────────────────────────────── */
+.eu-pg2__halftone-slider{
+  position:relative;
+  width:160px;height:22px;
+  display:flex;align-items:center;
+  flex:0 0 auto;
+}
+.eu-pg2__size-slider{
+  position:absolute;inset:0;
+  width:100%;
+  -webkit-appearance:none;appearance:none;
+  background:transparent;outline:none;
+  cursor:var(--eu-cursor);
+  z-index:2;
+  height:100%;
+  margin:0;
+}
+.eu-pg2__size-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:18px;height:18px;
+  border-radius:50%;
+  background:#fdfaf4;
+  border:2px solid #1a1a1a;
+  cursor:var(--eu-cursor);
+}
+.eu-pg2__size-slider::-moz-range-thumb{
+  width:14px;height:14px;
+  border-radius:50%;
+  border:2px solid #1a1a1a;
+  background:#fdfaf4;
+  cursor:var(--eu-cursor);
+}
+.eu-pg2__halftone-track{
+  position:absolute;
+  left:0;right:0;
+  top:50%;transform:translateY(-50%);
+  height:10px;
+  background:
+    radial-gradient(circle,#ccc 36%,transparent 36%) 0 0 / 6px 6px;
+  pointer-events:none;
+  z-index:1;
+  border-radius:5px;
+  overflow:hidden;
+}
+.eu-pg2__halftone-fill{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:50%;
+  background:
+    radial-gradient(circle,#003399 36%,transparent 36%) 0 0 / 6px 6px;
+}
+
+/* ─── TICKER ────────────────────────────────────────────────────────── */
+.eu-pg2__ticker{
+  padding:clamp(9px,1.2vw,14px) 16px;
+  display:flex;align-items:baseline;gap:12px;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#1a1a1a;
+  overflow:hidden;
+  background:#fdfaf4;
+}
+.eu-pg2__ticker-mark{ color:#003399;font-size:13px;flex:0 0 auto; }
+.eu-pg2__ticker-line{ white-space:nowrap;flex:1;overflow:hidden;text-overflow:ellipsis; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   POSTCARD CANVAS — items, animations, tagline overlay.
+   (Shared with the FM hero context via inherited selectors.)
+   ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__bg{
   position:absolute;inset:0;
-  background-size:cover;
-  background-position:center;
-  background-color:#fff;
+  background-size:cover;background-position:center;background-color:#fff;
 }
 .eu-pg2__items{
-  position:absolute;inset:0;
-  z-index:2;
+  position:absolute;inset:0;z-index:2;
 }
 .eu-pg2__overlay-tagline{
   position:absolute;
-  left:0;right:0;
-  bottom:6%;
-  z-index:3;
+  left:0;right:0;bottom:6%;z-index:3;
   pointer-events:none;
   font-family:'Times Eighteen',Georgia,serif;
   font-weight:bold;
-  font-size:clamp(18px,4cqw,42px);
-  line-height:1;
-  letter-spacing:-.005em;
-  text-align:center;
-  color:#fff;
+  font-size:clamp(16px,5cqw,42px);
+  line-height:1;letter-spacing:-.005em;
+  text-align:center;color:#fff;
   text-shadow:0 1px 4px rgba(0,0,0,.5),0 0 1px rgba(0,0,0,.6);
-  white-space:pre-line;
-  padding:0 6%;
+  white-space:pre-line;padding:0 6%;
 }
 
 .eu-pg2__item{
   position:absolute;
-  width:30%;
-  aspect-ratio:1;
-  cursor:default;
-  touch-action:none;
+  width:30%;aspect-ratio:1;
+  cursor:default;touch-action:none;
   transform-origin:center center;
   transform:translate(-50%,-50%);
-  user-select:none;
-  -webkit-user-drag:none;
+  user-select:none;-webkit-user-drag:none;
 }
-.eu-pg2__item-anim{ width:100%; height:100%; display:block; }
+.eu-pg2__item-anim{ width:100%;height:100%;display:block; }
 .eu-pg2__item img{
-  width:100%; height:100%; object-fit:contain;
-  pointer-events:none; -webkit-user-drag:none;
+  width:100%;height:100%;object-fit:contain;
+  pointer-events:none;-webkit-user-drag:none;
 }
 
 .eu-pg2__items.is-anim-bounce .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Bounce 1.2s ease-in-out infinite; }
-.eu-pg2__items.is-anim-beat .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Beat 1.0s ease-in-out infinite; }
-.eu-pg2__items.is-anim-rotate .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Spin 1.6s linear infinite; }
+.eu-pg2__items.is-anim-beat   .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Beat   1.0s ease-in-out infinite; }
+.eu-pg2__items.is-anim-rotate .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Spin   1.6s linear    infinite; }
 .eu-pg2__items.is-anim-wiggle .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Wiggle 0.5s ease-in-out infinite; }
-.eu-pg2__items.is-anim-orbit .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Orbit 1.4s linear infinite; }
+.eu-pg2__items.is-anim-orbit  .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Orbit  1.4s linear    infinite; }
 .eu-pg2__items[class*="is-anim-"] .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation-delay:calc(var(--i,0) * -0.1s); }
 
 @keyframes euPg2Bounce{
@@ -583,7 +731,15 @@
   100%{transform:translate(0,0) rotate(360deg)}
 }
 
-/* Lightswitch — preserved from postcard-generator. */
+/* Invert display mode */
+.eu-pg2__photo.is-inverted{
+  filter:invert(1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LIGHTSWITCH — preserved fully from postcard-generator v1.
+   In the FM hero it sits to the left of the postcard via position:absolute.
+   ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__switch-mount{
   position:absolute;
   left:-30px;
@@ -595,13 +751,11 @@
   gap:10px;
   z-index:10;
 }
-.eu-pg2__switch-wrap{ width:76px; height:118px; position:relative; cursor:var(--eu-cursor); user-select:none; }
+.eu-pg2__switch-wrap{ width:76px;height:118px;position:relative;cursor:var(--eu-cursor);user-select:none; }
 .eu-pg2__switch-wrap .eu-pg2__switch-input{position:absolute;opacity:0;pointer-events:none}
 .eu-pg2__switch-wrap .panel{
-  transform:scale(0.28);
-  transform-origin:left top;
-  background-color:#fff;
-  border-radius:4px;
+  transform:scale(0.28);transform-origin:left top;
+  background-color:#fff;border-radius:4px;
   box-shadow:
     inset -4px -4px 8px rgba(0,0,0,.25),
     inset 4px 4px 8px rgba(255,255,255,.5),
@@ -610,13 +764,13 @@
     1px 1px 1px rgba(0,0,0,.1),
     4px 4px 2px rgba(0,0,0,.05),
     6px 6px 3px rgba(0,0,0,.05);
-  height:420px; width:270px; position:relative;
+  height:420px;width:270px;position:relative;
 }
 .eu-pg2__switch-wrap .screw{
   align-items:center;background-color:#fff;border:1px solid #eee;border-radius:100%;
   box-shadow:inset -3px -3px 6px rgba(0,0,0,.1),inset 0 0 2px rgba(0,0,0,.2);
-  display:flex;height:24px;justify-content:center;position:absolute;left:50%;
-  transform:translateX(-50%);width:24px;
+  display:flex;height:24px;justify-content:center;position:absolute;
+  left:50%;transform:translateX(-50%);width:24px;
 }
 .eu-pg2__switch-wrap .screw.top{top:24px}
 .eu-pg2__switch-wrap .screw.top .screw__slot{transform:rotate(10deg)}
@@ -645,9 +799,7 @@
   box-shadow:inset 0 0 6px rgba(0,0,0,.05),inset 0 0 24px rgba(0,0,0,.025),inset -16px -16px 36px rgba(0,0,0,.1);
   height:50%;left:0;position:absolute;top:0;width:100%;z-index:2;
 }
-.eu-pg2__switch-wrap .switch__top-outset{
-  background:linear-gradient(90deg,#fff,#f7f7f7);height:10px;
-}
+.eu-pg2__switch-wrap .switch__top-outset{ background:linear-gradient(90deg,#fff,#f7f7f7);height:10px; }
 .eu-pg2__switch-wrap .switch__bottom{
   background-color:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
@@ -664,12 +816,12 @@
 .eu-pg2__switch-wrap .switch__shadow-box.top{top:-96px}
 .eu-pg2__switch-wrap .switch__shadow-box.bottom{top:20px}
 .eu-pg2__switch-wrap .switch__shadow.top{
-  background-color:rgba(0,0,0,.33);height:90px;position:absolute;bottom:20px;
-  filter:blur(10px);left:-70px;opacity:1;transform:rotate(20deg);width:90px;
+  background-color:rgba(0,0,0,.33);height:90px;position:absolute;
+  bottom:20px;filter:blur(10px);left:-70px;opacity:1;transform:rotate(20deg);width:90px;
 }
 .eu-pg2__switch-wrap .switch__shadow.bottom{
-  background-color:rgba(0,0,0,.33);height:90px;position:absolute;bottom:0;
-  left:-90px;filter:blur(0);opacity:.5;transform:rotate(0deg);width:90px;
+  background-color:rgba(0,0,0,.33);height:90px;position:absolute;
+  bottom:0;left:-90px;filter:blur(0);opacity:.5;transform:rotate(0deg);width:90px;
 }
 .eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__top{
   background-color:#fff;box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
@@ -685,217 +837,65 @@
 }
 .eu-pg2__switch-label{
   font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic;
-  font-size:13px;
-  white-space:nowrap;
-  color:#003399;
-  letter-spacing:.01em;
-  text-transform:none;
-  text-align:center;
+  font-style:italic;font-size:12px;
+  white-space:nowrap;color:#ccc;
+  letter-spacing:.01em;text-align:center;
 }
-@media(max-width:960px){
-  .eu-pg2__switch-mount{ position:relative; left:auto; top:auto; transform:none; margin:0 auto 8px; }
-}
-
-/* ═══ RIGHT — postcard front + tools + animate ═══ */
-.eu-pg2__right{ display:flex; flex-direction:column; }
-
-.eu-pg2__bg-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.eu-pg2__bg-tile-wrap{ display:flex; flex-direction:column; gap:6px; }
-.eu-pg2__bg-tile{
-  position:relative;
-  aspect-ratio:1;
-  border-radius:0;
-  overflow:hidden;
-  border:1.5px solid #1a1a1a;
-  cursor:var(--eu-cursor);
-  background:#fff;
-  display:flex; align-items:center; justify-content:center;
-}
-.eu-pg2__bg-tile.is-active{ border-color:#CC0000; border-width:2.5px; }
-.eu-pg2__bg-tile--image img{
-  width:100%;height:100%;object-fit:cover;
-  pointer-events:none; -webkit-user-drag:none;
-}
-.eu-pg2__bg-tile--color{ position:relative; }
-.eu-pg2__bg-tile--color input[type=color]{
-  position:absolute;inset:0;width:100%;height:100%;
-  opacity:0;border:none;cursor:var(--eu-cursor);
-}
-.eu-pg2__bg-swatch{
-  width:60%; aspect-ratio:1; border-radius:50%;
-  background:#fff; box-shadow:inset 0 2px 6px rgba(0,0,0,.06);
-}
-.eu-pg2__bg-label{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:9px; font-weight:700; letter-spacing:.24em;
-  text-transform:uppercase; text-align:center; color:#1a1a1a;
+@media(max-width:640px){
+  .eu-pg2__switch-mount{
+    position:relative;left:auto;top:auto;transform:none;
+    margin:0 auto 12px;
+  }
+  .eu-fm__hero{ padding:20px 20px 20px 20px; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   BG IMAGE MODAL
+   ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__bg-modal{
-  position:fixed; inset:0; z-index:9999;
-  display:flex; align-items:center; justify-content:center; padding:24px;
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:24px;
 }
 .eu-pg2__bg-modal[hidden]{display:none}
 .eu-pg2__bg-modal-backdrop{
-  position:absolute;inset:0; background:rgba(0,0,0,.45); cursor:var(--eu-cursor);
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.5);cursor:var(--eu-cursor);
 }
 .eu-pg2__bg-modal-panel{
-  position:relative; background:#fff; border-radius:3px;
-  width:min(700px,100%); max-height:85vh; overflow:auto;
-  padding:24px 24px 28px; border:1.5px solid #1a1a1a;
-  box-shadow:5px 5px 0 rgba(0,0,0,.05), 0 16px 44px rgba(0,0,0,.18);
+  position:relative;background:#fff;border-radius:3px;
+  width:min(700px,100%);max-height:85vh;overflow:auto;
+  padding:24px 24px 28px;
+  border:1.5px solid #1a1a1a;
+  box-shadow:5px 5px 0 rgba(0,0,0,.05),0 16px 44px rgba(0,0,0,.18);
 }
 .eu-pg2__bg-modal-close{
-  position:absolute; top:12px;right:14px;
-  background:none;border:none; font-size:28px;line-height:1;
-  cursor:var(--eu-cursor); color:#1a1a1a;
+  position:absolute;top:12px;right:14px;
+  background:none;border:none;font-size:28px;line-height:1;
+  cursor:var(--eu-cursor);color:#1a1a1a;
 }
 .eu-pg2__bg-modal-title{
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:11px; letter-spacing:.32em; text-transform:uppercase;
-  margin-bottom:16px; color:#1a1a1a;
+  font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+  margin-bottom:16px;color:#1a1a1a;
 }
 .eu-pg2__bg-source{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:8px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;
 }
 .eu-pg2__bg-source-item{
-  aspect-ratio:1; overflow:hidden; cursor:var(--eu-cursor); border:2px solid transparent;
+  aspect-ratio:1;overflow:hidden;cursor:var(--eu-cursor);
+  border:2px solid transparent;
 }
 .eu-pg2__bg-source-item:hover{ border-color:#CC0000; }
 .eu-pg2__bg-source-item img{
   width:100%;height:100%;object-fit:cover;
-  pointer-events:none; -webkit-user-drag:none;
+  pointer-events:none;-webkit-user-drag:none;
 }
 
-.eu-pg2__tools-row{ display:flex; gap:8px; }
-.eu-pg2__tool-btn{
-  flex:1; aspect-ratio:1; max-width:56px;
-  background:#fff; border:1.5px solid #1a1a1a; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  cursor:var(--eu-cursor); color:#1a1a1a;
-}
-.eu-pg2__tool-btn.is-active{ background:#003399; color:#fff; border-color:#003399; }
-.eu-pg2__tool-btn svg{ width:50%;height:50%; }
-
-.eu-pg2__anim-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
-.eu-pg2__anim-pill{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-size:14px; letter-spacing:.04em;
-  text-transform:none; font-weight:400;
-  padding:11px 14px;
-  background:#fff; border:1.5px solid #1a1a1a; border-radius:999px;
-  cursor:var(--eu-cursor); color:#1a1a1a;
-}
-.eu-pg2__anim-pill.is-active{ background:#CC0000; color:#fff; border-color:#CC0000; }
-
-/* ═══ TAGLINE STRIP ═══ */
-.eu-pg2__tagline-strip{
-  width:100%; max-width:1180px;
-  margin:clamp(20px,2.5vw,32px) auto 0;
-  text-align:center;
-}
-.eu-pg2__tagline-input{
-  width:min(560px,100%);
-  background:transparent;
-  border:none; border-bottom:2px solid #1a1a1a;
-  padding:8px 6px;
-  font-family:'Times Eighteen',Georgia,serif;
-  font-weight:bold; font-size:clamp(18px,2.6vw,26px);
-  letter-spacing:.005em; text-align:center;
-  color:#1a1a1a; outline:none; cursor:var(--eu-cursor);
-}
-.eu-pg2__tagline-input::placeholder{ color:#888; font-weight:400; font-style:italic; }
-.eu-pg2__tagline-input:focus{ border-bottom-color:#003399; color:#003399; }
-.eu-pg2__tagline-hint{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic; font-size:12px;
-  color:#888; margin:8px 0 0;
-}
-
-/* ═══ SEND BAND ═══ */
-.eu-pg2__share-band{
-  width:100%; max-width:1180px;
-  margin:clamp(20px,2.4vw,32px) auto 0;
-  padding-top:clamp(18px,2vw,28px);
-  border-top:1px solid rgba(0,0,0,.1);
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  grid-template-areas:
-    "caption actions"
-    "approve actions";
-  gap:clamp(10px,2vw,24px) clamp(16px,3vw,32px);
-  align-items:start;
-}
-.eu-pg2__share-band .eu-pg2__caption{ grid-area:caption; margin:0; max-width:540px; }
-.eu-pg2__caption{
-  font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic; font-size:13px; line-height:1.55;
-  color:#888;
-}
-.eu-pg2__caption strong{
-  color:#1a1a1a; font-style:normal; font-weight:400;
-  text-transform:uppercase; letter-spacing:.08em;
-}
-.eu-pg2__approve{
-  grid-area:approve;
-  display:inline-flex; align-items:center; gap:10px;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:11px; letter-spacing:.18em; text-transform:uppercase;
-  color:#1a1a1a; cursor:var(--eu-cursor); user-select:none;
-}
-.eu-pg2__approve input{ position:absolute;opacity:0;pointer-events:none; }
-.eu-pg2__approve-mark{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:18px; height:18px;
-  border:1.5px solid #1a1a1a;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:14px; line-height:1; color:#003399;
-  background:#fff;
-}
-.eu-pg2__approve.is-checked .eu-pg2__approve-mark{
-  background:#003399; color:#fff; border-color:#003399;
-}
-.eu-pg2__actions{ grid-area:actions; display:flex; flex-direction:row; gap:10px; align-self:start; }
-@media(max-width:760px){
-  .eu-pg2__share-band{grid-template-columns:1fr;grid-template-areas:"caption" "approve" "actions"}
-  .eu-pg2__actions{flex-direction:column}
-}
-.eu-pg2__action-btn{
-  height:54px; padding:0 22px; min-width:200px;
-  border:none;
-  font-family:'Times Eighteen',Georgia,serif;
-  font-weight:bold; font-size:16px;
-  letter-spacing:.12em; text-transform:uppercase;
-  cursor:var(--eu-cursor); color:#fff;
-  border-radius:2px;
-}
-.eu-pg2__action-btn--share{background:#003399}
-.eu-pg2__action-btn--dl{background:#CC0000}
-.eu-pg2__action-btn.is-disabled{
-  background:#e0e0e0; color:#888; pointer-events:none;
-}
-.eu-pg2__action-btn.is-busy{ opacity:.7; pointer-events:none; }
-
-/* ═══ TICKER ═══ */
-.eu-pg2__ticker{
-  width:100%; max-width:1180px;
-  margin:clamp(24px,2.6vw,36px) auto 0;
-  padding:clamp(8px,1.2vw,14px) 0;
-  border-top:1px solid #1a1a1a;
-  border-bottom:1px solid #1a1a1a;
-  display:flex; align-items:baseline; gap:14px;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:12px; letter-spacing:.16em;
-  text-transform:uppercase; color:#1a1a1a;
-  overflow:hidden;
-}
-.eu-pg2__ticker-mark{ color:#003399; font-size:14px; flex:0 0 auto; }
-.eu-pg2__ticker-line{ white-space:nowrap; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; }
-
-/* Aperitivo / golden hour accent overrides */
-.eu-os-body.is-aperitivo .eu-pg2__ticker-mark,
-.eu-os-body.is-aperitivo .eu-pg2__action-btn--share{ background:#d35400; }
-.eu-os-body.is-golden .eu-pg2__action-btn--share{ background:#b08600; }
-.eu-os-body.is-golden .eu-pg2__action-btn--dl{ background:#a44a00; }
-.eu-os-body.is-golden .eu-pg2__sticker-tile.is-active{ box-shadow:inset 0 0 0 2.5px #b08600; }
+/* ═══════════════════════════════════════════════════════════════════════
+   APERITIVO + GOLDEN HOUR ACCENTS
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-os-body.is-aperitivo .eu-pg2__ticker-mark{ color:#d35400; }
+.eu-os-body.is-aperitivo .eu-fm__action-btn--send{ background:#d35400; }
+.eu-os-body.is-golden .eu-fm__action-btn--send{ background:#b08600; }
+.eu-os-body.is-golden .eu-fm__action-btn--save{ background:#a44a00; }
+.eu-os-body.is-golden .eu-pg2__cell--sticker.is-active{ border-color:#b08600; }
