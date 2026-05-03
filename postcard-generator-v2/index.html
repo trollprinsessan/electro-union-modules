@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Electro Union — Postcard Generator</title>
+  <title>Electro Union — EU-01 / Europa Post</title>
 
   <link rel="stylesheet" href="../_shared/fonts.css">
   <link rel="stylesheet" href="../_shared/tokens.css">
@@ -17,6 +17,30 @@
 
 <div class="eu" id="eu">
   <div class="eu-pg2">
+
+    <!-- ═══ MASTHEAD — Union top-mark, service code, dual date ═══
+         Reads like the header of a 1989 European public-service brochure.
+         The shell is what makes Europa Post belong to the Electro Union;
+         every future module (FM Continental, Edicola) sits inside the same. -->
+    <header class="eu-pg2__masthead">
+      <div class="eu-pg2__masthead-rule"></div>
+      <div class="eu-pg2__masthead-row eu-pg2__masthead-row--top">
+        <div class="eu-pg2__topmark">
+          <span class="eu-pg2__topmark-name">ELECTRO UNION</span>
+          <span class="eu-pg2__topmark-star" aria-hidden="true">★</span>
+        </div>
+        <div class="eu-pg2__service-code">EU-01 / EUROPA POST</div>
+      </div>
+      <div class="eu-pg2__masthead-rule eu-pg2__masthead-rule--thin"></div>
+      <div class="eu-pg2__masthead-row eu-pg2__masthead-row--mid">
+        <h1 class="eu-pg2__service-name">Europa Post</h1>
+        <div class="eu-pg2__masthead-date" id="euPg2Date" aria-live="polite">— / Union Year —</div>
+      </div>
+      <p class="eu-pg2__service-descriptor">
+        Cartoline · Postcards · Cartes Postales · Postkarten · Vykort · Pocztówki · Открытки. Mark the card. Dispatch it across the continent.
+      </p>
+      <div class="eu-pg2__masthead-rule"></div>
+    </header>
 
     <div class="eu-pg2__workspace">
 
@@ -51,7 +75,7 @@
         <div class="eu-pg2__section-title">Size</div>
         <input type="range" class="eu-pg2__size-slider" id="euPg2Size" min="22" max="65" step="1" value="44" aria-label="Sticker size">
 
-        <p class="eu-pg2__hint">Pick a pastry or sticker, then draw on the postcard like a stamp pencil. Activate <strong>grab</strong> in the tools to drag placed items around instead of drawing.</p>
+        <p class="eu-pg2__hint">Select a stamp from the palette. Mark the card with your finger or pointer. Switch to <strong>grab</strong> to relocate a placement before dispatch.</p>
       </div>
 
       <!-- CENTER — framed stage with lightswitch -->
@@ -99,14 +123,14 @@
             <div class="eu-pg2__bg-tile eu-pg2__bg-tile--image" id="euPg2BgShow" role="button" aria-label="Choose background image">
               <img src="../postcard-generator/BACKGROUNDS/original_827931d0025519cb087cb567ddbc1e31.png" alt="">
             </div>
-            <div class="eu-pg2__bg-label">IMAGE</div>
+            <div class="eu-pg2__bg-label">Image</div>
           </div>
           <div class="eu-pg2__bg-tile-wrap">
             <label class="eu-pg2__bg-tile eu-pg2__bg-tile--color is-active" id="euPg2BgColor" title="Pick a colour">
               <span class="eu-pg2__bg-swatch" id="euPg2BgSwatch"></span>
               <input type="color" id="euPg2BgPicker" value="#ffffff">
             </label>
-            <div class="eu-pg2__bg-label">COLOR</div>
+            <div class="eu-pg2__bg-label">Colour</div>
           </div>
         </div>
 
@@ -169,18 +193,47 @@
 
     </div>
 
-    <!-- Share band — sits below the workspace as its own row -->
+    <!-- ═══ DISPATCH BAND ═══ Civic verbs as the headline. Caption keeps
+         the platform information that users need to choose between targets. -->
     <div class="eu-pg2__share-band">
-      <p class="eu-pg2__caption"><strong>Share on LinkedIn</strong> opens your phone's share sheet with an animated GIF (loops natively in the feed). <strong>Download for Instagram</strong> saves an MP4 (3 loops) — upload it to Stories from there.</p>
+      <p class="eu-pg2__caption">
+        <strong>Broadcast</strong> dispatches your card to LinkedIn — animated GIF, loops natively in the feed.
+        <strong>Dispatch</strong> saves an MP4 to your device — upload to Instagram Stories from there.
+        <em>The Union retains no transit copies.</em>
+      </p>
       <div class="eu-pg2__actions">
-        <button class="eu-pg2__action-btn eu-pg2__action-btn--share is-disabled" id="euPg2Share">Share on LinkedIn</button>
-        <button class="eu-pg2__action-btn eu-pg2__action-btn--dl is-disabled" id="euPg2Download">Download for Instagram</button>
+        <button class="eu-pg2__action-btn eu-pg2__action-btn--share is-disabled" id="euPg2Share">
+          <span class="eu-pg2__action-verb">Broadcast</span>
+          <span class="eu-pg2__action-target">→ LinkedIn · GIF</span>
+        </button>
+        <button class="eu-pg2__action-btn eu-pg2__action-btn--dl is-disabled" id="euPg2Download">
+          <span class="eu-pg2__action-verb">Dispatch</span>
+          <span class="eu-pg2__action-target">→ Instagram · MP4</span>
+        </button>
       </div>
     </div>
+
+    <!-- ═══ FOOTER — Union charter, multilingual stamp, founding mark,
+         Silicon Valley disclaimer. Every module ends with this block. ═══ -->
+    <footer class="eu-pg2__footer">
+      <div class="eu-pg2__footer-rule"></div>
+      <p class="eu-pg2__charter">"The good life doesn't change. Only the power source does."</p>
+      <p class="eu-pg2__multilingual">
+        Made in the Electro Union · Hergestellt in der Elektro-Union · Fait dans l'Union Électro · Fatto nell'Unione Elettrica · Hecho en la Unión Eléctrica · Tillverkad i Elektro-Unionen · Wyprodukowano w Unii Elektrycznej.
+      </p>
+      <div class="eu-pg2__footer-bar">
+        <span class="eu-pg2__footer-mark">★ Founded 9 November 1989</span>
+        <span class="eu-pg2__footer-hq">Headquartered Trieste · P.O. Box 1989</span>
+        <span class="eu-pg2__footer-member" id="euPg2Member">Member —</span>
+      </div>
+      <p class="eu-pg2__sv-disclaimer">
+        Not affiliated with Silicon Valley. We have nothing they don't already have. They have nothing we want.
+      </p>
+    </footer>
 
   </div>
 </div>
 
-<script src="script.js?v=9"></script>
+<script src="script.js?v=10"></script>
 </body>
 </html>
