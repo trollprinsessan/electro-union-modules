@@ -148,10 +148,19 @@
   var clearBtn   = document.getElementById('euPg2Clear');
   var shareBtn   = document.getElementById('euPg2Share');
   var dlBtn      = document.getElementById('euPg2Download');
-  // Boot, tagline, ticker, switch label, counter, approve refs.
-  var bootEl     = document.getElementById('euPg2Boot');
-  var bootImg    = document.getElementById('euBootImg');
-  var mainEl     = document.getElementById('euPg2Main');
+  // OS chrome refs
+  var bootEl     = document.getElementById('euOsBoot');
+  var bootFill   = document.getElementById('euOsBootFill');
+  var bootPct    = document.getElementById('euOsBootPct');
+  var bootLabel  = document.getElementById('euOsBootLabel');
+  var menubarEl  = document.getElementById('euOsMenubar');
+  var windowEl   = document.getElementById('euOsWindow');
+  var osInfoEl   = document.getElementById('euOsInfo');
+  var clockEl    = document.getElementById('euOsClock');
+  var dateEl     = document.getElementById('euOsDate');
+  var soundBtn   = document.getElementById('euOsSound');
+  var soundIcon  = document.getElementById('euOsSoundIcon');
+  // Postcard generator chrome refs
   var tagInput   = document.getElementById('euPg2TaglineInput');
   var tagOverlay = document.getElementById('euPg2TaglineOverlay');
   var switchLbl  = document.getElementById('euPg2SwitchLabel');
@@ -160,6 +169,7 @@
   var approveBox = document.getElementById('euPg2ApproveBox');
   var approveLbl = document.getElementById('euPg2Approve');
   var approveMark= approveLbl ? approveLbl.querySelector('.eu-pg2__approve-mark') : null;
+  var closeBtn   = document.querySelector('.eu-os__window-close');
 
   // ═══ STATE ═══
   // each placement: { el, si, xPct, yPct, sizePct, rot, strokeId, isTreat }
@@ -892,55 +902,241 @@
   setTagline(PASTRY_TAGLINES[0]);
 
   // ═══════════════════════════════════════════════════════════════════════
-  // BOOT RACK — image cycler that runs on every load.
-  // Preload first, swap src instantly every ~350ms, hard-cut to the
-  // generator after ~4 seconds.
+  // BOOT — fake-OS startup splash.
+  // Animates the segmented progress bar from 0→98% over ~3s while
+  // rotating a stage label ("Requesting postcard.psf" → "Connecting to
+  // continental relay" → "Decoding postal manifest"). Hard-cuts to the
+  // desktop, revealing menubar + window + os-info strip.
   // ═══════════════════════════════════════════════════════════════════════
-  var BOOT_IMAGES = [
-    '../postcard-generator/BACKGROUNDS/Plage 1 copy.jpg',
-    '../postcard-generator/BACKGROUNDS/original_4bdc51e802b02410cc5d4aa472900c38.jpg',
-    '../postcard-generator/BACKGROUNDS/original_24386db4bdc673a8e2c127178587ce68.jpg',
-    '../postcard-generator/BACKGROUNDS/butter.jpg',
-    '../postcard-generator/BACKGROUNDS/fc7c5841b4c129d0408f9ba2e7c46c1e.jpg',
-    '../drawing/STICKERS/EU_Stickers_1080x1350_01.png',
-    '../postcard-generator/BACKGROUNDS/original_370d3cb96067f4e231797ed5beb3a6cf.jpg',
-    '../postcard-generator/BACKGROUNDS/original_8d84e36822d69f3babb8a64f86366b97.jpg',
-    '../postcard-generator/BACKGROUNDS/original_2402ef13beb9b704f676c00af5eb7d72 (1).jpg',
-    '../drawing/STICKERS/EU_Stickers_1080x1350_09.png',
-    '../postcard-generator/BACKGROUNDS/original_da6863c3bb938276289d0e850bb17375.jpg',
-    '../postcard-generator/BACKGROUNDS/original_7ca01b4f8b02fa3ab601c9341bfd60d6.jpg'
+  var BOOT_LABELS = [
+    'Requesting postcard.psf',
+    'Connecting to continental relay',
+    'Verifying member credentials',
+    'Decoding postal manifest',
+    'Loading rack imagery',
+    'Establishing FM channel'
   ];
-  (function bootRack(){
-    if (!bootEl || !bootImg || !mainEl) return;
-    // Preload so swaps don't flash white.
-    BOOT_IMAGES.forEach(function(src){ var im = new Image(); im.src = src; });
-    // Random start so refresh feels different each time.
-    var idx = Math.floor(Math.random() * BOOT_IMAGES.length);
-    bootImg.src = BOOT_IMAGES[idx];
-    var BOOT_INTERVAL = 350;
-    var BOOT_DURATION = 4000;
-    var ticker = setInterval(function(){
-      idx = (idx + 1) % BOOT_IMAGES.length;
-      bootImg.src = BOOT_IMAGES[idx];
-    }, BOOT_INTERVAL);
-    setTimeout(function(){
-      clearInterval(ticker);
-      bootEl.style.display = 'none';
-      bootEl.setAttribute('aria-hidden', 'true');
-      mainEl.style.visibility = '';
-    }, BOOT_DURATION);
+  (function bootSplash(){
+    if (!bootEl || !bootFill || !bootPct) return;
+    var BOOT_DURATION = 3200;
+    var TARGET = 98; // % to settle at, like a real fake-OS splash
+    var start = performance.now();
+    var lastLabelIdx = -1;
+    function tick(now){
+      var t = Math.min(1, (now - start) / BOOT_DURATION);
+      // Mild ease-out so the bar fills fast then slows — feels like a
+      // real connection establishing, not a uniform timer.
+      var eased = 1 - Math.pow(1 - t, 1.6);
+      var pct = Math.round(eased * TARGET);
+      bootFill.style.width = pct + '%';
+      bootPct.textContent = pct + '%';
+      // Rotate the stage label every ~600ms.
+      var labelIdx = Math.min(BOOT_LABELS.length - 1, Math.floor((now - start) / 600));
+      if (labelIdx !== lastLabelIdx){
+        lastLabelIdx = labelIdx;
+        if (bootLabel) bootLabel.textContent = BOOT_LABELS[labelIdx];
+      }
+      if (t < 1){
+        requestAnimationFrame(tick);
+      } else {
+        // Hold a beat at 98%, then dismiss instantly. No transitions.
+        setTimeout(function(){
+          if (bootEl) bootEl.hidden = true;
+          if (menubarEl) menubarEl.hidden = false;
+          if (windowEl)  windowEl.hidden  = false;
+          if (osInfoEl)  osInfoEl.hidden  = false;
+        }, 320);
+      }
+    }
+    requestAnimationFrame(tick);
   })();
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TICKER — instant line swap every ~3 seconds.
+  // CET CLOCK + APERITIVO HOUR
+  // Ticks every second. The aperitivo class flips on between 18:00–20:00
+  // CET — the desktop tints, the ticker shifts to aperitivo lines, and
+  // the SEND button leans warm. Italo disco hours.
+  // ═══════════════════════════════════════════════════════════════════════
+  function getCETParts(){
+    try {
+      var parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Brussels',
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).formatToParts(new Date());
+      var get = function(t){
+        var p = parts.find(function(x){ return x.type === t; });
+        return p ? p.value : '';
+      };
+      return {
+        weekday: get('weekday').toUpperCase().slice(0,3),
+        day: parseInt(get('day'),10) || 0,
+        month: get('month').toUpperCase().slice(0,3),
+        year: get('year'),
+        hour: parseInt(get('hour'),10) || 0,
+        minute: get('minute')
+      };
+    } catch(_) {
+      var d = new Date();
+      var DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+      var MO = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      return {
+        weekday: DAYS[d.getDay()], day: d.getDate(), month: MO[d.getMonth()],
+        year: String(d.getFullYear()),
+        hour: d.getHours(), minute: ('0'+d.getMinutes()).slice(-2)
+      };
+    }
+  }
+  function tickClock(){
+    var p = getCETParts();
+    if (clockEl) clockEl.textContent = ('0'+p.hour).slice(-2) + ':' + p.minute;
+    if (dateEl)  dateEl.textContent  = p.weekday + ' ' + p.day + ' ' + p.month + ' ' + p.year;
+    var aperitivo = (p.hour >= 18 && p.hour < 20);
+    document.body.classList.toggle('is-aperitivo', aperitivo);
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // Swap the ticker line set when aperitivo is on.
+  var APERITIVO_TICKER_LINES = [
+    'Aperitivo hour · 18:00 to 20:00 CET',
+    'Negroni, sbagliato, with prosecco in it',
+    'Olives, taralli, the day winding down',
+    'Same spritz, own power',
+    'Italo disco from now until the streetlights come on',
+    'Greetings from the Electro Union'
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // KONAMI CODE — golden-hour palette unlocks on ↑↑↓↓←→←→BA
+  // ═══════════════════════════════════════════════════════════════════════
+  (function konami(){
+    var seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    var i = 0;
+    document.addEventListener('keydown', function(e){
+      var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (k === seq[i]){
+        i++;
+        if (i === seq.length){
+          document.body.classList.toggle('is-golden');
+          i = 0;
+        }
+      } else {
+        i = (k === seq[0]) ? 1 : 0;
+      }
+    });
+  })();
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // WEBAUDIO SWITCH-CLICK + GLOBAL SOUND TOGGLE
+  // Wall-switch click is a brief filtered noise burst, synthesised on the
+  // fly via WebAudio. Sound toggle in the menubar mutes everything; state
+  // persists in localStorage.
+  // ═══════════════════════════════════════════════════════════════════════
+  var soundMuted = (function(){
+    try { return localStorage.getItem('eu_sound_muted') === '1'; } catch(_){ return false; }
+  })();
+  function applySoundUi(){
+    if (!soundBtn) return;
+    soundBtn.setAttribute('aria-pressed', soundMuted ? 'true' : 'false');
+    if (soundIcon) soundIcon.textContent = soundMuted ? '🔇' : '🔊';
+  }
+  applySoundUi();
+  if (soundBtn){
+    soundBtn.addEventListener('click', function(){
+      soundMuted = !soundMuted;
+      try { localStorage.setItem('eu_sound_muted', soundMuted ? '1' : '0'); } catch(_){}
+      applySoundUi();
+    });
+  }
+
+  var audioCtx = null;
+  function getAudioCtx(){
+    if (!audioCtx){
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx){
+        try { audioCtx = new Ctx(); } catch(_){ audioCtx = null; }
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended'){
+      try { audioCtx.resume(); } catch(_){}
+    }
+    return audioCtx;
+  }
+  function playSwitchClick(){
+    if (soundMuted) return;
+    var ctx = getAudioCtx();
+    if (!ctx) return;
+    try {
+      // Brief filtered noise burst with a sharp envelope — reads as a
+      // mechanical wall-switch click.
+      var dur = 0.05;
+      var bufferSize = Math.max(64, Math.round(ctx.sampleRate * dur));
+      var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      var data = buffer.getChannelData(0);
+      for (var i=0; i<bufferSize; i++){
+        // Decaying noise — sharper attack, exponential tail.
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/bufferSize, 3);
+      }
+      var src = ctx.createBufferSource();
+      src.buffer = buffer;
+      var filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 2400;
+      filter.Q.value = 0.7;
+      var gain = ctx.createGain();
+      gain.gain.value = 0.45;
+      src.connect(filter).connect(gain).connect(ctx.destination);
+      src.start();
+    } catch(_){}
+  }
+  // Trigger on every lightswitch toggle (both directions).
+  if (switchInput){
+    switchInput.addEventListener('change', playSwitchClick);
+  }
+  // Also wire to the close button (decorative — plays click but doesn't
+  // actually close anything).
+  if (closeBtn){
+    closeBtn.addEventListener('click', function(){
+      playSwitchClick();
+      // Visually flash the title bar so the click feels acknowledged.
+      var tb = closeBtn.parentElement;
+      if (tb){
+        var prev = tb.style.background;
+        tb.style.background = '#1a1a1a';
+        var prevColor = '';
+        var titleEl = tb.querySelector('.eu-os__window-title');
+        if (titleEl){ prevColor = titleEl.style.color; titleEl.style.color = '#fdfaf4'; }
+        setTimeout(function(){
+          tb.style.background = prev;
+          if (titleEl) titleEl.style.color = prevColor;
+        }, 110);
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // TICKER — instant line swap every ~3 seconds. Reads from APERITIVO_*
+  // lines when the body has .is-aperitivo, otherwise the default set.
   // ═══════════════════════════════════════════════════════════════════════
   (function tickerRotation(){
     if (!tickerEl) return;
     var i = 0;
-    tickerEl.textContent = TICKER_LINES[0];
+    function currentLines(){
+      return document.body.classList.contains('is-aperitivo')
+        ? APERITIVO_TICKER_LINES
+        : TICKER_LINES;
+    }
+    tickerEl.textContent = currentLines()[0];
     setInterval(function(){
-      i = (i + 1) % TICKER_LINES.length;
-      tickerEl.textContent = TICKER_LINES[i];
+      var lines = currentLines();
+      i = (i + 1) % lines.length;
+      tickerEl.textContent = lines[i];
     }, 3000);
   })();
 
