@@ -1333,6 +1333,7 @@
     var fileRatioEl= document.getElementById('euFmFileRatio');
     var framedEl   = document.getElementById('euPg2Framed');
     var frameImg   = framedEl ? framedEl.querySelector('.eu-pg2__frame') : null;
+    var photoEl    = document.getElementById('euPg2Photo');
     var FRAME_FEED  = '../postcard-generator/Updated Imagery/FRAME1 UPDATED.png';
     var FRAME_STORY = '../postcard-generator/Updated Imagery/Frame_drawing pad_mobile.png';
     if (!btns.length) return;
@@ -1345,6 +1346,7 @@
       if (fileRatioEl) fileRatioEl.textContent = fmt === 'story' ? '9:16' : '4:5';
       if (framedEl)    framedEl.style.aspectRatio = fmt === 'story' ? '1063/1742' : '';
       if (frameImg)    frameImg.src = fmt === 'story' ? FRAME_STORY : FRAME_FEED;
+      if (photoEl)     photoEl.style.aspectRatio = fmt === 'story' ? '1080/1920' : '';
     }
     btns.forEach(function(btn){
       btn.addEventListener('click', function(){
