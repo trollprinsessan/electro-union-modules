@@ -301,7 +301,6 @@
   overflow:hidden;
   background:#fff;
   z-index:1;
-  box-shadow:2px 4px 20px rgba(0,0,0,.22);
   container-type:inline-size;
 }
 
