@@ -1,22 +1,28 @@
 /*
  * Electro Union OS — Postcard Generator (v2)
  *
- * Campaign-first layout. Not a tool, not a player — a world.
- * Two columns: postcard canvas (left, generous) + controls (right, clean).
- * EU blue desktop frames the white window. The postcard is the hero.
+ * Poolsuite FM pastiche: peachy desktop, fixed top menubar, floating
+ * window panel. The postcard generator runs as an FM-player layout
+ * inside the window: dark video hero → file row → track row → tab strip
+ * → tab content → transport bar → channel strip → ticker.
  *
  * IFRAME CONSTRAINT
  *   Cross-origin iframes (Webflow embed) kill CSS `transition` and
- *   `@keyframes`. All state changes are instant — JS-driven or DOM toggle.
+ *   `@keyframes`. So:
+ *     - No `transition` on any property — every state change is instant.
+ *     - Progress bar, clock, ticker: JS-driven (style.width / textContent).
+ *     - Sticker @keyframes survive only as non-iframe enhancement; the
+ *       export is canvas-rendered via JS, so iframe consumers still get
+ *       correct output.
  */
 
 /* ═══════════════════════════════════════════════════════════════════════
-   DESKTOP — EU blue. Warm boot, then you're in the brand.
+   DESKTOP
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os-body{
   margin:0;
-  background:#003399;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  background:#f4e6d8;
+  font-family:'Times Eighteen',Georgia,serif;
   color:#1a1a1a;
   min-height:100vh;
 }
@@ -26,12 +32,11 @@
   padding-top:42px;
   padding-bottom:34px;
 }
-/* Time-based desktop accents */
-.eu-os-body.is-golden{ background:#001f7a; }
-.eu-os-body.is-aperitivo{ background:#1a0066; }
+.eu-os-body.is-golden{ background:#f3e2a8; }
+.eu-os-body.is-aperitivo{ background:#f2d4b8; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   BOOT LOADER — warm, photographic, immersive. Unchanged.
+   BOOT LOADER
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__boot{
   position:fixed;
@@ -166,15 +171,16 @@
 .eu-os__menubar-clock,.eu-os__menubar-date{ font-variant-numeric:tabular-nums; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   WINDOW PANEL — wider (960px) to give the postcard more room.
+   WINDOW PANEL
+   Narrower than before — 900px max-width keeps it window-like.
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__window{
-  width:min(960px,calc(100% - 32px));
+  width:min(900px,calc(100% - 32px));
   margin:24px auto 16px;
-  background:#fff;
+  background:#fdfaf4;
   border:1.5px solid #1a1a1a;
   border-radius:3px;
-  box-shadow:5px 5px 0 rgba(0,0,0,.08),0 20px 60px rgba(0,0,0,.35);
+  box-shadow:5px 5px 0 rgba(0,0,0,.05),0 16px 44px rgba(0,0,0,.18);
   overflow:hidden;
 }
 .eu-os__window[hidden]{display:none}
@@ -186,7 +192,7 @@
   gap:12px;
   height:36px;
   padding:0 12px;
-  background:#fff;
+  background:#fdfaf4;
   border-bottom:1.5px solid #1a1a1a;
 }
 .eu-os__window-close{
@@ -214,7 +220,7 @@
   font-weight:bold;font-size:18px;letter-spacing:.005em;
   font-variant-numeric:tabular-nums;color:#1a1a1a;
 }
-.eu-os__window-body{ background:#fff; }
+.eu-os__window-body{ background:#fdfaf4; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    OS-INFO STRIP
@@ -243,39 +249,43 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   APP LAYOUT — two-column grid inside the window body.
-   Left: postcard canvas (flexible). Right: controls (fixed 300px).
+   FM PLAYER — main layout container inside the window body.
+   Every section is a horizontal stripe, full window width.
    ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__app{
-  display:grid;
-  grid-template-columns:1fr 300px;
-  align-items:stretch;
+.eu-fm{
+  display:flex;
+  flex-direction:column;
 }
 
-/* ─── CANVAS COLUMN ──────────────────────────────────────────────────── */
-.eu-pg2__canvas-col{
-  background:#fff;
-  border-right:1.5px solid #1a1a1a;
-  padding:44px 44px 44px 96px; /* left: extra room for lightswitch */
+/* ─── HERO ───────────────────────────────────────────────────────────── */
+.eu-fm__hero{
+  background:#111;
+  border-bottom:1.5px solid #1a1a1a;
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:28px 80px 28px 80px;
+  position:relative;
+  min-height:300px;
 }
-.eu-pg2__stage{
+/* The stage is a positioned container so the absolute switch-mount
+   doesn't overflow the hero unexpectedly */
+.eu-fm .eu-pg2__stage{
   position:relative;
   width:100%;
-  max-width:420px;
+  max-width:300px;
 }
-.eu-pg2__framed{
+.eu-fm .eu-pg2__framed{
   position:relative;
   width:100%;
   aspect-ratio:1063/1270;
+  margin:0 auto;
 }
-.eu-pg2__frame{
+.eu-fm .eu-pg2__frame{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:fill;pointer-events:none;z-index:0;
 }
-.eu-pg2__photo{
+.eu-fm .eu-pg2__photo{
   position:absolute;
   top:49.4%;left:48.7%;
   transform:translate(-50%,-50%);
@@ -284,119 +294,157 @@
   overflow:hidden;
   background:#fff;
   z-index:1;
-  box-shadow:2px 4px 20px rgba(0,0,0,.22);
+  box-shadow:2px 4px 16px rgba(0,0,0,.3);
   container-type:inline-size;
 }
 
-/* ─── CONTROLS COLUMN ───────────────────────────────────────────────── */
-.eu-pg2__controls-col{
-  background:#fff;
-  display:flex;
-  flex-direction:column;
-  overflow-y:auto;
-}
-
-/* ─── CONTROL SECTIONS ──────────────────────────────────────────────── */
-.eu-pg2__ctrl-section{
-  padding:14px 16px 16px;
-  flex-shrink:0;
-}
-.eu-pg2__ctrl-section + .eu-pg2__ctrl-section{
-  border-top:1.5px solid #1a1a1a;
-}
-.eu-pg2__ctrl-section--actions{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  margin-top:auto;
-}
-
-/* Section heading row: label left, sub-tabs right */
-.eu-pg2__ctrl-head{
+/* ─── FILE ROW ──────────────────────────────────────────────────────── */
+.eu-fm__file-row{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-
-/* Primary section label */
-.eu-pg2__ctrl-label{
+  gap:8px;
+  padding:8px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
   color:#1a1a1a;
-  display:block;
-  margin-bottom:9px;
+  overflow:hidden;
 }
-.eu-pg2__ctrl-head .eu-pg2__ctrl-label{
-  margin-bottom:0;
+.eu-fm__filename{ font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.eu-fm__file-sep{ color:#bbb;flex:0 0 auto; }
+.eu-fm__file-dims,.eu-fm__file-ratio{ color:#888;flex:0 0 auto; }
+
+/* ─── TRACK ROW ─────────────────────────────────────────────────────── */
+.eu-fm__track-row{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:14px 16px 12px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+}
+.eu-fm__track-info{ flex:1;min-width:0; }
+.eu-fm__track-title{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(16px,2.2vw,22px);
+  color:#1a1a1a;
+  line-height:1.1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.eu-fm__track-sub{
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#aaa;
+  margin-top:5px;
+}
+.eu-fm__heart{
+  flex:0 0 auto;
+  width:34px;height:34px;
+  border:1.5px solid #1a1a1a;
+  border-radius:4px;
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;line-height:1;
+  cursor:var(--eu-cursor);color:#1a1a1a;
+  padding:0;
+}
+.eu-fm__heart[aria-pressed="true"],.eu-fm__heart.is-active{
+  background:#CC0000;border-color:#CC0000;color:#fff;
 }
 
-/* Smaller inline label (SIZE, Front, Format…) */
-.eu-pg2__ctrl-sub-label{
+/* ─── TAB STRIP ─────────────────────────────────────────────────────── */
+.eu-fm__tabs{
+  display:flex;
+  gap:6px;
+  padding:10px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.eu-fm__tab{
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:8px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
-  color:#aaa;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 14px;
+  border:1.5px solid #1a1a1a;
+  border-radius:999px;
+  background:transparent;
+  cursor:var(--eu-cursor);
+  color:#1a1a1a;
+  white-space:nowrap;
   flex:0 0 auto;
 }
-
-/* Pair row: two side-by-side items */
-.eu-pg2__ctrl-pair-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-.eu-pg2__ctrl-pair-item{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
+.eu-fm__tab.is-active{
+  background:#1a1a1a;color:#fdfaf4;
 }
 
-/* Size row: SIZE label + halftone slider + readout */
-.eu-pg2__size-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:10px;
+/* ─── TAB CONTENT ───────────────────────────────────────────────────── */
+.eu-fm__content{
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  max-height:220px;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+.eu-fm__panel{
+  padding:14px 16px 16px;
+}
+.eu-fm__panel[hidden]{display:none}
+.eu-fm__panel-section{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid #e8e8e8;
+}
+.eu-fm__panel-section-title{
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:#aaa;margin-bottom:9px;
+}
+.eu-fm__settings-footer{
+  margin-top:22px;
+  padding-top:12px;
+  border-top:1px solid #e8e8e8;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#bbb;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   CELL GRID — stamp/motion/tool tiles
-   ═══════════════════════════════════════════════════════════════════════ */
+/* ─── OS-CELL GRID ──────────────────────────────────────────────────── */
 .eu-pg2__cell-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(62px,1fr));
-  gap:5px;
+  /* auto-fill keeps cells small regardless of panel width */
+  grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
+  gap:6px;
 }
-/* Stamp grid: always 3 columns so 9 items = 3 neat rows */
-.eu-pg2__cell-grid--stamps{ grid-template-columns:repeat(3,1fr); }
-/* Front picker: 2 cells side by side */
-.eu-pg2__cell-grid--front{  grid-template-columns:repeat(2,1fr); }
-/* Motion: 3 per row, 2 rows */
-.eu-pg2__cell-grid--motion{ grid-template-columns:repeat(3,1fr); }
-/* Draw tools: all 4 in one row */
-.eu-pg2__cell-grid--tools{  grid-template-columns:repeat(4,1fr); }
+/* These override to specific column counts where layout is fixed */
+.eu-pg2__cell-grid--front{   grid-template-columns:repeat(2,1fr); }
+.eu-pg2__cell-grid--tools{   grid-template-columns:repeat(4,minmax(0,1fr)); }
+.eu-pg2__cell-grid--pointer{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.eu-pg2__cell-grid--motion{  grid-template-columns:repeat(3,minmax(0,1fr)); }
 
 .eu-pg2__cell{
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:4px;
-  padding:8px 4px 6px;
+  gap:5px;
+  padding:10px 6px 8px;
   background:#fff;
   border:1.5px solid #e0e0e0;
-  border-radius:4px;
+  border-radius:5px;
   cursor:var(--eu-cursor);
   color:#1a1a1a;
   aspect-ratio:1;
   user-select:none;
 }
-.eu-pg2__cell--motion{ aspect-ratio:auto;padding:8px 6px; }
+.eu-pg2__cell--motion{ aspect-ratio:auto;padding:10px 6px; }
 .eu-pg2__cell.is-active{
   background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
 }
 .eu-pg2__cell-img{
-  width:62%;aspect-ratio:1;
+  width:60%;aspect-ratio:1;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;flex:0 0 auto;
 }
@@ -404,12 +452,17 @@
   width:100%;height:100%;object-fit:contain;
   pointer-events:none;-webkit-user-drag:none;
 }
-.eu-pg2__cell-img--eu img{ width:150%;height:150%; }
+/* EU sticker images are designed to overflow the cell area */
+.eu-pg2__cell-img--eu img{
+  width:150%;height:150%;
+}
 .eu-pg2__cell-img--photo{ border-radius:2px;overflow:hidden; }
 .eu-pg2__cell-img--photo img{ object-fit:cover; }
-.eu-pg2__cell-img--glyph{ font-size:20px;width:auto;aspect-ratio:auto; }
+.eu-pg2__cell-img--glyph{
+  font-size:22px;width:auto;aspect-ratio:auto;
+}
 .eu-pg2__cell-img--swatch{
-  width:62%;aspect-ratio:1;
+  width:60%;aspect-ratio:1;
   position:relative;border-radius:3px;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
 }
@@ -423,24 +476,23 @@ input[type=color]{
 }
 .eu-pg2__cell-label{
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  font-size:8px;letter-spacing:.12em;text-transform:uppercase;
   text-align:center;
   line-height:1.2;
 }
 .eu-pg2__cell svg{
-  width:52%;height:52%;display:block;
+  width:55%;height:55%;display:block;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   SUB-TABS (Pastry / Stickers)
-   ═══════════════════════════════════════════════════════════════════════ */
+/* ─── SUB-TABS (Pastry / Stickers) ─────────────────────────────────── */
 .eu-pg2__tabs{
-  display:flex;gap:4px;
+  display:flex;gap:5px;
+  margin-bottom:11px;
 }
 .eu-pg2__tab{
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:8px;letter-spacing:.14em;text-transform:uppercase;
-  padding:3px 10px;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 12px;
   border:1.5px solid #e0e0e0;border-radius:999px;
   background:transparent;cursor:var(--eu-cursor);color:#1a1a1a;
 }
@@ -449,51 +501,10 @@ input[type=color]{
 }
 .eu-pg2__tab-panel[hidden]{display:none}
 
-/* ═══════════════════════════════════════════════════════════════════════
-   TAGLINE INPUT — big, bold, campaigns-voice
-   ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__tagline-input{
-  width:100%;
-  background:#fff;
-  border:1.5px solid #e0e0e0;
-  border-radius:3px;
-  padding:10px 12px;
-  font-family:'Times Eighteen',Georgia,serif;
-  font-weight:bold;
-  font-size:16px;letter-spacing:.005em;
-  color:#1a1a1a;outline:none;
-  cursor:var(--eu-cursor);
-  box-sizing:border-box;
-}
-.eu-pg2__tagline-input:focus{ border-color:#003399;color:#003399; }
-.eu-pg2__tagline-input::placeholder{
-  font-weight:400;font-style:italic;color:#ccc;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   FORMAT / DISPLAY / CURSOR TOGGLES
-   ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__toggle-row{ display:flex;gap:4px; }
-.eu-pg2__toggle-row--stacked{ flex-direction:column;gap:4px; }
-.eu-pg2__toggle{
-  flex:1;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:8px;letter-spacing:.12em;text-transform:uppercase;
-  padding:6px 8px;
-  border:1.5px solid #e0e0e0;border-radius:3px;
-  background:#fff;cursor:var(--eu-cursor);color:#1a1a1a;
-  text-align:center;
-  white-space:nowrap;
-}
-.eu-pg2__toggle.is-active{
-  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   APPROVE CHIP
-   ═══════════════════════════════════════════════════════════════════════ */
+/* ─── APPROVE CHIP ──────────────────────────────────────────────────── */
 .eu-pg2__chip{
   display:inline-flex;align-items:center;gap:8px;
+  margin-top:13px;
   font-family:'ABC Schengen Mono','Courier New',monospace;
   font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:#1a1a1a;cursor:var(--eu-cursor);user-select:none;
@@ -510,34 +521,97 @@ input[type=color]{
   background:#003399;border-color:#003399;color:#fff;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   ACTION BUTTONS — full-width, tall, campaign-blue and red
-   ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__action-btn{
+/* ─── FORMAT / DISPLAY TOGGLES ──────────────────────────────────────── */
+.eu-pg2__toggle-row{ display:flex;gap:5px; }
+.eu-pg2__toggle{
+  flex:1;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:7px 10px;
+  border:1.5px solid #e0e0e0;border-radius:5px;
+  background:#fff;cursor:var(--eu-cursor);color:#1a1a1a;
+  text-align:center;
+}
+.eu-pg2__toggle.is-active{
+  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
+}
+
+/* ─── TRANSPORT BAR ─────────────────────────────────────────────────── */
+.eu-fm__transport{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  padding:12px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  align-items:center;
+}
+.eu-fm__tagline-input{
   width:100%;
-  height:44px;
+  background:#fff;
+  border:1.5px solid #e0e0e0;
+  border-radius:4px;
+  padding:9px 12px;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:15px;letter-spacing:.005em;
+  color:#1a1a1a;outline:none;
+  cursor:var(--eu-cursor);
+  box-sizing:border-box;
+}
+.eu-fm__tagline-input:focus{ border-color:#003399;color:#003399; }
+.eu-fm__tagline-input::placeholder{
+  font-weight:400;font-style:italic;color:#bbb;
+}
+.eu-fm__transport-actions{
+  display:flex;gap:8px;flex:0 0 auto;
+}
+.eu-fm__action-btn{
+  height:40px;
+  padding:0 16px;
   border:none;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
   cursor:var(--eu-cursor);color:#fff;
-  border-radius:3px;
+  border-radius:4px;
   white-space:nowrap;
 }
-.eu-pg2__action-btn--send{ background:#003399; }
-.eu-pg2__action-btn--save{ background:#CC0000; }
-.eu-pg2__action-btn.is-disabled{
-  background:#e8e8e8;color:#bbb;pointer-events:none;
+.eu-fm__action-btn--send{ background:#003399; }
+.eu-fm__action-btn--save{ background:#CC0000; }
+.eu-fm__action-btn.is-disabled{
+  background:#e0e0e0;color:#aaa;pointer-events:none;
 }
-.eu-pg2__action-btn.is-busy{ opacity:.7;pointer-events:none; }
+.eu-fm__action-btn.is-busy{ opacity:.7;pointer-events:none; }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   HALFTONE SIZE SLIDER
-   ═══════════════════════════════════════════════════════════════════════ */
+/* ─── CHANNEL STRIP ─────────────────────────────────────────────────── */
+.eu-fm__channel{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding:8px 16px;
+  border-bottom:1.5px solid #1a1a1a;
+  background:#fdfaf4;
+  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#aaa;
+}
+.eu-fm__channel-name{
+  flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.eu-fm__channel-size{
+  display:flex;align-items:center;gap:10px;flex:0 0 auto;
+}
+.eu-fm__channel-label{ color:#1a1a1a;font-weight:700; }
+.eu-fm__channel-readout{
+  color:#1a1a1a;font-weight:700;min-width:22px;text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ─── HALFTONE SLIDER ───────────────────────────────────────────────── */
 .eu-pg2__halftone-slider{
   position:relative;
-  flex:1;
-  height:20px;
+  width:160px;height:22px;
   display:flex;align-items:center;
+  flex:0 0 auto;
 }
 .eu-pg2__size-slider{
   position:absolute;inset:0;
@@ -551,29 +625,29 @@ input[type=color]{
 }
 .eu-pg2__size-slider::-webkit-slider-thumb{
   -webkit-appearance:none;
-  width:16px;height:16px;
+  width:18px;height:18px;
   border-radius:50%;
-  background:#fff;
+  background:#fdfaf4;
   border:2px solid #1a1a1a;
   cursor:var(--eu-cursor);
 }
 .eu-pg2__size-slider::-moz-range-thumb{
-  width:13px;height:13px;
+  width:14px;height:14px;
   border-radius:50%;
   border:2px solid #1a1a1a;
-  background:#fff;
+  background:#fdfaf4;
   cursor:var(--eu-cursor);
 }
 .eu-pg2__halftone-track{
   position:absolute;
   left:0;right:0;
   top:50%;transform:translateY(-50%);
-  height:9px;
+  height:10px;
   background:
     radial-gradient(circle,#ccc 36%,transparent 36%) 0 0 / 6px 6px;
   pointer-events:none;
   z-index:1;
-  border-radius:4px;
+  border-radius:5px;
   overflow:hidden;
 }
 .eu-pg2__halftone-fill{
@@ -584,23 +658,21 @@ input[type=color]{
     radial-gradient(circle,#003399 36%,transparent 36%) 0 0 / 6px 6px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   TICKER — campaign manifesto strip at the base of the window
-   ═══════════════════════════════════════════════════════════════════════ */
+/* ─── TICKER ────────────────────────────────────────────────────────── */
 .eu-pg2__ticker{
-  border-top:1.5px solid #1a1a1a;
-  padding:clamp(9px,1.2vw,13px) 16px;
+  padding:clamp(9px,1.2vw,14px) 16px;
   display:flex;align-items:baseline;gap:12px;
   font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#1a1a1a;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#1a1a1a;
   overflow:hidden;
-  background:#fff;
+  background:#fdfaf4;
 }
-.eu-pg2__ticker-mark{ color:#003399;font-size:12px;flex:0 0 auto; }
+.eu-pg2__ticker-mark{ color:#003399;font-size:13px;flex:0 0 auto; }
 .eu-pg2__ticker-line{ white-space:nowrap;flex:1;overflow:hidden;text-overflow:ellipsis; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   POSTCARD CANVAS — background, items, tagline overlay
+   POSTCARD CANVAS — items, animations, tagline overlay.
+   (Shared with the FM hero context via inherited selectors.)
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__bg{
   position:absolute;inset:0;
@@ -622,7 +694,6 @@ input[type=color]{
   white-space:pre-line;padding:0 6%;
 }
 
-/* ─── STICKER ITEMS ─────────────────────────────────────────────────── */
 .eu-pg2__item{
   position:absolute;
   width:30%;aspect-ratio:1;
@@ -637,7 +708,6 @@ input[type=color]{
   pointer-events:none;-webkit-user-drag:none;
 }
 
-/* ─── STICKER ANIMATIONS ─────────────────────────────────────────────── */
 .eu-pg2__items.is-anim-bounce .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Bounce 1.2s ease-in-out infinite; }
 .eu-pg2__items.is-anim-beat   .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Beat   1.0s ease-in-out infinite; }
 .eu-pg2__items.is-anim-rotate .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Spin   1.6s linear    infinite; }
@@ -662,14 +732,17 @@ input[type=color]{
 }
 
 /* Invert display mode */
-.eu-pg2__photo.is-inverted{ filter:invert(1); }
+.eu-pg2__photo.is-inverted{
+  filter:invert(1);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
-   LIGHTSWITCH — physical wall switch, to the left of the postcard.
+   LIGHTSWITCH — preserved fully from postcard-generator v1.
+   In the FM hero it sits to the left of the postcard via position:absolute.
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__switch-mount{
   position:absolute;
-  left:-80px;
+  left:-30px;
   top:50%;
   transform:translateY(-50%);
   display:flex;
@@ -764,9 +837,16 @@ input[type=color]{
 }
 .eu-pg2__switch-label{
   font-family:'Times Eighteen',Georgia,serif;
-  font-style:italic;font-size:11px;
-  white-space:nowrap;color:#bbb;
+  font-style:italic;font-size:12px;
+  white-space:nowrap;color:#ccc;
   letter-spacing:.01em;text-align:center;
+}
+@media(max-width:640px){
+  .eu-pg2__switch-mount{
+    position:relative;left:auto;top:auto;transform:none;
+    margin:0 auto 12px;
+  }
+  .eu-fm__hero{ padding:20px 20px 20px 20px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -812,27 +892,10 @@ input[type=color]{
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════════════════════════ */
-@media(max-width:700px){
-  .eu-pg2__app{
-    grid-template-columns:1fr;
-  }
-  .eu-pg2__canvas-col{
-    border-right:none;
-    border-bottom:1.5px solid #1a1a1a;
-    padding:32px 40px 32px 80px;
-  }
-  .eu-pg2__switch-mount{
-    left:-68px;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
    APERITIVO + GOLDEN HOUR ACCENTS
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os-body.is-aperitivo .eu-pg2__ticker-mark{ color:#d35400; }
-.eu-os-body.is-aperitivo .eu-pg2__action-btn--send{ background:#d35400; }
-.eu-os-body.is-golden .eu-pg2__action-btn--send{ background:#b08600; }
-.eu-os-body.is-golden .eu-pg2__action-btn--save{ background:#a44a00; }
+.eu-os-body.is-aperitivo .eu-fm__action-btn--send{ background:#d35400; }
+.eu-os-body.is-golden .eu-fm__action-btn--send{ background:#b08600; }
+.eu-os-body.is-golden .eu-fm__action-btn--save{ background:#a44a00; }
 .eu-os-body.is-golden .eu-pg2__cell--sticker.is-active{ border-color:#b08600; }

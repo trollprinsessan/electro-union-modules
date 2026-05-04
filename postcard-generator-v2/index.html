@@ -17,10 +17,12 @@
 <body class="eu-os-body">
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     ELECTRO UNION OS
-     Boot loader → fake OS chrome → campaign postcard generator.
-     Two-column layout: postcard canvas left, controls right.
-     No CSS transitions (cross-origin iframe constraint — all state instant).
+     ELECTRO UNION OS — Poolsuite FM pastiche.
+     Fake late-90s OS: peachy desktop, fixed top menubar, floating window
+     panel with title bar and boot loader. The postcard generator runs as
+     an FM-player layout inside the window: video hero → track info → tabs
+     → transport bar → channel strip. Every element is instant — no CSS
+     transitions (cross-origin iframe constraint).
      ═══════════════════════════════════════════════════════════════════════ -->
 <div class="eu-os">
 
@@ -83,15 +85,13 @@
     </div>
 
     <div class="eu-os__window-body">
+      <div class="eu-fm" id="euFm">
 
-      <div class="eu-pg2__app">
-
-        <!-- ═══════════════════════════════════════════════════════════════
-             LEFT COLUMN — postcard canvas.
-             Generous padding, lightswitch to the left of the framed card.
-             The postcard is the hero. Everything else serves it.
-             ═══════════════════════════════════════════════════════════════ -->
-        <div class="eu-pg2__canvas-col">
+        <!-- ─────────────────────────────────────────────────────────────
+             HERO — full-width postcard canvas. Dark surround like a
+             video player. Postcard centred, lightswitch to its left.
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-fm__hero">
           <div class="eu-pg2__stage" id="euPg2Stage">
 
             <div class="eu-pg2__switch-mount">
@@ -124,28 +124,56 @@
               </div>
             </div>
 
-          </div><!-- /stage -->
-        </div><!-- /canvas-col -->
+          </div>
+        </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════
-             RIGHT COLUMN — controls.
-             Sections separated by ruled lines. Top to bottom: stamps →
-             tagline → front+format → motion → tools → approve+actions.
-             ═══════════════════════════════════════════════════════════════ -->
-        <div class="eu-pg2__controls-col">
+        <!-- ─────────────────────────────────────────────────────────────
+             FILE ROW — filename · dims · ratio. Like Poolsuite's
+             "track filename · duration" row under the video.
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-fm__file-row">
+          <span class="eu-fm__filename" id="euFmFilename">greetings_from_the_electro_union.png</span>
+          <span class="eu-fm__file-sep" aria-hidden="true">·</span>
+          <span class="eu-fm__file-dims" id="euFmFileDims">1080 × 1350</span>
+          <span class="eu-fm__file-sep" aria-hidden="true">·</span>
+          <span class="eu-fm__file-ratio" id="euFmFileRatio">4:5</span>
+        </div>
 
-          <!-- ── STAMPS ─────────────────────────────────────────────── -->
-          <div class="eu-pg2__ctrl-section">
-            <div class="eu-pg2__ctrl-head">
-              <span class="eu-pg2__ctrl-label">Choose a stamp</span>
-              <div class="eu-pg2__tabs" role="tablist">
-                <button type="button" class="eu-pg2__tab is-active" data-tab="pastry">Pastry</button>
-                <button type="button" class="eu-pg2__tab" data-tab="stickers">Stickers</button>
-              </div>
+        <!-- ─────────────────────────────────────────────────────────────
+             TRACK ROW — tagline as track title, favourites heart.
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-fm__track-row">
+          <div class="eu-fm__track-info">
+            <div class="eu-fm__track-title" id="euFmTrackTitle">SAME BAGUETTE. OWN POWER.</div>
+            <div class="eu-fm__track-sub">Electro Union FM · Campaign Mix</div>
+          </div>
+          <button type="button" class="eu-fm__heart" id="euFmHeart" aria-label="Add to favourites" aria-pressed="false">♡</button>
+        </div>
+
+        <!-- ─────────────────────────────────────────────────────────────
+             TAB STRIP — rounded pill tabs, black fill on active.
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-fm__tabs" role="tablist">
+          <button type="button" class="eu-fm__tab is-active" data-fm-tab="stamps" role="tab" aria-selected="true">Stamps</button>
+          <button type="button" class="eu-fm__tab" data-fm-tab="front" role="tab" aria-selected="false">Front</button>
+          <button type="button" class="eu-fm__tab" data-fm-tab="motion" role="tab" aria-selected="false">Motion</button>
+          <button type="button" class="eu-fm__tab" data-fm-tab="tools" role="tab" aria-selected="false">Tools</button>
+          <button type="button" class="eu-fm__tab" data-fm-tab="settings" role="tab" aria-selected="false">Settings</button>
+        </div>
+
+        <!-- ─────────────────────────────────────────────────────────────
+             TAB CONTENT — swapped by JS (instant hidden toggle).
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-fm__content">
+
+          <!-- ── STAMPS ── -->
+          <div class="eu-fm__panel" id="euFmPanelStamps" data-fm-panel="stamps">
+            <div class="eu-pg2__tabs" role="tablist">
+              <button type="button" class="eu-pg2__tab is-active" data-tab="pastry">Pastry</button>
+              <button type="button" class="eu-pg2__tab" data-tab="stickers">Stickers</button>
             </div>
-
             <div class="eu-pg2__tab-panel" id="euPg2PastryGrid" data-tab-panel="pastry">
-              <div class="eu-pg2__cell-grid eu-pg2__cell-grid--stamps">
+              <div class="eu-pg2__cell-grid">
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker is-active" data-sticker="0"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette" loading="lazy"></span><span class="eu-pg2__cell-label">Baguette</span></button>
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="1"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/DSC_0410-a.png" alt="Stroopwafel" loading="lazy"></span><span class="eu-pg2__cell-label">Stroopwafel</span></button>
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="2"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/045.png" alt="Kanelbulle" loading="lazy"></span><span class="eu-pg2__cell-label">Kanelbulle</span></button>
@@ -157,9 +185,8 @@
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="8"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/sernik.png" alt="Sernik" loading="lazy"></span><span class="eu-pg2__cell-label">Sernik</span></button>
               </div>
             </div>
-
             <div class="eu-pg2__tab-panel" id="euPg2StickerGrid" data-tab-panel="stickers" hidden>
-              <div class="eu-pg2__cell-grid eu-pg2__cell-grid--stamps">
+              <div class="eu-pg2__cell-grid">
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="9"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_01.png" alt="EU·01" loading="lazy"></span><span class="eu-pg2__cell-label">EU·01</span></button>
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="10"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_02.png" alt="EU·02" loading="lazy"></span><span class="eu-pg2__cell-label">EU·02</span></button>
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="11"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_03.png" alt="EU·03" loading="lazy"></span><span class="eu-pg2__cell-label">EU·03</span></button>
@@ -171,57 +198,32 @@
                 <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="17"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_14.png" alt="EU·09" loading="lazy"></span><span class="eu-pg2__cell-label">EU·09</span></button>
               </div>
             </div>
+          </div>
 
-            <div class="eu-pg2__size-row">
-              <span class="eu-pg2__ctrl-sub-label">SIZE</span>
-              <div class="eu-pg2__halftone-slider">
-                <input type="range" class="eu-pg2__size-slider" id="euPg2Size" min="22" max="65" step="1" value="44" aria-label="Sticker size">
-                <div class="eu-pg2__halftone-track" aria-hidden="true">
-                  <div class="eu-pg2__halftone-fill" id="euPg2SizeFill"></div>
-                </div>
-              </div>
-              <span class="eu-pg2__ctrl-sub-label" id="euPg2SizeReadout">44</span>
+          <!-- ── FRONT ── -->
+          <div class="eu-fm__panel" id="euFmPanelFront" data-fm-panel="front" hidden>
+            <div class="eu-pg2__cell-grid eu-pg2__cell-grid--front">
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--front" id="euPg2BgShow" aria-label="Choose postcard image">
+                <span class="eu-pg2__cell-img eu-pg2__cell-img--photo"><img id="euPg2BgShowImg" src="../postcard-generator/BACKGROUNDS/original_827931d0025519cb087cb567ddbc1e31.png" alt="" loading="lazy"></span>
+                <span class="eu-pg2__cell-label">Image</span>
+              </button>
+              <label class="eu-pg2__cell eu-pg2__cell--front is-active" id="euPg2BgColor" title="Pick a colour">
+                <span class="eu-pg2__cell-img eu-pg2__cell-img--swatch">
+                  <span class="eu-pg2__bg-swatch" id="euPg2BgSwatch"></span>
+                  <input type="color" id="euPg2BgPicker" value="#ffffff">
+                </span>
+                <span class="eu-pg2__cell-label">Colour</span>
+              </label>
             </div>
+            <label class="eu-pg2__chip" id="euPg2Approve">
+              <input type="checkbox" id="euPg2ApproveBox">
+              <span class="eu-pg2__chip-mark" aria-hidden="true">☐</span>
+              <span class="eu-pg2__chip-label">I approve this message</span>
+            </label>
           </div>
 
-          <!-- ── TAGLINE ─────────────────────────────────────────────── -->
-          <div class="eu-pg2__ctrl-section">
-            <span class="eu-pg2__ctrl-label">Tagline</span>
-            <input type="text" id="euPg2TaglineInput" class="eu-pg2__tagline-input" placeholder="SAME ___. OWN POWER." maxlength="50" autocomplete="off" spellcheck="false">
-          </div>
-
-          <!-- ── FRONT + FORMAT ─────────────────────────────────────── -->
-          <div class="eu-pg2__ctrl-section">
-            <div class="eu-pg2__ctrl-pair-row">
-              <div class="eu-pg2__ctrl-pair-item">
-                <span class="eu-pg2__ctrl-sub-label">Front</span>
-                <div class="eu-pg2__cell-grid eu-pg2__cell-grid--front">
-                  <button type="button" class="eu-pg2__cell eu-pg2__cell--front" id="euPg2BgShow" aria-label="Choose postcard image">
-                    <span class="eu-pg2__cell-img eu-pg2__cell-img--photo"><img id="euPg2BgShowImg" src="../postcard-generator/BACKGROUNDS/original_827931d0025519cb087cb567ddbc1e31.png" alt="" loading="lazy"></span>
-                    <span class="eu-pg2__cell-label">Image</span>
-                  </button>
-                  <label class="eu-pg2__cell eu-pg2__cell--front is-active" id="euPg2BgColor" title="Pick a colour">
-                    <span class="eu-pg2__cell-img eu-pg2__cell-img--swatch">
-                      <span class="eu-pg2__bg-swatch" id="euPg2BgSwatch"></span>
-                      <input type="color" id="euPg2BgPicker" value="#ffffff">
-                    </span>
-                    <span class="eu-pg2__cell-label">Colour</span>
-                  </label>
-                </div>
-              </div>
-              <div class="eu-pg2__ctrl-pair-item">
-                <span class="eu-pg2__ctrl-sub-label">Format</span>
-                <div class="eu-pg2__toggle-row eu-pg2__toggle-row--stacked">
-                  <button type="button" class="eu-pg2__toggle is-active" data-format="feed">Feed · 4:5</button>
-                  <button type="button" class="eu-pg2__toggle" data-format="story">Story · 9:16</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── MOTION ─────────────────────────────────────────────── -->
-          <div class="eu-pg2__ctrl-section">
-            <span class="eu-pg2__ctrl-label">Motion</span>
+          <!-- ── MOTION ── -->
+          <div class="eu-fm__panel" id="euFmPanelMotion" data-fm-panel="motion" hidden>
             <div class="eu-pg2__cell-grid eu-pg2__cell-grid--motion">
               <button type="button" class="eu-pg2__cell eu-pg2__cell--motion is-active" data-anim="none"><span class="eu-pg2__cell-label">None</span></button>
               <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="bounce"><span class="eu-pg2__cell-label">Bounce</span></button>
@@ -230,70 +232,110 @@
               <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="wiggle"><span class="eu-pg2__cell-label">Wiggle</span></button>
               <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="orbit"><span class="eu-pg2__cell-label">Orbit</span></button>
             </div>
-          </div>
-
-          <!-- ── TOOLS + DISPLAY ────────────────────────────────────── -->
-          <div class="eu-pg2__ctrl-section">
-            <div class="eu-pg2__ctrl-pair-row">
-              <div class="eu-pg2__ctrl-pair-item">
-                <span class="eu-pg2__ctrl-sub-label">Draw</span>
-                <div class="eu-pg2__cell-grid eu-pg2__cell-grid--tools">
-                  <button type="button" class="eu-pg2__cell eu-pg2__cell--tool is-active" id="euPg2Pencil" aria-label="Draw" aria-pressed="true">
-                    <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M22 4 L28 10 L11 27 L4 28 L5 21 Z M21 7 L25 11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg></span>
-                    <span class="eu-pg2__cell-label">Draw</span>
-                  </button>
-                  <button type="button" class="eu-pg2__cell eu-pg2__cell--tool" id="euPg2Grab" aria-label="Grab" aria-pressed="false">
-                    <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 16 V8 a2 2 0 0 1 4 0 V14 V6 a2 2 0 0 1 4 0 V14 V8 a2 2 0 0 1 4 0 V16 V12 a2 2 0 0 1 4 0 V20 Q27 28 19 28 H17 Q11 28 9 22 L6 17 Q5 14 8 13 Q10 13 11 15 Z" fill="currentColor"/></svg></span>
-                    <span class="eu-pg2__cell-label">Grab</span>
-                  </button>
-                  <button type="button" class="eu-pg2__cell eu-pg2__cell--tool" id="euPg2Undo" aria-label="Undo">
-                    <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12 L12 3 L12 8 H18 Q26 8 26 16 V28 H22 V16 Q22 12 18 12 H12 V21 Z" fill="currentColor"/></svg></span>
-                    <span class="eu-pg2__cell-label">Undo</span>
-                  </button>
-                  <button type="button" class="eu-pg2__cell eu-pg2__cell--tool" id="euPg2Clear" aria-label="Clear">
-                    <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 6 L16 14 L24 6 L26 8 L18 16 L26 24 L24 26 L16 18 L8 26 L6 24 L14 16 L6 8 Z" fill="currentColor"/></svg></span>
-                    <span class="eu-pg2__cell-label">Clear</span>
-                  </button>
-                </div>
-              </div>
-              <div class="eu-pg2__ctrl-pair-item">
-                <span class="eu-pg2__ctrl-sub-label">Display</span>
-                <div class="eu-pg2__toggle-row eu-pg2__toggle-row--stacked">
-                  <button type="button" class="eu-pg2__toggle is-active" data-display="normal">Normal</button>
-                  <button type="button" class="eu-pg2__toggle" data-display="invert">Invert</button>
-                </div>
-                <span class="eu-pg2__ctrl-sub-label eu-pg2__ctrl-sub-label--cursor" style="margin-top:10px">Cursor</span>
-                <div class="eu-pg2__toggle-row eu-pg2__toggle-row--stacked">
-                  <button type="button" class="eu-pg2__toggle is-active" data-pointer="bolt">⚡ Bolt</button>
-                  <button type="button" class="eu-pg2__toggle" data-pointer="pencil">✎ Pencil</button>
-                  <button type="button" class="eu-pg2__toggle" data-pointer="stamp">✉ Stamp</button>
-                </div>
+            <div class="eu-fm__panel-section">
+              <div class="eu-fm__panel-section-title">Format</div>
+              <div class="eu-pg2__toggle-row">
+                <button type="button" class="eu-pg2__toggle is-active" data-format="feed">Feed · 4:5</button>
+                <button type="button" class="eu-pg2__toggle" data-format="story">Story · 9:16</button>
               </div>
             </div>
           </div>
 
-          <!-- ── APPROVE + ACTIONS ──────────────────────────────────── -->
-          <div class="eu-pg2__ctrl-section eu-pg2__ctrl-section--actions">
-            <label class="eu-pg2__chip" id="euPg2Approve">
-              <input type="checkbox" id="euPg2ApproveBox">
-              <span class="eu-pg2__chip-mark" aria-hidden="true">☐</span>
-              <span class="eu-pg2__chip-label">I approve this message</span>
-            </label>
-            <button class="eu-pg2__action-btn eu-pg2__action-btn--send is-disabled" id="euPg2Share">SEND POSTCARD</button>
-            <button class="eu-pg2__action-btn eu-pg2__action-btn--save is-disabled" id="euPg2Download">SAVE POSTCARD</button>
+          <!-- ── TOOLS ── -->
+          <div class="eu-fm__panel" id="euFmPanelTools" data-fm-panel="tools" hidden>
+            <div class="eu-fm__panel-section-title">Draw</div>
+            <div class="eu-pg2__cell-grid eu-pg2__cell-grid--tools">
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--tool is-active" id="euPg2Pencil" aria-label="Draw" aria-pressed="true">
+                <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M22 4 L28 10 L11 27 L4 28 L5 21 Z M21 7 L25 11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg></span>
+                <span class="eu-pg2__cell-label">Draw</span>
+              </button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--tool" id="euPg2Grab" aria-label="Grab" aria-pressed="false">
+                <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 16 V8 a2 2 0 0 1 4 0 V14 V6 a2 2 0 0 1 4 0 V14 V8 a2 2 0 0 1 4 0 V16 V12 a2 2 0 0 1 4 0 V20 Q27 28 19 28 H17 Q11 28 9 22 L6 17 Q5 14 8 13 Q10 13 11 15 Z" fill="currentColor"/></svg></span>
+                <span class="eu-pg2__cell-label">Grab</span>
+              </button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--tool" id="euPg2Undo" aria-label="Undo">
+                <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12 L12 3 L12 8 H18 Q26 8 26 16 V28 H22 V16 Q22 12 18 12 H12 V21 Z" fill="currentColor"/></svg></span>
+                <span class="eu-pg2__cell-label">Undo</span>
+              </button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--tool" id="euPg2Clear" aria-label="Clear">
+                <span class="eu-pg2__cell-img"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 6 L16 14 L24 6 L26 8 L18 16 L26 24 L24 26 L16 18 L8 26 L6 24 L14 16 L6 8 Z" fill="currentColor"/></svg></span>
+                <span class="eu-pg2__cell-label">Clear</span>
+              </button>
+            </div>
+            <div class="eu-fm__panel-section">
+              <div class="eu-fm__panel-section-title">Pointer</div>
+              <div class="eu-pg2__cell-grid eu-pg2__cell-grid--pointer">
+                <button type="button" class="eu-pg2__cell eu-pg2__cell--pointer is-active" data-pointer="bolt">
+                  <span class="eu-pg2__cell-img eu-pg2__cell-img--glyph">⚡</span>
+                  <span class="eu-pg2__cell-label">Bolt</span>
+                </button>
+                <button type="button" class="eu-pg2__cell eu-pg2__cell--pointer" data-pointer="pencil">
+                  <span class="eu-pg2__cell-img eu-pg2__cell-img--glyph">✎</span>
+                  <span class="eu-pg2__cell-label">Pencil</span>
+                </button>
+                <button type="button" class="eu-pg2__cell eu-pg2__cell--pointer" data-pointer="stamp">
+                  <span class="eu-pg2__cell-img eu-pg2__cell-img--glyph">✉</span>
+                  <span class="eu-pg2__cell-label">Stamp</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-        </div><!-- /controls-col -->
+          <!-- ── SETTINGS ── -->
+          <div class="eu-fm__panel" id="euFmPanelSettings" data-fm-panel="settings" hidden>
+            <div class="eu-fm__panel-section-title">Display Mode</div>
+            <div class="eu-pg2__toggle-row">
+              <button type="button" class="eu-pg2__toggle is-active" data-display="normal">Normal</button>
+              <button type="button" class="eu-pg2__toggle" data-display="invert">Invert</button>
+            </div>
+            <div class="eu-fm__settings-footer">
+              Electro Union OS Version 3.7 · Copyright 1957–2026
+            </div>
+          </div>
 
-      </div><!-- /eu-pg2__app -->
+        </div><!-- /eu-fm__content -->
 
-      <!-- TICKER — spans full window width -->
-      <div class="eu-pg2__ticker" aria-hidden="true">
-        <span class="eu-pg2__ticker-mark">★</span>
-        <span class="eu-pg2__ticker-line" id="euPg2TickerLine">Greetings from the Electro Union</span>
-      </div>
+        <!-- ─────────────────────────────────────────────────────────────
+             TRANSPORT — tagline input + send/save. The editable
+             "now playing" display sits left; actions sit right.
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-fm__transport">
+          <input type="text" id="euPg2TaglineInput" class="eu-fm__tagline-input" placeholder="SAME ___. OWN POWER." maxlength="50" autocomplete="off" spellcheck="false">
+          <div class="eu-fm__transport-actions">
+            <button class="eu-fm__action-btn eu-fm__action-btn--send is-disabled" id="euPg2Share">SEND POSTCARD</button>
+            <button class="eu-fm__action-btn eu-fm__action-btn--save is-disabled" id="euPg2Download">SAVE POSTCARD</button>
+          </div>
+        </div>
 
-      <!-- BG IMAGE MODAL (fixed overlay) -->
+        <!-- ─────────────────────────────────────────────────────────────
+             CHANNEL STRIP — channel ID + SIZE slider.
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-fm__channel">
+          <span class="eu-fm__channel-name">Channel: Electro Union FM (Default)</span>
+          <div class="eu-fm__channel-size">
+            <span class="eu-fm__channel-label">SIZE</span>
+            <div class="eu-pg2__halftone-slider">
+              <input type="range" class="eu-pg2__size-slider" id="euPg2Size" min="22" max="65" step="1" value="44" aria-label="Sticker size">
+              <div class="eu-pg2__halftone-track" aria-hidden="true">
+                <div class="eu-pg2__halftone-fill" id="euPg2SizeFill"></div>
+              </div>
+            </div>
+            <span class="eu-fm__channel-readout" id="euPg2SizeReadout">44</span>
+          </div>
+        </div>
+
+        <!-- ─────────────────────────────────────────────────────────────
+             TICKER — campaign manifesto fragments + postcard language.
+             Instant swap every ~3s.
+             ───────────────────────────────────────────────────────────── -->
+        <div class="eu-pg2__ticker" aria-hidden="true">
+          <span class="eu-pg2__ticker-mark">★</span>
+          <span class="eu-pg2__ticker-line" id="euPg2TickerLine">Greetings from the Electro Union</span>
+        </div>
+
+      </div><!-- /eu-fm -->
+
+      <!-- BG MODAL (fixed overlay, outside FM flow) -->
       <div class="eu-pg2__bg-modal" id="euPg2BgModal" hidden>
         <div class="eu-pg2__bg-modal-backdrop" data-close></div>
         <div class="eu-pg2__bg-modal-panel" role="dialog" aria-label="Choose postcard front">
@@ -335,6 +377,6 @@
 
 </div>
 
-<script src="script.js?v=14"></script>
+<script src="script.js?v=13"></script>
 </body>
 </html>
