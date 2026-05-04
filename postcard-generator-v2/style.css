@@ -23,11 +23,10 @@
 .eu-os{
   position:relative;
   min-height:100vh;
-  padding:58px 0 50px;
+  padding:34px 0 28px; /* menubar top + os-info bottom */
   display:flex;
-  align-items:flex-start;
-  justify-content:stretch;
-  gap:0;
+  flex-direction:column;
+  align-items:stretch;
 }
 /* Time-based desktop accents */
 .eu-os-body.is-golden{ background:#f7f5f0; }
@@ -172,19 +171,17 @@
    WINDOW PANEL — wider (960px) to give the postcard more room.
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__window{
-  flex:0 0 320px;
-  width:320px;
+  flex:0 0 auto;
+  width:100%;
   margin:0;
-  align-self:stretch;
-  max-height:calc(100vh - 58px);
   display:flex;
   flex-direction:column;
   background:#fff;
   border:none;
-  border-left:1.5px solid #1a1a1a;
+  border-top:1.5px solid #1a1a1a;
   border-radius:0;
   box-shadow:none;
-  overflow:hidden;
+  overflow:visible;
 }
 .eu-os__window[hidden]{display:none}
 .eu-os__window-titlebar{
@@ -223,20 +220,19 @@
   font-weight:bold;font-size:18px;letter-spacing:.005em;
   font-variant-numeric:tabular-nums;color:#1a1a1a;
 }
-.eu-os__window-body{ background:#fff; flex:1; overflow-y:auto; }
+.eu-os__window-body{ background:#fff; overflow-x:auto; overflow-y:hidden; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    FREE-STANDING CANVAS — floats on the EU blue desktop beside the window
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__canvas{
   flex:1 1 0;
-  min-width:0;
-  align-self:flex-start;
-  padding:40px 40px 40px 100px;
-  position:relative;
+  min-height:0;
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:24px 40px 24px 100px; /* 100px left for lightswitch */
+  position:relative;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -286,7 +282,7 @@
 }
 .eu-pg2__stage{
   position:relative;
-  width:min(700px,100%);
+  width:min(460px,calc(100vw - 200px));
 }
 .eu-pg2__framed{
   position:relative;
@@ -309,27 +305,36 @@
   container-type:inline-size;
 }
 
-/* ─── CONTROLS COLUMN ───────────────────────────────────────────────── */
+/* ─── CONTROLS STRIP — horizontal instrument panel ──────────────────── */
 .eu-pg2__controls-col{
   background:#fff;
   display:flex;
-  flex-direction:column;
-  overflow-y:auto;
+  flex-direction:row;
+  align-items:stretch;
+  overflow-x:auto;
+  overflow-y:hidden;
 }
 
-/* ─── CONTROL SECTIONS ──────────────────────────────────────────────── */
+/* ─── CONTROL SECTIONS — individual modules ─────────────────────────── */
 .eu-pg2__ctrl-section{
-  padding:14px 16px 16px;
+  padding:12px 16px 14px;
   flex-shrink:0;
+  border-right:1.5px solid #1a1a1a;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
 .eu-pg2__ctrl-section + .eu-pg2__ctrl-section{
-  border-top:1.5px solid #1a1a1a;
+  border-top:none;
 }
 .eu-pg2__ctrl-section--actions{
   display:flex;
   flex-direction:column;
   gap:8px;
-  margin-top:auto;
+  margin-left:auto;
+  border-right:none;
+  min-width:160px;
+  justify-content:center;
 }
 
 /* Section heading row: label left, sub-tabs right */
@@ -362,14 +367,16 @@
 
 /* Pair row: two side-by-side items */
 .eu-pg2__ctrl-pair-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
+  display:flex;
   gap:12px;
+  align-items:flex-start;
 }
 .eu-pg2__ctrl-pair-item{
+  flex:0 0 auto;
   display:flex;
   flex-direction:column;
   gap:7px;
+  min-width:80px;
 }
 
 /* Size row: SIZE label + halftone slider + readout */
@@ -388,25 +395,25 @@
   grid-template-columns:repeat(auto-fill,minmax(62px,1fr));
   gap:5px;
 }
-/* Stamp grid: always 3 columns so 9 items = 3 neat rows */
-.eu-pg2__cell-grid--stamps{ grid-template-columns:repeat(3,1fr); }
+/* Stamp grid: 3 columns, 3 rows — compact in horizontal strip */
+.eu-pg2__cell-grid--stamps{ grid-template-columns:repeat(3,54px); }
 /* Front picker: 2 cells side by side */
-.eu-pg2__cell-grid--front{  grid-template-columns:repeat(2,1fr); }
+.eu-pg2__cell-grid--front{  grid-template-columns:repeat(2,60px); }
 /* Motion: 3 per row, 2 rows */
-.eu-pg2__cell-grid--motion{ grid-template-columns:repeat(3,1fr); }
+.eu-pg2__cell-grid--motion{ grid-template-columns:repeat(3,52px); }
 /* Draw tools: all 4 in one row */
-.eu-pg2__cell-grid--tools{  grid-template-columns:repeat(4,1fr); }
+.eu-pg2__cell-grid--tools{  grid-template-columns:repeat(4,48px); }
 
 .eu-pg2__cell{
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:4px;
-  padding:8px 4px 6px;
+  gap:3px;
+  padding:6px 3px 5px;
   background:#fff;
   border:1.5px solid #e0e0e0;
-  border-radius:4px;
+  border-radius:3px;
   cursor:var(--eu-cursor);
   color:#1a1a1a;
   aspect-ratio:1;
@@ -835,27 +842,15 @@ input[type=color]{
 /* ═══════════════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════════════ */
-@media(max-width:680px){
-  .eu-os{
-    flex-direction:column;
-    align-items:stretch;
-    padding:52px 0 44px;
-  }
-  .eu-os__window{
-    flex:0 0 auto;
-    width:100%;
-    border-left:none;
-    border-top:1.5px solid #1a1a1a;
-    max-height:none;
-  }
+@media(max-width:500px){
   .eu-pg2__canvas{
-    padding:32px 32px 32px 80px;
+    padding:20px 20px 20px 72px;
   }
   .eu-pg2__stage{
-    width:min(480px,100%);
+    width:calc(100vw - 120px);
   }
   .eu-pg2__switch-mount{
-    left:-68px;
+    left:-60px;
   }
 }
 
