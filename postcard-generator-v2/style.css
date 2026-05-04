@@ -189,9 +189,9 @@
 .eu-os__window[hidden]{display:none}
 .eu-os__window-titlebar{
   position:relative;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
+  display:flex;
   align-items:center;
+  justify-content:space-between;
   gap:12px;
   height:36px;
   padding:0 12px;
