@@ -15,7 +15,7 @@
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os-body{
   margin:0;
-  background:#003399;
+  background:#fff;
   font-family:'ABC Schengen Mono','Courier New',monospace;
   color:#1a1a1a;
   min-height:100vh;
@@ -23,12 +23,15 @@
 .eu-os{
   position:relative;
   min-height:100vh;
-  padding-top:42px;
-  padding-bottom:34px;
+  padding:58px 24px 50px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  gap:24px;
 }
 /* Time-based desktop accents */
-.eu-os-body.is-golden{ background:#001f7a; }
-.eu-os-body.is-aperitivo{ background:#1a0066; }
+.eu-os-body.is-golden{ background:#f7f5f0; }
+.eu-os-body.is-aperitivo{ background:#f5f3f7; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    BOOT LOADER — warm, photographic, immersive. Unchanged.
@@ -37,7 +40,7 @@
   position:fixed;
   inset:0;
   z-index:10000;
-  background:#f4e6d8;
+  background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -49,7 +52,7 @@
   grid-template-columns:minmax(220px,38%) 1fr;
   gap:0;
   width:min(820px,100%);
-  background:#fdfaf4;
+  background:#fff;
   border:1.5px solid #1a1a1a;
   border-radius:3px;
   box-shadow:4px 4px 0 rgba(0,0,0,.06),0 12px 36px rgba(0,0,0,.18);
@@ -109,7 +112,7 @@
   position:relative;
   height:18px;
   border:1.5px solid #1a1a1a;
-  background:#fdfaf4;
+  background:#fff;
   overflow:hidden;
 }
 .eu-os__boot-progress-fill{
@@ -169,8 +172,13 @@
    WINDOW PANEL — wider (960px) to give the postcard more room.
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os__window{
-  width:min(960px,calc(100% - 32px));
-  margin:24px auto 16px;
+  flex:0 0 320px;
+  width:320px;
+  margin:0;
+  align-self:flex-start;
+  max-height:calc(100vh - 96px);
+  display:flex;
+  flex-direction:column;
   background:#fff;
   border:1.5px solid #1a1a1a;
   border-radius:3px;
@@ -214,7 +222,17 @@
   font-weight:bold;font-size:18px;letter-spacing:.005em;
   font-variant-numeric:tabular-nums;color:#1a1a1a;
 }
-.eu-os__window-body{ background:#fff; }
+.eu-os__window-body{ background:#fff; flex:1; overflow-y:auto; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FREE-STANDING CANVAS — floats on the EU blue desktop beside the window
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__canvas{
+  flex:0 0 auto;
+  align-self:flex-start;
+  padding:40px 40px 40px 100px;
+  position:relative;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    OS-INFO STRIP
@@ -263,8 +281,7 @@
 }
 .eu-pg2__stage{
   position:relative;
-  width:100%;
-  max-width:420px;
+  width:360px;
 }
 .eu-pg2__framed{
   position:relative;
@@ -814,14 +831,22 @@ input[type=color]{
 /* ═══════════════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════════════ */
-@media(max-width:700px){
-  .eu-pg2__app{
-    grid-template-columns:1fr;
+@media(max-width:860px){
+  .eu-os{
+    flex-direction:column;
+    align-items:center;
+    padding:52px 16px 44px;
+    gap:16px;
   }
-  .eu-pg2__canvas-col{
-    border-right:none;
-    border-bottom:1.5px solid #1a1a1a;
-    padding:32px 40px 32px 80px;
+  .eu-os__window{
+    flex:0 0 auto;
+    width:min(480px,100%);
+  }
+  .eu-pg2__canvas{
+    padding:32px 32px 32px 80px;
+  }
+  .eu-pg2__stage{
+    width:min(320px,100%);
   }
   .eu-pg2__switch-mount{
     left:-68px;
