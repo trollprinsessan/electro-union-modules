@@ -23,11 +23,11 @@
 .eu-os{
   position:relative;
   min-height:100vh;
-  padding:58px 24px 50px;
+  padding:58px 0 50px;
   display:flex;
   align-items:flex-start;
-  justify-content:center;
-  gap:24px;
+  justify-content:stretch;
+  gap:0;
 }
 /* Time-based desktop accents */
 .eu-os-body.is-golden{ background:#f7f5f0; }
@@ -175,14 +175,15 @@
   flex:0 0 320px;
   width:320px;
   margin:0;
-  align-self:flex-start;
-  max-height:calc(100vh - 96px);
+  align-self:stretch;
+  max-height:calc(100vh - 58px);
   display:flex;
   flex-direction:column;
   background:#fff;
-  border:1.5px solid #1a1a1a;
-  border-radius:3px;
-  box-shadow:5px 5px 0 rgba(0,0,0,.08),0 20px 60px rgba(0,0,0,.35);
+  border:none;
+  border-left:1.5px solid #1a1a1a;
+  border-radius:0;
+  box-shadow:none;
   overflow:hidden;
 }
 .eu-os__window[hidden]{display:none}
@@ -228,10 +229,14 @@
    FREE-STANDING CANVAS — floats on the EU blue desktop beside the window
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__canvas{
-  flex:0 0 auto;
+  flex:1 1 0;
+  min-width:0;
   align-self:flex-start;
   padding:40px 40px 40px 100px;
   position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -281,7 +286,7 @@
 }
 .eu-pg2__stage{
   position:relative;
-  width:360px;
+  width:min(700px,100%);
 }
 .eu-pg2__framed{
   position:relative;
@@ -830,22 +835,24 @@ input[type=color]{
 /* ═══════════════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════════════ */
-@media(max-width:860px){
+@media(max-width:680px){
   .eu-os{
     flex-direction:column;
-    align-items:center;
-    padding:52px 16px 44px;
-    gap:16px;
+    align-items:stretch;
+    padding:52px 0 44px;
   }
   .eu-os__window{
     flex:0 0 auto;
-    width:min(480px,100%);
+    width:100%;
+    border-left:none;
+    border-top:1.5px solid #1a1a1a;
+    max-height:none;
   }
   .eu-pg2__canvas{
     padding:32px 32px 32px 80px;
   }
   .eu-pg2__stage{
-    width:min(320px,100%);
+    width:min(480px,100%);
   }
   .eu-pg2__switch-mount{
     left:-68px;
