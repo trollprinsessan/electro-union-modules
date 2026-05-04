@@ -69,7 +69,44 @@
     </div>
   </div>
 
-  <!-- ─── WINDOW PANEL ─── -->
+  <!-- ─── FREE-STANDING POSTCARD CANVAS ─── -->
+  <div class="eu-pg2__canvas">
+    <div class="eu-pg2__stage" id="euPg2Stage">
+
+      <div class="eu-pg2__switch-mount">
+        <label for="euPg2Switch" class="eu-pg2__switch-wrap" aria-label="Push for a treat — randomize the postcard">
+          <input type="checkbox" id="euPg2Switch" class="eu-pg2__switch-input" />
+          <div class="panel">
+            <div class="screw top"><div class="screw__slot"></div></div>
+            <div class="switch__hole">
+              <div class="switch__groove">
+                <div class="switch">
+                  <div class="switch__shadow-box top"><div class="switch__shadow top"></div></div>
+                  <div class="switch__shadow-box bottom"><div class="switch__shadow bottom"></div></div>
+                  <div class="switch__top"><div class="switch__top-outset"></div></div>
+                  <div class="switch__bottom"><div class="switch__bottom-outset"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="screw bottom"><div class="screw__slot"></div></div>
+          </div>
+        </label>
+        <span class="eu-pg2__switch-label" id="euPg2SwitchLabel">Push for a treat</span>
+      </div>
+
+      <div class="eu-pg2__framed" id="euPg2Framed">
+        <img class="eu-pg2__frame" src="../postcard-generator/Updated Imagery/FRAME1 UPDATED.png" alt="">
+        <div class="eu-pg2__photo" id="euPg2Photo">
+          <div class="eu-pg2__bg" id="euPg2Bg"></div>
+          <div class="eu-pg2__items" id="euPg2Items"></div>
+          <div class="eu-pg2__overlay-tagline" id="euPg2TaglineOverlay" aria-hidden="true"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── WINDOW PANEL (controls only) ─── -->
   <div class="eu-os__window" id="euOsWindow" hidden>
     <div class="eu-os__window-titlebar">
       <button type="button" class="eu-os__window-close" aria-label="Close window">×</button>
@@ -84,54 +121,6 @@
 
     <div class="eu-os__window-body">
 
-      <div class="eu-pg2__app">
-
-        <!-- ═══════════════════════════════════════════════════════════════
-             LEFT COLUMN — postcard canvas.
-             Generous padding, lightswitch to the left of the framed card.
-             The postcard is the hero. Everything else serves it.
-             ═══════════════════════════════════════════════════════════════ -->
-        <div class="eu-pg2__canvas-col">
-          <div class="eu-pg2__stage" id="euPg2Stage">
-
-            <div class="eu-pg2__switch-mount">
-              <label for="euPg2Switch" class="eu-pg2__switch-wrap" aria-label="Push for a treat — randomize the postcard">
-                <input type="checkbox" id="euPg2Switch" class="eu-pg2__switch-input" />
-                <div class="panel">
-                  <div class="screw top"><div class="screw__slot"></div></div>
-                  <div class="switch__hole">
-                    <div class="switch__groove">
-                      <div class="switch">
-                        <div class="switch__shadow-box top"><div class="switch__shadow top"></div></div>
-                        <div class="switch__shadow-box bottom"><div class="switch__shadow bottom"></div></div>
-                        <div class="switch__top"><div class="switch__top-outset"></div></div>
-                        <div class="switch__bottom"><div class="switch__bottom-outset"></div></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="screw bottom"><div class="screw__slot"></div></div>
-                </div>
-              </label>
-              <span class="eu-pg2__switch-label" id="euPg2SwitchLabel">Push for a treat</span>
-            </div>
-
-            <div class="eu-pg2__framed" id="euPg2Framed">
-              <img class="eu-pg2__frame" src="../postcard-generator/Updated Imagery/FRAME1 UPDATED.png" alt="">
-              <div class="eu-pg2__photo" id="euPg2Photo">
-                <div class="eu-pg2__bg" id="euPg2Bg"></div>
-                <div class="eu-pg2__items" id="euPg2Items"></div>
-                <div class="eu-pg2__overlay-tagline" id="euPg2TaglineOverlay" aria-hidden="true"></div>
-              </div>
-            </div>
-
-          </div><!-- /stage -->
-        </div><!-- /canvas-col -->
-
-        <!-- ═══════════════════════════════════════════════════════════════
-             RIGHT COLUMN — controls.
-             Sections separated by ruled lines. Top to bottom: stamps →
-             tagline → front+format → motion → tools → approve+actions.
-             ═══════════════════════════════════════════════════════════════ -->
         <div class="eu-pg2__controls-col">
 
           <!-- ── STAMPS ─────────────────────────────────────────────── -->
@@ -284,8 +273,6 @@
           </div>
 
         </div><!-- /controls-col -->
-
-      </div><!-- /eu-pg2__app -->
 
       <!-- TICKER — spans full window width -->
       <div class="eu-pg2__ticker" aria-hidden="true">
