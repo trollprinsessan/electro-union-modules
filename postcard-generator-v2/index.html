@@ -16,133 +16,58 @@
 </head>
 <body class="eu-os-body">
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     ELECTRO UNION OS
-     Boot loader → fake OS chrome → campaign postcard generator.
-     Two-column layout: postcard canvas left, controls right.
-     No CSS transitions (cross-origin iframe constraint — all state instant).
-     ═══════════════════════════════════════════════════════════════════════ -->
 <div class="eu-os">
 
-  <!-- ─── CAMPAIGN BANNER ─── -->
+  <!-- ─── TOP MARQUEE ─── -->
   <div class="eu-pg2__campaign-banner" id="euPg2Banner">
-    <!-- Rolling red strip -->
     <div class="eu-pg2__banner-ticker-wrap">
       <div class="eu-pg2__banner-ticker-track" id="euPg2BannerTickerTrack">
-        <span class="eu-pg2__banner-ticker-seg">Generate your own postcard from the Electro Union&nbsp;&nbsp;·&nbsp;&nbsp;</span>
-        <span class="eu-pg2__banner-ticker-seg">Generate your own postcard from the Electro Union&nbsp;&nbsp;·&nbsp;&nbsp;</span>
-        <span class="eu-pg2__banner-ticker-seg">Generate your own postcard from the Electro Union&nbsp;&nbsp;·&nbsp;&nbsp;</span>
-        <span class="eu-pg2__banner-ticker-seg">Generate your own postcard from the Electro Union&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+        <!-- segments duplicated for seamless loop; pastries interleaved as separators -->
+        <span class="eu-pg2__banner-ticker-seg">Generate your own postcard</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/045.png" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Pick a pencil.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Make it dance.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/DSC_0410-a.png" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Put your name on it.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Make Europe the Electro Union.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/pastelnata.webp" alt="">
+
+        <span class="eu-pg2__banner-ticker-seg">Generate your own postcard</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/045.png" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Pick a pencil.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Make it dance.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/DSC_0410-a.png" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Put your name on it.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="">
+        <span class="eu-pg2__banner-ticker-seg">Make Europe the Electro Union.</span>
+        <img class="eu-pg2__banner-ticker-pastry" src="../drawing/Updated Imagery/pastelnata.webp" alt="">
       </div>
     </div>
-    <!-- Headline area -->
-    <div class="eu-pg2__banner-body">
-      <div class="eu-pg2__banner-stickers eu-pg2__banner-stickers--left">
-        <img class="eu-pg2__banner-sticker" src="../drawing/STICKERS/EU_Stickers_1080x1350_01.png" alt="" style="--r:-14deg;--s:110px;--t:-6px">
-        <img class="eu-pg2__banner-sticker" src="../drawing/STICKERS/EU_Stickers_1080x1350_04.png" alt="" style="--r:10deg;--s:92px;--t:10px">
-        <img class="eu-pg2__banner-sticker" src="../drawing/STICKERS/EU_Stickers_1080x1350_12.png" alt="" style="--r:-6deg;--s:100px;--t:-4px">
-      </div>
-      <div class="eu-pg2__banner-text">
-        <p class="eu-pg2__banner-sub">Greetings from the</p>
-        <h1 class="eu-pg2__banner-headline">Electro Union</h1>
-      </div>
-      <div class="eu-pg2__banner-stickers eu-pg2__banner-stickers--right">
-        <img class="eu-pg2__banner-sticker" src="../drawing/STICKERS/EU_Stickers_1080x1350_02.png" alt="" style="--r:12deg;--s:96px;--t:6px">
-        <img class="eu-pg2__banner-sticker" src="../drawing/STICKERS/EU_Stickers_1080x1350_08.png" alt="" style="--r:-9deg;--s:114px;--t:-12px">
-        <img class="eu-pg2__banner-sticker" src="../drawing/STICKERS/EU_Stickers_1080x1350_09.png" alt="" style="--r:7deg;--s:88px;--t:8px">
-      </div>
+
+    <!-- INTRO: tagline + headline + subhead -->
+    <div class="eu-pg2__intro">
+      <p class="eu-pg2__intro-tagline">Only one continent puts <span class="eu-pg2__intro-tagline-rotator" id="euPg2TaglineRotator">pastel de nata</span> in the same single market.</p>
+      <h1 class="eu-pg2__intro-title">
+        <span class="eu-pg2__intro-title-sm">Greetings from the</span>
+        <span class="eu-pg2__intro-title-lg">Electro Union</span>
+      </h1>
+      <p class="eu-pg2__intro-subhead">Share on LinkedIn opens your phone's share sheet with an animated GIF. Download for Instagram saves an MP4 to your device, upload it from there to Stories.</p>
     </div>
   </div>
 
-  <!-- ─── FLOATING PANELS DESK ─── -->
+  <!-- ─── DESK ─── -->
   <div class="eu-pg2__desk" id="euOsWindow">
 
-    <!-- ══ LEFT COLUMN: PASTRY + STICKERS + MOTION ══════════════════════ -->
+    <!-- LEFT COLUMN -->
     <div class="eu-pg2__desk-left">
 
-    <!-- ── PANEL 1: PASTRY ──────────────────────────────────────────── -->
-    <div class="eu-pg2__panel eu-pg2__panel--pastry">
-      <div class="eu-pg2__panel-body">
-        <div id="euPg2PastryGrid">
-          <div class="eu-pg2__cell-grid eu-pg2__cell-grid--stamps">
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker is-active" data-sticker="0"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette" loading="lazy"></span><span class="eu-pg2__cell-label">Baguette</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="1"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/DSC_0410-a.png" alt="Stroopwafel" loading="lazy"></span><span class="eu-pg2__cell-label">Stroopwafel</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="2"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/045.png" alt="Kanelbulle" loading="lazy"></span><span class="eu-pg2__cell-label">Kanelbulle</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="3"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/baklava_udate.png" alt="Baklava" loading="lazy"></span><span class="eu-pg2__cell-label">Baklava</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="4"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/kürtőskalács.png" alt="Kürtős" loading="lazy"></span><span class="eu-pg2__cell-label">Kürtős</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="5"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="Croissant" loading="lazy"></span><span class="eu-pg2__cell-label">Croissant</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="6"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/danish.png" alt="Danish" loading="lazy"></span><span class="eu-pg2__cell-label">Danish</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="7"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/pastelnata.webp" alt="Pastel" loading="lazy"></span><span class="eu-pg2__cell-label">Pastel</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="8"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/sernik.png" alt="Sernik" loading="lazy"></span><span class="eu-pg2__cell-label">Sernik</span></button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PANEL 2: STICKERS ────────────────────────────────────────── -->
-    <div class="eu-pg2__panel eu-pg2__panel--stickers">
-      <div class="eu-pg2__panel-body">
-        <div id="euPg2StickerGrid">
-          <div class="eu-pg2__cell-grid eu-pg2__cell-grid--stamps">
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="9"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_01.png" alt="EU·01" loading="lazy"></span><span class="eu-pg2__cell-label">EU·01</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="10"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_02.png" alt="EU·02" loading="lazy"></span><span class="eu-pg2__cell-label">EU·02</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="11"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_03.png" alt="EU·03" loading="lazy"></span><span class="eu-pg2__cell-label">EU·03</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="12"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_04.png" alt="EU·04" loading="lazy"></span><span class="eu-pg2__cell-label">EU·04</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="13"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_08.png" alt="EU·05" loading="lazy"></span><span class="eu-pg2__cell-label">EU·05</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="14"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_09.png" alt="EU·06" loading="lazy"></span><span class="eu-pg2__cell-label">EU·06</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="15"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_12.png" alt="EU·07" loading="lazy"></span><span class="eu-pg2__cell-label">EU·07</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="16"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_13.png" alt="EU·08" loading="lazy"></span><span class="eu-pg2__cell-label">EU·08</span></button>
-            <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="17"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_14.png" alt="EU·09" loading="lazy"></span><span class="eu-pg2__cell-label">EU·09</span></button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PANEL 3: MOTION ──────────────────────────────────────────── -->
-    <div class="eu-pg2__panel eu-pg2__panel--motion">
-      <div class="eu-pg2__panel-nameplate">
-        <span class="eu-pg2__panel-name">Motion</span>
-      </div>
-      <div class="eu-pg2__panel-body">
-        <div class="eu-pg2__cell-grid eu-pg2__cell-grid--motion">
-          <button type="button" class="eu-pg2__cell eu-pg2__cell--motion is-active" data-anim="none"><span class="eu-pg2__cell-label">None</span></button>
-          <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="bounce"><span class="eu-pg2__cell-label">Bounce</span></button>
-          <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="beat"><span class="eu-pg2__cell-label">Beat</span></button>
-          <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="rotate"><span class="eu-pg2__cell-label">Spin</span></button>
-          <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="wiggle"><span class="eu-pg2__cell-label">Wiggle</span></button>
-          <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="orbit"><span class="eu-pg2__cell-label">Orbit</span></button>
-        </div>
-      </div>
-    </div>
-
-    </div><!-- /desk-left -->
-
-    <!-- ══ CENTER: POSTCARD ════════════════════════════════════════════ -->
-    <div class="eu-pg2__desk-center">
-
-      <div class="eu-pg2__stage" id="euPg2Stage">
-        <div class="eu-pg2__framed" id="euPg2Framed">
-          <img class="eu-pg2__frame" src="../postcard-generator/Updated Imagery/FRAME1 UPDATED.png" alt="">
-          <div class="eu-pg2__photo" id="euPg2Photo">
-            <div class="eu-pg2__bg" id="euPg2Bg"></div>
-            <div class="eu-pg2__items" id="euPg2Items"></div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /desk-center -->
-
-    <!-- ══ RIGHT COLUMN: PUSH + BG + DRAW + SEND ═════════════════════ -->
-    <div class="eu-pg2__desk-right">
-
-      <!-- PANEL 2: PUSH FOR A TREAT -->
+      <!-- LIGHT SWITCH (no title) -->
       <div class="eu-pg2__panel eu-pg2__panel--push">
-        <div class="eu-pg2__panel-nameplate">
-          <span class="eu-pg2__panel-name">Push for a treat</span>
-          <span class="eu-pg2__switch-label" id="euPg2SwitchLabel">Push for a treat</span>
-        </div>
         <div class="eu-pg2__panel-body eu-pg2__panel-body--push">
-          <label for="euPg2Switch" class="eu-pg2__switch-wrap" aria-label="Push for a treat — randomize the postcard">
+          <label for="euPg2Switch" class="eu-pg2__switch-wrap" aria-label="Press for one surprise — randomize the postcard">
             <input type="checkbox" id="euPg2Switch" class="eu-pg2__switch-input" />
             <div class="panel">
               <div class="screw top"><div class="screw__slot"></div></div>
@@ -159,16 +84,91 @@
               <div class="screw bottom"><div class="screw__slot"></div></div>
             </div>
           </label>
+          <span class="eu-pg2__switch-label" id="euPg2SwitchLabel">Press for one surprise</span>
         </div>
       </div>
 
-      <!-- PANEL 4: BACKGROUND -->
-      <div class="eu-pg2__panel eu-pg2__panel--bg">
+      <!-- PICK A PENCIL — combined pastry + sticker pile -->
+      <div class="eu-pg2__panel eu-pg2__panel--pencil">
         <div class="eu-pg2__panel-nameplate">
-          <span class="eu-pg2__panel-name">Background</span>
+          <span class="eu-pg2__panel-name">Pick a pencil</span>
         </div>
         <div class="eu-pg2__panel-body">
-          <div class="eu-pg2__cell-grid eu-pg2__cell-grid--front">
+          <div id="euPg2PastryGrid">
+            <div class="eu-pg2__cell-grid eu-pg2__cell-grid--stamps">
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker is-active" data-sticker="0"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="1"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/DSC_0410-a.png" alt="Stroopwafel" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="2"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/045.png" alt="Kanelbulle" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="3"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/baklava_udate.png" alt="Baklava" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="4"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/kürtőskalács.png" alt="Kürtős" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="5"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/pngimg.com - croissant_PNG46722.png" alt="Croissant" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="6"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/danish.png" alt="Danish" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="7"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/pastelnata.webp" alt="Pastel" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="8"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/sernik.png" alt="Sernik" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="9"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_01.png" alt="EU·01" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="10"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_02.png" alt="EU·02" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="11"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_03.png" alt="EU·03" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="12"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_04.png" alt="EU·04" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="13"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_08.png" alt="EU·05" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="14"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_09.png" alt="EU·06" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="15"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_12.png" alt="EU·07" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="16"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_13.png" alt="EU·08" loading="lazy"></span></button>
+              <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker" data-sticker="17"><span class="eu-pg2__cell-img eu-pg2__cell-img--eu"><img src="../drawing/STICKERS/EU_Stickers_1080x1350_14.png" alt="EU·09" loading="lazy"></span></button>
+            </div>
+          </div>
+
+          <!-- empty container so script that targets euPg2StickerGrid still finds it -->
+          <div id="euPg2StickerGrid" hidden></div>
+
+          <!-- SIZE SLIDER — pastry token thumb on a track -->
+          <div class="eu-pg2__size">
+            <input type="range" id="euPg2PastrySize" class="eu-pg2__size-input" min="22" max="65" step="1" value="44" aria-label="Stamp size">
+            <input type="range" id="euPg2StickerSize" class="eu-pg2__size-input-mirror" min="22" max="65" step="1" value="44" hidden aria-hidden="true">
+            <div class="eu-pg2__size-track" aria-hidden="true">
+              <div class="eu-pg2__size-thumb" id="euPg2SizeThumb">
+                <img id="euPg2SizeThumbImg" src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /desk-left -->
+
+    <!-- CENTER -->
+    <div class="eu-pg2__desk-center">
+      <div class="eu-pg2__stage" id="euPg2Stage">
+        <div class="eu-pg2__framed" id="euPg2Framed">
+          <img class="eu-pg2__frame" src="../postcard-generator/Updated Imagery/FRAME1 UPDATED.png" alt="">
+          <div class="eu-pg2__photo" id="euPg2Photo">
+            <div class="eu-pg2__bg" id="euPg2Bg"></div>
+            <div class="eu-pg2__items" id="euPg2Items"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="eu-pg2__desk-right">
+
+      <!-- ANIMATE pills 3×2 -->
+      <div class="eu-pg2__panel eu-pg2__panel--motion">
+        <div class="eu-pg2__panel-body">
+          <div class="eu-pg2__cell-grid eu-pg2__cell-grid--motion">
+            <button type="button" class="eu-pg2__cell eu-pg2__cell--motion is-active" data-anim="none"><span class="eu-pg2__cell-label">None</span></button>
+            <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="bounce"><span class="eu-pg2__cell-label">Bounce</span></button>
+            <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="beat"><span class="eu-pg2__cell-label">Beat</span></button>
+            <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="rotate"><span class="eu-pg2__cell-label">Spin</span></button>
+            <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="wiggle"><span class="eu-pg2__cell-label">Wiggle</span></button>
+            <button type="button" class="eu-pg2__cell eu-pg2__cell--motion" data-anim="orbit"><span class="eu-pg2__cell-label">Orbit</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACKGROUND row: image + colour + format toggle -->
+      <div class="eu-pg2__panel eu-pg2__panel--bg">
+        <div class="eu-pg2__panel-body">
+          <div class="eu-pg2__bg-row">
             <button type="button" class="eu-pg2__cell eu-pg2__cell--front" id="euPg2BgShow" aria-label="Choose postcard image">
               <span class="eu-pg2__cell-img eu-pg2__cell-img--photo"><img id="euPg2BgShowImg" src="../postcard-generator/BACKGROUNDS/original_827931d0025519cb087cb567ddbc1e31.png" alt="" loading="lazy"></span>
               <span class="eu-pg2__cell-label">Image</span>
@@ -176,24 +176,20 @@
             <label class="eu-pg2__cell eu-pg2__cell--front is-active" id="euPg2BgColor" title="Pick a colour">
               <span class="eu-pg2__cell-img eu-pg2__cell-img--swatch">
                 <span class="eu-pg2__bg-swatch" id="euPg2BgSwatch"></span>
-                <input type="color" id="euPg2BgPicker" value="#ffffff">
+                <input type="color" id="euPg2BgPicker" value="#003399">
               </span>
               <span class="eu-pg2__cell-label">Colour</span>
             </label>
-          </div>
-          <div class="eu-pg2__panel-sublabel">Format</div>
-          <div class="eu-pg2__toggle-row eu-pg2__toggle-row--stacked">
-            <button type="button" class="eu-pg2__toggle is-active" data-format="feed">Feed · 4:5</button>
-            <button type="button" class="eu-pg2__toggle" data-format="story">Story · 9:16</button>
+            <div class="eu-pg2__format-toggle">
+              <button type="button" class="eu-pg2__format-btn is-active" data-format="feed">Feed · 4:5</button>
+              <button type="button" class="eu-pg2__format-btn" data-format="story">Story · 9:16</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- PANEL 5: DRAW -->
+      <!-- TOOLS 2×2 -->
       <div class="eu-pg2__panel eu-pg2__panel--draw">
-        <div class="eu-pg2__panel-nameplate">
-          <span class="eu-pg2__panel-name">Draw</span>
-        </div>
         <div class="eu-pg2__panel-body">
           <div class="eu-pg2__cell-grid eu-pg2__cell-grid--tools">
             <button type="button" class="eu-pg2__cell eu-pg2__cell--tool is-active" id="euPg2Pencil" aria-label="Draw" aria-pressed="true">
@@ -213,25 +209,18 @@
               <span class="eu-pg2__cell-label">Clear</span>
             </button>
           </div>
-          <div class="eu-pg2__panel-sublabel">Display</div>
-          <div class="eu-pg2__toggle-row eu-pg2__toggle-row--stacked">
-            <button type="button" class="eu-pg2__toggle is-active" data-display="normal">Normal</button>
-            <button type="button" class="eu-pg2__toggle" data-display="invert">Invert</button>
-          </div>
         </div>
       </div>
 
-      <!-- PANEL 6: SEND + SHARE -->
+      <!-- SEND + SAVE -->
       <div class="eu-pg2__panel eu-pg2__panel--send">
-        <div class="eu-pg2__panel-nameplate">
-          <span class="eu-pg2__window-counter">
+        <div class="eu-pg2__panel-body eu-pg2__panel-body--send">
+          <span class="eu-pg2__window-counter" hidden>
             <span class="eu-pg2__window-counter-num" id="euPg2CounterNum">—</span>
             <span class="eu-pg2__window-counter-label">SENT</span>
           </span>
-        </div>
-        <div class="eu-pg2__panel-body eu-pg2__panel-body--send">
-<button class="eu-pg2__action-btn eu-pg2__action-btn--send is-disabled" id="euPg2Share">SEND POSTCARD</button>
-          <button class="eu-pg2__action-btn eu-pg2__action-btn--save is-disabled" id="euPg2Download">SAVE POSTCARD</button>
+          <button class="eu-pg2__action-btn eu-pg2__action-btn--send is-disabled" id="euPg2Share">Send postcard</button>
+          <button class="eu-pg2__action-btn eu-pg2__action-btn--save is-disabled" id="euPg2Download">Save postcard</button>
         </div>
       </div>
 
@@ -240,8 +229,7 @@
   </div><!-- /desk -->
 
 
-
-  <!-- BG IMAGE MODAL (fixed overlay) -->
+  <!-- BG IMAGE MODAL -->
   <div class="eu-pg2__bg-modal" id="euPg2BgModal" hidden>
     <div class="eu-pg2__bg-modal-backdrop" data-close></div>
     <div class="eu-pg2__bg-modal-panel" role="dialog" aria-label="Choose postcard front">
@@ -271,10 +259,61 @@
     </div>
   </div>
 
-
 </div>
 
-<script src="script.js?v=14"></script>
+<script src="script.js?v=15"></script>
+<script>
+// TAGLINE ROTATOR — cycle the pastry name in the intro tagline
+(function(){
+  var el = document.getElementById('euPg2TaglineRotator');
+  if (!el) return;
+  var pastries = [
+    'pastel de nata',
+    'croissant',
+    'baguette',
+    'baklava',
+    'kanelbulle',
+    'stroopwafel',
+    'kürtőskalács',
+    'danish',
+    'sernik'
+  ];
+  var i = 0;
+  setInterval(function(){
+    i = (i + 1) % pastries.length;
+    el.textContent = pastries[i];
+  }, 1800);
+})();
+
+// SIZE SLIDER — wire pastry-token thumb (position + scale) and mirror to sticker slider
+(function(){
+  var slider  = document.getElementById('euPg2PastrySize');
+  var mirror  = document.getElementById('euPg2StickerSize');
+  var thumb   = document.getElementById('euPg2SizeThumb');
+  var thumbImg= document.getElementById('euPg2SizeThumbImg');
+  var grid    = document.getElementById('euPg2PastryGrid');
+  if (!slider || !thumb) return;
+
+  function updateThumb(){
+    var min = parseFloat(slider.min), max = parseFloat(slider.max);
+    var val = parseFloat(slider.value);
+    var pct = (val - min) / (max - min);
+    var size = 22 + pct * 42; // 22 → 64 px
+    thumb.style.setProperty('--thumb-size', size + 'px');
+    thumb.style.left = (8 + pct * 84) + '%';
+    if (mirror && mirror.value !== slider.value) mirror.value = slider.value;
+  }
+  function updateThumbImg(){
+    var active = grid && grid.querySelector('.eu-pg2__cell.is-active img');
+    if (active && thumbImg) thumbImg.src = active.src;
+  }
+  slider.addEventListener('input', updateThumb);
+  if (grid){
+    grid.addEventListener('click', function(){ setTimeout(updateThumbImg, 0); });
+  }
+  updateThumb();
+  updateThumbImg();
+})();
+</script>
 </body>
 </html>
-/html>

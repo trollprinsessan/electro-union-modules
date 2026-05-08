@@ -83,7 +83,7 @@
     '../drawing/STICKERS/EU_Stickers_1080x1350_14.png'
   ];
   var EU_STICKER_OFFSET = 9;
-  var EU_STICKER_BOOST  = 1.4;
+  var EU_STICKER_BOOST  = 1.68;
 
   var BG_SRCS = [
     '../postcard-generator/BACKGROUNDS/Image_1.png',
@@ -435,6 +435,9 @@
     });
   }
   updateGate();
+
+  // Default postcard — roulette on first load so the frame is never empty
+  setTimeout(function(){ pushForTreat(); }, 100);
 
   // ═══ EXPORT ═══
   function getExportDims(){
