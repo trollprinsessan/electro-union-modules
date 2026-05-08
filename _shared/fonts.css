@@ -34,3 +34,37 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* ABC Schengen Core — display weights, used for terminal chrome and
+   the ELECTRO UNION wordmark. The family is literally named after
+   Schengen, Europe's border treaty. Using it as the Union's system
+   display typeface is the conceptual move; the heavy weights give us
+   a fat sans-serif for boot/wordmark, regular for body chrome. */
+@font-face {
+  font-family: 'ABC Schengen';
+  src: url('fonts/ABC Schengen Core/ABCSchengenCore-Heavy-Trial.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABC Schengen';
+  src: url('fonts/ABC Schengen Core/ABCSchengenCore-Bold-Trial.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABC Schengen';
+  src: url('fonts/ABC Schengen Core/ABCSchengenCore-Medium-Trial.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABC Schengen';
+  src: url('fonts/ABC Schengen Core/ABCSchengenCore-Regular-Trial.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

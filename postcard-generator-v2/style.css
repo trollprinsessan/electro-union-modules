@@ -1,0 +1,1058 @@
+/*
+ * Electro Union OS — Postcard Generator (v2)
+ *
+ * Campaign-first layout. Not a tool, not a player — a world.
+ * Two columns: postcard canvas (left, generous) + controls (right, clean).
+ * EU blue desktop frames the white window. The postcard is the hero.
+ *
+ * IFRAME CONSTRAINT
+ *   Cross-origin iframes (Webflow embed) kill CSS `transition` and
+ *   `@keyframes`. All state changes are instant — JS-driven or DOM toggle.
+ */
+
+/* ─── FONTS ──────────────────────────────────────────────────────────── */
+@font-face{
+  font-family:'Stars Revenge';
+  src:url('stars_revenge.ttf') format('truetype');
+  font-weight:400 900;
+  font-style:normal;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DESKTOP — EU blue. Warm boot, then you're in the brand.
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-os-body{
+  margin:0;
+  background:#fff;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  color:#1a1a1a;
+  min-height:100vh;
+}
+.eu-os{
+  position:relative;
+  min-height:100vh;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+/* Time-based desktop accents */
+.eu-os-body.is-golden{ background:#f7f5f0; }
+.eu-os-body.is-aperitivo{ background:#f5f3f7; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BOOT LOADER — warm, photographic, immersive. Unchanged.
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-os__boot{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.eu-os__boot[hidden]{display:none}
+.eu-os__boot-panel{
+  display:grid;
+  grid-template-columns:minmax(220px,38%) 1fr;
+  gap:0;
+  width:min(820px,100%);
+  background:#fff;
+  border:1.5px solid #1a1a1a;
+  border-radius:3px;
+  box-shadow:4px 4px 0 rgba(0,0,0,.06),0 12px 36px rgba(0,0,0,.18);
+  overflow:hidden;
+}
+.eu-os__boot-photo{
+  position:relative;
+  background:#000;
+  overflow:hidden;
+  min-height:240px;
+}
+.eu-os__boot-photo img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+  filter:contrast(1.05) saturate(.92);
+}
+.eu-os__boot-info{
+  padding:24px 28px 22px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.eu-os__boot-mark{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-size:clamp(34px,4vw,46px);
+  line-height:1;
+  letter-spacing:-.005em;
+  color:#1a1a1a;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  margin:0 0 4px;
+}
+.eu-os__boot-mark-bolt{ font-size:.7em; color:#003399; }
+.eu-os__boot-version{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:11px;letter-spacing:.04em;color:#1a1a1a;margin:0;font-weight:600;
+}
+.eu-os__boot-credits{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-style:italic;font-size:13px;line-height:1.5;color:#3a3a3a;margin:6px 0 0;
+}
+.eu-os__boot-copyright{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:10px;letter-spacing:.04em;color:#777;margin:0 0 14px;
+}
+.eu-os__boot-progress-row{
+  display:flex;
+  justify-content:space-between;align-items:baseline;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:11px;letter-spacing:.04em;color:#1a1a1a;margin-top:auto;
+}
+.eu-os__boot-progress-pct{ font-weight:700; }
+.eu-os__boot-progress{
+  margin-top:8px;
+  position:relative;
+  height:18px;
+  border:1.5px solid #1a1a1a;
+  background:#fff;
+  overflow:hidden;
+}
+.eu-os__boot-progress-fill{
+  position:absolute;
+  inset:2px auto 2px 2px;
+  width:0%;
+  background:repeating-linear-gradient(
+    90deg,
+    #003399 0 7px,
+    transparent 7px 9px
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MENUBAR
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-os__menubar{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:200;
+  height:34px;
+  background:#fdfaf4;
+  border-bottom:1.5px solid #1a1a1a;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#1a1a1a;
+}
+.eu-os__menubar[hidden]{display:none}
+.eu-os__menubar-cell{ display:inline-flex;align-items:center;gap:10px; }
+.eu-os__menubar-cell--brand{
+  border:1.5px solid #1a1a1a;
+  padding:5px 10px 5px 8px;
+  background:#fff;
+}
+.eu-os__menubar-bolt{
+  display:inline-block;font-size:13px;line-height:1;
+  color:#003399;transform:translateY(-1px);
+}
+.eu-os__menubar-link{ color:#1a1a1a;text-decoration:none;letter-spacing:.18em; }
+.eu-os__menubar-link:hover{ color:#003399; }
+.eu-os__menubar-cell--right{ gap:14px; }
+.eu-os__menubar-sound{
+  background:none;border:none;cursor:var(--eu-cursor);
+  font-size:14px;line-height:1;padding:0 2px;color:#1a1a1a;
+}
+.eu-os__menubar-sound[aria-pressed="true"]{ opacity:.5; }
+.eu-os__menubar-clock-dot{
+  width:9px;height:9px;
+  display:inline-block;border-radius:50%;
+  border:1.5px solid #CC0000;background:#fff;
+  text-indent:-9999px;overflow:hidden;margin-right:-2px;
+}
+.eu-os__menubar-clock,.eu-os__menubar-date{ font-variant-numeric:tabular-nums; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CAMPAIGN BANNER — GREETINGS FROM THE ELECTRO UNION
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__campaign-banner{
+  background:#fff;
+  width:100%;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+.eu-pg2__campaign-banner[hidden]{display:none}
+
+/* Red rolling ticker strip */
+.eu-pg2__banner-ticker-wrap{
+  background:#CC0000;
+  height:30px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  border-bottom:1.5px solid #a00000;
+}
+.eu-pg2__banner-ticker-track{
+  display:flex;
+  align-items:center;
+  white-space:nowrap;
+  will-change:transform;
+}
+.eu-pg2__banner-ticker-seg{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-style:italic;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#fff;
+  flex-shrink:0;
+}
+
+/* Headline body */
+.eu-pg2__banner-body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px 40px 224px;
+  gap:0;
+}
+
+.eu-pg2__banner-text{
+  text-align:center;
+  flex:0 0 auto;
+}
+.eu-pg2__banner-sub{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(28px,3.2vw,44px);
+  color:#1a1a1a;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin:0 0 2px;
+  line-height:1;
+}
+.eu-pg2__banner-headline{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(44px,7vw,96px);
+  color:#1a1a1a;
+  text-transform:uppercase;
+  letter-spacing:-.025em;
+  line-height:.92;
+  margin:0;
+  white-space:nowrap;
+}
+
+.eu-pg2__banner-stickers{
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+}
+.eu-pg2__banner-stickers--left{ margin-right:32px; }
+.eu-pg2__banner-stickers--right{ margin-left:32px; }
+
+.eu-pg2__banner-sticker{
+  width:var(--s,60px);
+  height:var(--s,60px);
+  object-fit:contain;
+  transform:rotate(var(--r,0deg)) translateY(var(--t,0px));
+  flex-shrink:0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FLOATING PANELS DESK — postcard centred, independent panels around it
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__desk{
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  gap:16px;
+  padding:24px 20px;
+  background:#fff;
+  min-height:100vh;
+  max-width:1280px;
+  margin:0 auto;
+}
+.eu-pg2__desk[hidden]{display:none}
+
+.eu-pg2__desk-left{
+  flex-shrink:0;
+  width:260px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.eu-pg2__desk-center{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+}
+
+.eu-pg2__desk-right{
+  flex-shrink:0;
+  width:240px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* ─── PANEL — borderless, built into the page ───────────────────────── */
+.eu-pg2__panel{
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+}
+
+/* Panel nameplate strip */
+.eu-pg2__panel-nameplate{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:0 4px;
+  height:28px;
+  background:transparent;
+  flex-shrink:0;
+  margin-bottom:6px;
+}
+
+/* Panel name text */
+.eu-pg2__panel-name{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:#003399;white-space:nowrap;
+}
+
+/* Sublabel inside panel body (Format, Display) */
+.eu-pg2__panel-sublabel{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:#aaa;margin:6px 0 4px;
+}
+
+/* Panel body */
+.eu-pg2__panel-body{
+  padding:0 2px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  flex:1;
+}
+
+/* Pastry + Stickers panels — fill the left column */
+.eu-pg2__panel--pastry,
+.eu-pg2__panel--stickers{ width:100%; }
+.eu-pg2__panel--pastry .eu-pg2__panel-body,
+.eu-pg2__panel--stickers .eu-pg2__panel-body{ gap:10px; }
+
+/* Push panel — centred switch */
+.eu-pg2__panel-body--push{
+  align-items:center;
+  justify-content:center;
+  padding:14px 10px;
+  gap:0;
+}
+
+/* Motion panel — 3×2 grid in left column */
+.eu-pg2__panel--motion{ width:100%; }
+
+/* Send panel */
+.eu-pg2__panel-body--send{ gap:8px; }
+
+/* Sent counter in send panel nameplate */
+.eu-pg2__window-counter{
+  display:inline-flex;align-items:baseline;gap:5px;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:#fff;white-space:nowrap;
+}
+.eu-pg2__window-counter-num{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;font-size:17px;letter-spacing:.005em;
+  font-variant-numeric:tabular-nums;color:#fff;
+}
+
+/* ─── CANVAS — postcard on the desk surface ──────────────────────────── */
+.eu-pg2__canvas{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   APP LAYOUT — two-column grid inside the window body.
+   Left: postcard canvas (flexible). Right: controls (fixed 300px).
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__app{
+  display:grid;
+  grid-template-columns:1fr 300px;
+  align-items:stretch;
+}
+
+/* ─── CANVAS COLUMN ──────────────────────────────────────────────────── */
+.eu-pg2__canvas-col{
+  background:#fff;
+  border-right:1.5px solid #1a1a1a;
+  padding:44px 44px 44px 96px; /* left: extra room for lightswitch */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.eu-pg2__stage{
+  position:relative;
+  width:min(560px,calc(100vw - 560px));
+}
+.eu-pg2__framed{
+  position:relative;
+  width:100%;
+  aspect-ratio:1063/1270;
+}
+.eu-pg2__frame{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:fill;pointer-events:none;z-index:0;
+}
+.eu-pg2__photo{
+  position:absolute;
+  top:49.4%;left:48.7%;
+  transform:translate(-50%,-50%);
+  width:82%;
+  aspect-ratio:1080/1350;
+  overflow:hidden;
+  background:#fff;
+  z-index:1;
+  container-type:inline-size;
+}
+
+/* ─── CONTROLS STRIP — horizontal instrument panel ──────────────────── */
+.eu-pg2__controls-col{
+  background:#fff;
+  display:flex;
+  flex-direction:row;
+  align-items:stretch;
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+
+/* ─── CONTROL SECTIONS — individual modules ─────────────────────────── */
+.eu-pg2__ctrl-section{
+  padding:12px 16px 14px;
+  flex-shrink:0;
+  border-right:1.5px solid #1a1a1a;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.eu-pg2__ctrl-section + .eu-pg2__ctrl-section{
+  border-top:none;
+}
+.eu-pg2__ctrl-section--actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-left:auto;
+  border-right:none;
+  min-width:160px;
+  justify-content:center;
+}
+
+/* Section heading row: label left, sub-tabs right */
+.eu-pg2__ctrl-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+/* Primary section label */
+.eu-pg2__ctrl-label{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:#1a1a1a;
+  display:block;
+  margin-bottom:9px;
+}
+.eu-pg2__ctrl-head .eu-pg2__ctrl-label{
+  margin-bottom:0;
+}
+
+/* Smaller inline label (SIZE, Front, Format…) */
+.eu-pg2__ctrl-sub-label{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:#aaa;
+  flex:0 0 auto;
+}
+
+/* Pair row: two side-by-side items */
+.eu-pg2__ctrl-pair-row{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+.eu-pg2__ctrl-pair-item{
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  min-width:80px;
+}
+
+/* Size row: SIZE label + halftone slider + readout */
+.eu-pg2__size-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CELL GRID — stamp/motion/tool tiles
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__cell-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(62px,1fr));
+  gap:5px;
+}
+/* Stamp grid: 3 columns — minmax(0,1fr) prevents min-content inflation from food photos */
+.eu-pg2__cell-grid--stamps{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+/* Front picker: 2 cells side by side */
+.eu-pg2__cell-grid--front{  grid-template-columns:repeat(2,1fr); }
+/* Motion: 3 per row in the left column */
+.eu-pg2__cell-grid--motion{ grid-template-columns:repeat(3,1fr); }
+/* Draw tools: 2×2 in the narrower right module */
+.eu-pg2__cell-grid--tools{  grid-template-columns:repeat(2,1fr); }
+
+.eu-pg2__cell{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:6px 3px 5px;
+  background:#fff;
+  border:1.5px solid #e0e0e0;
+  border-radius:3px;
+  cursor:var(--eu-cursor);
+  color:#1a1a1a;
+  aspect-ratio:1;
+  min-height:0;
+  min-width:0;
+  overflow:hidden;
+  user-select:none;
+}
+.eu-pg2__cell--motion{ aspect-ratio:auto;padding:8px 6px; }
+.eu-pg2__cell.is-active{
+  background:#003399;border-color:#003399;color:#fff;
+}
+.eu-pg2__cell-img{
+  width:62%;aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;flex:0 0 auto;
+}
+.eu-pg2__cell-img img{
+  width:100%;height:100%;object-fit:contain;
+  pointer-events:none;-webkit-user-drag:none;
+}
+.eu-pg2__cell-img--eu img{ width:150%;height:150%; }
+.eu-pg2__cell-img--photo{ border-radius:2px;overflow:hidden; }
+.eu-pg2__cell-img--photo img{ object-fit:cover; }
+.eu-pg2__cell-img--glyph{ font-size:20px;width:auto;aspect-ratio:auto; }
+.eu-pg2__cell-img--swatch{
+  width:62%;aspect-ratio:1;
+  position:relative;border-radius:3px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.eu-pg2__bg-swatch{
+  width:72%;aspect-ratio:1;border-radius:50%;
+  background:#fff;box-shadow:inset 0 2px 6px rgba(0,0,0,.1);
+}
+input[type=color]{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:0;border:none;cursor:var(--eu-cursor);
+}
+.eu-pg2__cell-label{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  text-align:center;
+  line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  max-width:100%;
+}
+.eu-pg2__panel--pastry .eu-pg2__cell-label,
+.eu-pg2__panel--stickers .eu-pg2__cell-label{ display:none; }
+
+/* ── Pile layout: pastry + sticker cells ─────────────────────────────── */
+/* Container: fixed-height relative block — no grid */
+.eu-pg2__panel--pastry .eu-pg2__cell-grid,
+.eu-pg2__panel--stickers .eu-pg2__cell-grid{
+  display:block;
+  position:relative;
+  height:340px;
+}
+/* Each cell: absolutely placed, no box chrome */
+.eu-pg2__panel--pastry .eu-pg2__cell,
+.eu-pg2__panel--stickers .eu-pg2__cell{
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:0;
+  position:absolute;
+  width:80px;
+  height:80px;
+  top:var(--top,0px);
+  left:var(--left,0px);
+  overflow:visible;
+  z-index:1;
+}
+.eu-pg2__panel--pastry .eu-pg2__cell.is-active,
+.eu-pg2__panel--stickers .eu-pg2__cell.is-active{
+  background:transparent;border:none;color:inherit;
+  z-index:3;
+}
+/* All full opacity */
+.eu-pg2__panel--pastry .eu-pg2__cell:not(.is-active),
+.eu-pg2__panel--stickers .eu-pg2__cell:not(.is-active){ opacity:1; }
+/* Image: rotate only — absolute pos handles placement */
+.eu-pg2__panel--pastry .eu-pg2__cell .eu-pg2__cell-img,
+.eu-pg2__panel--stickers .eu-pg2__cell .eu-pg2__cell-img{
+  pointer-events:none;
+  width:92%;
+  transform:rotate(var(--tilt,0deg));
+}
+/* Active: scale up + drop shadow */
+.eu-pg2__panel--pastry .eu-pg2__cell.is-active .eu-pg2__cell-img,
+.eu-pg2__panel--stickers .eu-pg2__cell.is-active .eu-pg2__cell-img{
+  transform:rotate(var(--tilt,0deg)) scale(1.22);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.28));
+}
+
+/* Per-item: scattered pile — fits within 260px column */
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(1),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(1){ --tilt:-6deg;  --top:5px;   --left:8px;   }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(2),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(2){ --tilt:8deg;   --top:18px;  --left:100px; }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(3),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(3){ --tilt:-4deg;  --top:0px;   --left:168px; }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(4),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(4){ --tilt:11deg;  --top:110px; --left:58px;  }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(5),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(5){ --tilt:-9deg;  --top:95px;  --left:165px; }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(6),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(6){ --tilt:5deg;   --top:130px; --left:10px;  }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(7),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(7){ --tilt:-7deg;  --top:228px; --left:85px;  }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(8),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(8){ --tilt:3deg;   --top:240px; --left:5px;   }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(9),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(9){ --tilt:-11deg; --top:248px; --left:162px; }
+
+/* Baguette + Stroopwafel: 20% smaller */
+.eu-pg2__panel--pastry [data-sticker="0"] .eu-pg2__cell-img,
+.eu-pg2__panel--pastry [data-sticker="1"] .eu-pg2__cell-img{ width:69%; }
+.eu-pg2__panel--pastry [data-sticker="0"].is-active .eu-pg2__cell-img,
+.eu-pg2__panel--pastry [data-sticker="1"].is-active .eu-pg2__cell-img{
+  transform:rotate(var(--tilt,0deg)) scale(1.22);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.28));
+  width:69%;
+}
+.eu-pg2__cell svg{
+  width:52%;height:52%;display:block;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TAGLINE INPUT — big, bold, campaigns-voice
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__tagline-input{
+  width:100%;
+  background:#fff;
+  border:1.5px solid #e0e0e0;
+  border-radius:3px;
+  padding:10px 12px;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:16px;letter-spacing:.005em;
+  color:#1a1a1a;outline:none;
+  cursor:var(--eu-cursor);
+  box-sizing:border-box;
+}
+.eu-pg2__tagline-input:focus{ border-color:#003399;color:#003399; }
+.eu-pg2__tagline-input::placeholder{
+  font-weight:400;font-style:italic;color:#ccc;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FORMAT / DISPLAY / CURSOR TOGGLES
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__toggle-row{ display:flex;gap:4px; }
+.eu-pg2__toggle-row--stacked{ flex-direction:column;gap:4px; }
+.eu-pg2__toggle{
+  flex:1;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:8px;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px 8px;
+  border:1.5px solid #e0e0e0;border-radius:3px;
+  background:#fff;cursor:var(--eu-cursor);color:#1a1a1a;
+  text-align:center;
+  white-space:nowrap;
+}
+.eu-pg2__toggle.is-active{
+  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   APPROVE CHIP
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__chip{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:#1a1a1a;cursor:var(--eu-cursor);user-select:none;
+}
+.eu-pg2__chip input{ position:absolute;opacity:0;pointer-events:none; }
+.eu-pg2__chip-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;
+  border:1.5px solid #1a1a1a;
+  font-size:12px;color:#1a1a1a;background:#fff;
+  flex:0 0 auto;
+}
+.eu-pg2__chip.is-checked .eu-pg2__chip-mark{
+  background:#003399;border-color:#003399;color:#fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ACTION BUTTONS — full-width, tall, campaign-blue and red
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__action-btn{
+  width:100%;
+  height:44px;
+  border:none;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  cursor:var(--eu-cursor);color:#fff;
+  border-radius:3px;
+  white-space:nowrap;
+}
+.eu-pg2__action-btn--send{ background:#003399; }
+.eu-pg2__action-btn--save{ background:#CC0000; }
+.eu-pg2__action-btn.is-disabled{
+  background:#e8e8e8;color:#bbb;pointer-events:none;
+}
+.eu-pg2__action-btn.is-busy{ opacity:.7;pointer-events:none; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HALFTONE SIZE SLIDER
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__halftone-slider{
+  position:relative;
+  flex:1;
+  height:20px;
+  display:flex;align-items:center;
+}
+.eu-pg2__size-slider{
+  position:absolute;inset:0;
+  width:100%;
+  -webkit-appearance:none;appearance:none;
+  background:transparent;outline:none;
+  cursor:var(--eu-cursor);
+  z-index:2;
+  height:100%;
+  margin:0;
+}
+.eu-pg2__size-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:#fff;
+  border:2px solid #1a1a1a;
+  cursor:var(--eu-cursor);
+}
+.eu-pg2__size-slider::-moz-range-thumb{
+  width:13px;height:13px;
+  border-radius:50%;
+  border:2px solid #1a1a1a;
+  background:#fff;
+  cursor:var(--eu-cursor);
+}
+.eu-pg2__halftone-track{
+  position:absolute;
+  left:0;right:0;
+  top:50%;transform:translateY(-50%);
+  height:9px;
+  background:
+    radial-gradient(circle,#ccc 36%,transparent 36%) 0 0 / 6px 6px;
+  pointer-events:none;
+  z-index:1;
+  border-radius:4px;
+  overflow:hidden;
+}
+.eu-pg2__halftone-fill{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:50%;
+  background:
+    radial-gradient(circle,#003399 36%,transparent 36%) 0 0 / 6px 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TICKER — campaign manifesto strip at the base of the window
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__ticker{
+  border-top:1.5px solid #1a1a1a;
+  padding:clamp(9px,1.2vw,13px) 16px;
+  display:flex;align-items:baseline;gap:12px;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#1a1a1a;
+  overflow:hidden;
+  background:#fff;
+}
+.eu-pg2__ticker-mark{ color:#003399;font-size:12px;flex:0 0 auto; }
+.eu-pg2__ticker-line{ white-space:nowrap;flex:1;overflow:hidden;text-overflow:ellipsis; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   POSTCARD CANVAS — background, items, tagline overlay
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;background-color:#fff;
+}
+.eu-pg2__items{
+  position:absolute;inset:0;z-index:2;
+}
+.eu-pg2__overlay-tagline{
+  position:absolute;
+  left:0;right:0;bottom:6%;z-index:3;
+  pointer-events:none;
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(16px,5cqw,42px);
+  line-height:1;letter-spacing:-.005em;
+  text-align:center;color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.5),0 0 1px rgba(0,0,0,.6);
+  white-space:pre-line;padding:0 6%;
+}
+
+/* ─── STICKER ITEMS ─────────────────────────────────────────────────── */
+.eu-pg2__item{
+  position:absolute;
+  width:30%;aspect-ratio:1;
+  cursor:default;touch-action:none;
+  transform-origin:center center;
+  transform:translate(-50%,-50%);
+  user-select:none;-webkit-user-drag:none;
+}
+.eu-pg2__item-anim{ width:100%;height:100%;display:block; }
+.eu-pg2__item img{
+  width:100%;height:100%;object-fit:contain;
+  pointer-events:none;-webkit-user-drag:none;
+}
+
+/* ─── STICKER ANIMATIONS ─────────────────────────────────────────────── */
+.eu-pg2__items.is-anim-bounce .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Bounce 1.2s ease-in-out infinite; }
+.eu-pg2__items.is-anim-beat   .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Beat   1.0s ease-in-out infinite; }
+.eu-pg2__items.is-anim-rotate .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Spin   1.6s linear    infinite; }
+.eu-pg2__items.is-anim-wiggle .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Wiggle 0.5s ease-in-out infinite; }
+.eu-pg2__items.is-anim-orbit  .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation:euPg2Orbit  1.4s linear    infinite; }
+.eu-pg2__items[class*="is-anim-"] .eu-pg2__item:not(.is-treat) .eu-pg2__item-anim{ animation-delay:calc(var(--i,0) * -0.1s); }
+
+@keyframes euPg2Bounce{
+  0%{transform:translateY(0)} 25%{transform:translateY(-22%)} 50%{transform:translateY(0)} 75%{transform:translateY(22%)} 100%{transform:translateY(0)}
+}
+@keyframes euPg2Beat{
+  0%{transform:scale(1)} 25%{transform:scale(1.20)} 50%{transform:scale(1)} 75%{transform:scale(0.85)} 100%{transform:scale(1)}
+}
+@keyframes euPg2Spin{ to{transform:rotate(360deg)} }
+@keyframes euPg2Wiggle{ 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(12deg)} }
+@keyframes euPg2Orbit{
+  0%{transform:translate(0,0) rotate(0)}
+  25%{transform:translate(6%,-5%) rotate(90deg)}
+  50%{transform:translate(0,-10%) rotate(180deg)}
+  75%{transform:translate(-6%,-5%) rotate(270deg)}
+  100%{transform:translate(0,0) rotate(360deg)}
+}
+
+/* Invert display mode */
+.eu-pg2__photo.is-inverted{ filter:invert(1); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LIGHTSWITCH — physical wall switch, to the left of the postcard.
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__switch-mount{
+  position:absolute;
+  left:-80px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  z-index:10;
+}
+.eu-pg2__switch-wrap{ width:76px;height:118px;position:relative;cursor:var(--eu-cursor);user-select:none; }
+.eu-pg2__switch-wrap .eu-pg2__switch-input{position:absolute;opacity:0;pointer-events:none}
+.eu-pg2__switch-wrap .panel{
+  transform:scale(0.28);transform-origin:left top;
+  background-color:#fff;border-radius:4px;
+  box-shadow:
+    inset -4px -4px 8px rgba(0,0,0,.25),
+    inset 4px 4px 8px rgba(255,255,255,.5),
+    inset 2px 2px 2px rgba(177,177,177,.25),
+    -4px -4px 16px rgba(255,255,255,.25),
+    1px 1px 1px rgba(0,0,0,.1),
+    4px 4px 2px rgba(0,0,0,.05),
+    6px 6px 3px rgba(0,0,0,.05);
+  height:420px;width:270px;position:relative;
+}
+.eu-pg2__switch-wrap .screw{
+  align-items:center;background-color:#fff;border:1px solid #eee;border-radius:100%;
+  box-shadow:inset -3px -3px 6px rgba(0,0,0,.1),inset 0 0 2px rgba(0,0,0,.2);
+  display:flex;height:24px;justify-content:center;position:absolute;
+  left:50%;transform:translateX(-50%);width:24px;
+}
+.eu-pg2__switch-wrap .screw.top{top:24px}
+.eu-pg2__switch-wrap .screw.top .screw__slot{transform:rotate(10deg)}
+.eu-pg2__switch-wrap .screw.bottom{bottom:24px}
+.eu-pg2__switch-wrap .screw.bottom .screw__slot{transform:rotate(-30deg)}
+.eu-pg2__switch-wrap .screw__slot{
+  background-color:#eee;border-radius:2px;box-shadow:inset 2px 2px 4px rgba(0,0,0,.2);
+  height:4px;width:calc(100% - 2px);
+}
+.eu-pg2__switch-wrap .switch__hole{
+  background-color:#bbb;border-radius:6px;height:240px;left:50%;padding:2px;
+  position:absolute;top:50%;transform:translateX(-50%) translateY(-50%);width:120px;
+}
+.eu-pg2__switch-wrap .switch__groove{
+  background-color:#f7f7f7;border-radius:5px;
+  box-shadow:inset 1px 1px 2px rgba(0,0,0,.2),inset -1px -1px 4px rgba(0,0,0,.2),-1px -1px 4px rgba(255,255,255,.5);
+  padding:5px;height:100%;width:100%;
+}
+.eu-pg2__switch-wrap .switch{
+  background-color:#fff;border-radius:3px;border:1px solid #ddd;
+  box-shadow:0 0 2px rgba(0,0,0,.75),-2px -2px 2px rgba(255,255,255,.75);
+  cursor:var(--eu-cursor);position:relative;height:100%;width:100%;
+}
+.eu-pg2__switch-wrap .switch__top{
+  background-color:#eee;
+  box-shadow:inset 0 0 6px rgba(0,0,0,.05),inset 0 0 24px rgba(0,0,0,.025),inset -16px -16px 36px rgba(0,0,0,.1);
+  height:50%;left:0;position:absolute;top:0;width:100%;z-index:2;
+}
+.eu-pg2__switch-wrap .switch__top-outset{ background:linear-gradient(90deg,#fff,#f7f7f7);height:10px; }
+.eu-pg2__switch-wrap .switch__bottom{
+  background-color:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
+  height:50%;left:0;position:absolute;top:50%;width:100%;z-index:2;
+}
+.eu-pg2__switch-wrap .switch__bottom-outset{
+  bottom:0;background:linear-gradient(90deg,#e7e7e7,#d7d7d7);
+  box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
+  height:0;position:absolute;width:100%;
+}
+.eu-pg2__switch-wrap .switch__shadow-box{
+  height:208px;left:104px;overflow:hidden;position:absolute;width:100px;z-index:1;
+}
+.eu-pg2__switch-wrap .switch__shadow-box.top{top:-96px}
+.eu-pg2__switch-wrap .switch__shadow-box.bottom{top:20px}
+.eu-pg2__switch-wrap .switch__shadow.top{
+  background-color:rgba(0,0,0,.33);height:90px;position:absolute;
+  bottom:20px;filter:blur(10px);left:-70px;opacity:1;transform:rotate(20deg);width:90px;
+}
+.eu-pg2__switch-wrap .switch__shadow.bottom{
+  background-color:rgba(0,0,0,.33);height:90px;position:absolute;
+  bottom:0;left:-90px;filter:blur(0);opacity:.5;transform:rotate(0deg);width:90px;
+}
+.eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__top{
+  background-color:#fff;box-shadow:inset 0 0 3px rgba(0,0,0,.1),inset 0 0 12px rgba(0,0,0,.05);
+}
+.eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__top-outset{height:0}
+.eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__bottom{background-color:#eee}
+.eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__bottom-outset{height:10px}
+.eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__shadow.top{
+  left:-90px;filter:blur(0);opacity:.5;transform:rotate(0deg);
+}
+.eu-pg2__switch-wrap .eu-pg2__switch-input:checked + .panel .switch__shadow.bottom{
+  left:-70px;filter:blur(10px);opacity:1;transform:rotate(-20deg);
+}
+.eu-pg2__switch-label{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-style:italic;font-size:11px;
+  white-space:nowrap;color:#bbb;
+  letter-spacing:.01em;text-align:center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BG IMAGE MODAL
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-pg2__bg-modal{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.eu-pg2__bg-modal[hidden]{display:none}
+.eu-pg2__bg-modal-backdrop{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.5);cursor:var(--eu-cursor);
+}
+.eu-pg2__bg-modal-panel{
+  position:relative;background:#fff;border-radius:3px;
+  width:min(700px,100%);max-height:85vh;overflow:auto;
+  padding:24px 24px 28px;
+  border:1.5px solid #1a1a1a;
+  box-shadow:5px 5px 0 rgba(0,0,0,.05),0 16px 44px rgba(0,0,0,.18);
+}
+.eu-pg2__bg-modal-close{
+  position:absolute;top:12px;right:14px;
+  background:none;border:none;font-size:28px;line-height:1;
+  cursor:var(--eu-cursor);color:#1a1a1a;
+}
+.eu-pg2__bg-modal-title{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+  margin-bottom:16px;color:#1a1a1a;
+}
+.eu-pg2__bg-source{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;
+}
+.eu-pg2__bg-source-item{
+  aspect-ratio:1;overflow:hidden;cursor:var(--eu-cursor);
+  border:2px solid transparent;
+}
+.eu-pg2__bg-source-item:hover{ border-color:#CC0000; }
+.eu-pg2__bg-source-item img{
+  width:100%;height:100%;object-fit:cover;
+  pointer-events:none;-webkit-user-drag:none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════ */
+@media(max-width:500px){
+  .eu-pg2__canvas{
+    padding:20px 20px 20px 72px;
+  }
+  .eu-pg2__stage{
+    width:calc(100vw - 120px);
+  }
+  .eu-pg2__switch-mount{
+    left:-60px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   APERITIVO + GOLDEN HOUR ACCENTS
+   ═══════════════════════════════════════════════════════════════════════ */
+.eu-os-body.is-aperitivo .eu-pg2__ticker-mark{ color:#d35400; }
+.eu-os-body.is-aperitivo .eu-pg2__action-btn--send{ background:#d35400; }
+.eu-os-body.is-golden .eu-pg2__action-btn--send{ background:#b08600; }
+.eu-os-body.is-golden .eu-pg2__action-btn--save{ background:#a44a00; }
+.eu-os-body.is-golden .eu-pg2__cell--sticker.is-active{ border-color:#b08600; }
