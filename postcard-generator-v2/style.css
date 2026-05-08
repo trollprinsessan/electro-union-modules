@@ -10,20 +10,28 @@
  *   `@keyframes`. All state changes are instant — JS-driven or DOM toggle.
  */
 
+/* ─── FONTS ──────────────────────────────────────────────────────────── */
+@font-face{
+  font-family:'Stars Revenge';
+  src:url('stars_revenge.ttf') format('truetype');
+  font-weight:400 900;
+  font-style:normal;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    DESKTOP — EU blue. Warm boot, then you're in the brand.
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-os-body{
   margin:0;
   background:#fff;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   color:#1a1a1a;
   min-height:100vh;
 }
 .eu-os{
   position:relative;
   min-height:100vh;
-  padding:34px 0 28px; /* menubar top + os-info bottom */
+  padding:0;
   display:flex;
   flex-direction:column;
   align-items:stretch;
@@ -88,7 +96,7 @@
 }
 .eu-os__boot-mark-bolt{ font-size:.7em; color:#003399; }
 .eu-os__boot-version{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:11px;letter-spacing:.04em;color:#1a1a1a;margin:0;font-weight:600;
 }
 .eu-os__boot-credits{
@@ -96,13 +104,13 @@
   font-style:italic;font-size:13px;line-height:1.5;color:#3a3a3a;margin:6px 0 0;
 }
 .eu-os__boot-copyright{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:10px;letter-spacing:.04em;color:#777;margin:0 0 14px;
 }
 .eu-os__boot-progress-row{
   display:flex;
   justify-content:space-between;align-items:baseline;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:11px;letter-spacing:.04em;color:#1a1a1a;margin-top:auto;
 }
 .eu-os__boot-progress-pct{ font-weight:700; }
@@ -137,7 +145,7 @@
   border-bottom:1.5px solid #1a1a1a;
   display:flex;align-items:center;justify-content:space-between;
   padding:0 14px;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#1a1a1a;
 }
 .eu-os__menubar[hidden]{display:none}
@@ -168,98 +176,219 @@
 .eu-os__menubar-clock,.eu-os__menubar-date{ font-variant-numeric:tabular-nums; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   WINDOW PANEL — wider (960px) to give the postcard more room.
+   CAMPAIGN BANNER — GREETINGS FROM THE ELECTRO UNION
    ═══════════════════════════════════════════════════════════════════════ */
-.eu-os__window{
-  flex:0 0 auto;
-  width:100%;
-  margin:0;
-  display:flex;
-  flex-direction:column;
+.eu-pg2__campaign-banner{
   background:#fff;
-  border:none;
-  border-top:1.5px solid #1a1a1a;
-  border-radius:0;
-  box-shadow:none;
-  overflow:visible;
+  width:100%;
+  overflow:hidden;
+  box-sizing:border-box;
 }
-.eu-os__window[hidden]{display:none}
-.eu-os__window-titlebar{
-  position:relative;
+.eu-pg2__campaign-banner[hidden]{display:none}
+
+/* Red rolling ticker strip */
+.eu-pg2__banner-ticker-wrap{
+  background:#CC0000;
+  height:30px;
+  overflow:hidden;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  height:36px;
-  padding:0 12px;
-  background:#fff;
-  border-bottom:1.5px solid #1a1a1a;
+  border-bottom:1.5px solid #a00000;
 }
-.eu-os__window-close{
-  width:22px;height:22px;
-  display:inline-flex;align-items:center;justify-content:center;
-  background:#fff;border:1.5px solid #1a1a1a;border-radius:2px;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:18px;line-height:1;color:#1a1a1a;cursor:var(--eu-cursor);padding:0;
+.eu-pg2__banner-ticker-track{
+  display:flex;
+  align-items:center;
+  white-space:nowrap;
+  will-change:transform;
 }
-.eu-os__window-close:hover{ background:#1a1a1a;color:#fff; }
-.eu-os__window-title{
-  text-align:center;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:11px;letter-spacing:.32em;text-transform:uppercase;
-  color:#1a1a1a;font-weight:700;text-shadow:.5px 0 0 currentColor;
-}
-.eu-os__window-counter{
-  display:inline-flex;align-items:baseline;gap:6px;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:#1a1a1a;white-space:nowrap;
-}
-.eu-os__window-counter-num{
+.eu-pg2__banner-ticker-seg{
   font-family:'Times Eighteen',Georgia,serif;
-  font-weight:bold;font-size:18px;letter-spacing:.005em;
-  font-variant-numeric:tabular-nums;color:#1a1a1a;
+  font-weight:bold;
+  font-style:italic;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#fff;
+  flex-shrink:0;
 }
-.eu-os__window-body{ background:#fff; overflow-x:auto; overflow-y:hidden; }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   FREE-STANDING CANVAS — floats on the EU blue desktop beside the window
-   ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__canvas{
-  flex:1 1 0;
-  min-height:0;
+/* Headline body */
+.eu-pg2__banner-body{
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:24px 40px 24px 100px; /* 100px left for lightswitch */
-  position:relative;
+  padding:20px 40px 224px;
+  gap:0;
+}
+
+.eu-pg2__banner-text{
+  text-align:center;
+  flex:0 0 auto;
+}
+.eu-pg2__banner-sub{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(28px,3.2vw,44px);
+  color:#1a1a1a;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin:0 0 2px;
+  line-height:1;
+}
+.eu-pg2__banner-headline{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;
+  font-size:clamp(44px,7vw,96px);
+  color:#1a1a1a;
+  text-transform:uppercase;
+  letter-spacing:-.025em;
+  line-height:.92;
+  margin:0;
+  white-space:nowrap;
+}
+
+.eu-pg2__banner-stickers{
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+}
+.eu-pg2__banner-stickers--left{ margin-right:32px; }
+.eu-pg2__banner-stickers--right{ margin-left:32px; }
+
+.eu-pg2__banner-sticker{
+  width:var(--s,60px);
+  height:var(--s,60px);
+  object-fit:contain;
+  transform:rotate(var(--r,0deg)) translateY(var(--t,0px));
+  flex-shrink:0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   OS-INFO STRIP
+   FLOATING PANELS DESK — postcard centred, independent panels around it
    ═══════════════════════════════════════════════════════════════════════ */
-.eu-os__os-info{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  z-index:200;
-  height:28px;
-  background:#fdfaf4;
-  border-top:1.5px solid #1a1a1a;
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+.eu-pg2__desk{
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  gap:16px;
+  padding:24px 20px;
+  background:#fff;
+  min-height:100vh;
+  max-width:1280px;
+  margin:0 auto;
+}
+.eu-pg2__desk[hidden]{display:none}
+
+.eu-pg2__desk-left{
+  flex-shrink:0;
+  width:260px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.eu-pg2__desk-center{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
   align-items:center;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#1a1a1a;
+  gap:16px;
 }
-.eu-os__os-info[hidden]{display:none}
-.eu-os__os-info-cell{
-  padding:0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+
+.eu-pg2__desk-right{
+  flex-shrink:0;
+  width:240px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
-.eu-os__os-info-cell + .eu-os__os-info-cell{ border-left:1.5px solid #1a1a1a; }
-@media(max-width:760px){
-  .eu-os__os-info{ grid-template-columns:1fr 1fr;height:auto;padding:6px 0; }
-  .eu-os__os-info-cell:nth-child(3){ display:none; }
+
+/* ─── PANEL — borderless, built into the page ───────────────────────── */
+.eu-pg2__panel{
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
 }
+
+/* Panel nameplate strip */
+.eu-pg2__panel-nameplate{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:0 4px;
+  height:28px;
+  background:transparent;
+  flex-shrink:0;
+  margin-bottom:6px;
+}
+
+/* Panel name text */
+.eu-pg2__panel-name{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:#003399;white-space:nowrap;
+}
+
+/* Sublabel inside panel body (Format, Display) */
+.eu-pg2__panel-sublabel{
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:#aaa;margin:6px 0 4px;
+}
+
+/* Panel body */
+.eu-pg2__panel-body{
+  padding:0 2px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  flex:1;
+}
+
+/* Pastry + Stickers panels — fill the left column */
+.eu-pg2__panel--pastry,
+.eu-pg2__panel--stickers{ width:100%; }
+.eu-pg2__panel--pastry .eu-pg2__panel-body,
+.eu-pg2__panel--stickers .eu-pg2__panel-body{ gap:10px; }
+
+/* Push panel — centred switch */
+.eu-pg2__panel-body--push{
+  align-items:center;
+  justify-content:center;
+  padding:14px 10px;
+  gap:0;
+}
+
+/* Motion panel — 3×2 grid in left column */
+.eu-pg2__panel--motion{ width:100%; }
+
+/* Send panel */
+.eu-pg2__panel-body--send{ gap:8px; }
+
+/* Sent counter in send panel nameplate */
+.eu-pg2__window-counter{
+  display:inline-flex;align-items:baseline;gap:5px;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:#fff;white-space:nowrap;
+}
+.eu-pg2__window-counter-num{
+  font-family:'Times Eighteen',Georgia,serif;
+  font-weight:bold;font-size:17px;letter-spacing:.005em;
+  font-variant-numeric:tabular-nums;color:#fff;
+}
+
+/* ─── CANVAS — postcard on the desk surface ──────────────────────────── */
+.eu-pg2__canvas{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
 
 /* ═══════════════════════════════════════════════════════════════════════
    APP LAYOUT — two-column grid inside the window body.
@@ -282,7 +411,7 @@
 }
 .eu-pg2__stage{
   position:relative;
-  width:min(460px,calc(100vw - 200px));
+  width:min(560px,calc(100vw - 560px));
 }
 .eu-pg2__framed{
   position:relative;
@@ -347,7 +476,7 @@
 
 /* Primary section label */
 .eu-pg2__ctrl-label{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
   color:#1a1a1a;
   display:block;
@@ -359,7 +488,7 @@
 
 /* Smaller inline label (SIZE, Front, Format…) */
 .eu-pg2__ctrl-sub-label{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:8px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
   color:#aaa;
   flex:0 0 auto;
@@ -395,14 +524,14 @@
   grid-template-columns:repeat(auto-fill,minmax(62px,1fr));
   gap:5px;
 }
-/* Stamp grid: 3 columns, 3 rows — compact in horizontal strip */
-.eu-pg2__cell-grid--stamps{ grid-template-columns:repeat(3,54px); }
+/* Stamp grid: 3 columns — minmax(0,1fr) prevents min-content inflation from food photos */
+.eu-pg2__cell-grid--stamps{ grid-template-columns:repeat(3,minmax(0,1fr)); }
 /* Front picker: 2 cells side by side */
-.eu-pg2__cell-grid--front{  grid-template-columns:repeat(2,60px); }
-/* Motion: 3 per row, 2 rows */
-.eu-pg2__cell-grid--motion{ grid-template-columns:repeat(3,52px); }
-/* Draw tools: all 4 in one row */
-.eu-pg2__cell-grid--tools{  grid-template-columns:repeat(4,48px); }
+.eu-pg2__cell-grid--front{  grid-template-columns:repeat(2,1fr); }
+/* Motion: 3 per row in the left column */
+.eu-pg2__cell-grid--motion{ grid-template-columns:repeat(3,1fr); }
+/* Draw tools: 2×2 in the narrower right module */
+.eu-pg2__cell-grid--tools{  grid-template-columns:repeat(2,1fr); }
 
 .eu-pg2__cell{
   display:flex;
@@ -417,11 +546,14 @@
   cursor:var(--eu-cursor);
   color:#1a1a1a;
   aspect-ratio:1;
+  min-height:0;
+  min-width:0;
+  overflow:hidden;
   user-select:none;
 }
 .eu-pg2__cell--motion{ aspect-ratio:auto;padding:8px 6px; }
 .eu-pg2__cell.is-active{
-  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
+  background:#003399;border-color:#003399;color:#fff;
 }
 .eu-pg2__cell-img{
   width:62%;aspect-ratio:1;
@@ -450,32 +582,94 @@ input[type=color]{
   opacity:0;border:none;cursor:var(--eu-cursor);
 }
 .eu-pg2__cell-label{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  font-family:'Stars Revenge',Arial,sans-serif;
+  font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
   text-align:center;
   line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  max-width:100%;
+}
+.eu-pg2__panel--pastry .eu-pg2__cell-label,
+.eu-pg2__panel--stickers .eu-pg2__cell-label{ display:none; }
+
+/* ── Pile layout: pastry + sticker cells ─────────────────────────────── */
+/* Container: fixed-height relative block — no grid */
+.eu-pg2__panel--pastry .eu-pg2__cell-grid,
+.eu-pg2__panel--stickers .eu-pg2__cell-grid{
+  display:block;
+  position:relative;
+  height:340px;
+}
+/* Each cell: absolutely placed, no box chrome */
+.eu-pg2__panel--pastry .eu-pg2__cell,
+.eu-pg2__panel--stickers .eu-pg2__cell{
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:0;
+  position:absolute;
+  width:80px;
+  height:80px;
+  top:var(--top,0px);
+  left:var(--left,0px);
+  overflow:visible;
+  z-index:1;
+}
+.eu-pg2__panel--pastry .eu-pg2__cell.is-active,
+.eu-pg2__panel--stickers .eu-pg2__cell.is-active{
+  background:transparent;border:none;color:inherit;
+  z-index:3;
+}
+/* All full opacity */
+.eu-pg2__panel--pastry .eu-pg2__cell:not(.is-active),
+.eu-pg2__panel--stickers .eu-pg2__cell:not(.is-active){ opacity:1; }
+/* Image: rotate only — absolute pos handles placement */
+.eu-pg2__panel--pastry .eu-pg2__cell .eu-pg2__cell-img,
+.eu-pg2__panel--stickers .eu-pg2__cell .eu-pg2__cell-img{
+  pointer-events:none;
+  width:92%;
+  transform:rotate(var(--tilt,0deg));
+}
+/* Active: scale up + drop shadow */
+.eu-pg2__panel--pastry .eu-pg2__cell.is-active .eu-pg2__cell-img,
+.eu-pg2__panel--stickers .eu-pg2__cell.is-active .eu-pg2__cell-img{
+  transform:rotate(var(--tilt,0deg)) scale(1.22);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.28));
+}
+
+/* Per-item: scattered pile — fits within 260px column */
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(1),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(1){ --tilt:-6deg;  --top:5px;   --left:8px;   }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(2),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(2){ --tilt:8deg;   --top:18px;  --left:100px; }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(3),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(3){ --tilt:-4deg;  --top:0px;   --left:168px; }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(4),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(4){ --tilt:11deg;  --top:110px; --left:58px;  }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(5),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(5){ --tilt:-9deg;  --top:95px;  --left:165px; }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(6),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(6){ --tilt:5deg;   --top:130px; --left:10px;  }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(7),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(7){ --tilt:-7deg;  --top:228px; --left:85px;  }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(8),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(8){ --tilt:3deg;   --top:240px; --left:5px;   }
+.eu-pg2__panel--pastry .eu-pg2__cell:nth-child(9),
+.eu-pg2__panel--stickers .eu-pg2__cell:nth-child(9){ --tilt:-11deg; --top:248px; --left:162px; }
+
+/* Baguette + Stroopwafel: 20% smaller */
+.eu-pg2__panel--pastry [data-sticker="0"] .eu-pg2__cell-img,
+.eu-pg2__panel--pastry [data-sticker="1"] .eu-pg2__cell-img{ width:69%; }
+.eu-pg2__panel--pastry [data-sticker="0"].is-active .eu-pg2__cell-img,
+.eu-pg2__panel--pastry [data-sticker="1"].is-active .eu-pg2__cell-img{
+  transform:rotate(var(--tilt,0deg)) scale(1.22);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.28));
+  width:69%;
 }
 .eu-pg2__cell svg{
   width:52%;height:52%;display:block;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   SUB-TABS (Pastry / Stickers)
-   ═══════════════════════════════════════════════════════════════════════ */
-.eu-pg2__tabs{
-  display:flex;gap:4px;
-}
-.eu-pg2__tab{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
-  font-size:8px;letter-spacing:.14em;text-transform:uppercase;
-  padding:3px 10px;
-  border:1.5px solid #e0e0e0;border-radius:999px;
-  background:transparent;cursor:var(--eu-cursor);color:#1a1a1a;
-}
-.eu-pg2__tab.is-active{
-  background:#1a1a1a;border-color:#1a1a1a;color:#fdfaf4;
-}
-.eu-pg2__tab-panel[hidden]{display:none}
 
 /* ═══════════════════════════════════════════════════════════════════════
    TAGLINE INPUT — big, bold, campaigns-voice
@@ -505,7 +699,7 @@ input[type=color]{
 .eu-pg2__toggle-row--stacked{ flex-direction:column;gap:4px; }
 .eu-pg2__toggle{
   flex:1;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:8px;letter-spacing:.12em;text-transform:uppercase;
   padding:6px 8px;
   border:1.5px solid #e0e0e0;border-radius:3px;
@@ -522,7 +716,7 @@ input[type=color]{
    ═══════════════════════════════════════════════════════════════════════ */
 .eu-pg2__chip{
   display:inline-flex;align-items:center;gap:8px;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:#1a1a1a;cursor:var(--eu-cursor);user-select:none;
 }
@@ -545,7 +739,7 @@ input[type=color]{
   width:100%;
   height:44px;
   border:none;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
   cursor:var(--eu-cursor);color:#fff;
   border-radius:3px;
@@ -619,7 +813,7 @@ input[type=color]{
   border-top:1.5px solid #1a1a1a;
   padding:clamp(9px,1.2vw,13px) 16px;
   display:flex;align-items:baseline;gap:12px;
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#1a1a1a;
   overflow:hidden;
   background:#fff;
@@ -822,7 +1016,7 @@ input[type=color]{
   cursor:var(--eu-cursor);color:#1a1a1a;
 }
 .eu-pg2__bg-modal-title{
-  font-family:'ABC Schengen Mono','Courier New',monospace;
+  font-family:'Stars Revenge',Arial,sans-serif;
   font-size:11px;letter-spacing:.32em;text-transform:uppercase;
   margin-bottom:16px;color:#1a1a1a;
 }

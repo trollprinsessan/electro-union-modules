@@ -33,25 +33,10 @@
   var CAMPAIGN_URL_LABEL = 'norrsken.org/goodnews';
   var CAMPAIGN_FOOTER    = 'MAKE EUROPE THE ELECTRO UNION · ' + CAMPAIGN_URL_LABEL.toUpperCase();
 
-  // Auto-taglines per pastry index. Mixed-case display, but the canvas
-  // export forces uppercase to read like a poster.
-  var PASTRY_TAGLINES = [
-    'SAME BAGUETTE.\nOWN POWER.',
-    'SAME STROOPWAFEL.\nOWN POWER.',
-    'SAME FIKA.\nOWN POWER.',
-    'SAME BAKLAVA.\nOWN POWER.',
-    'SAME KÜRTŐS.\nOWN POWER.',
-    'SAME CROISSANT.\nOWN POWER.',
-    'SAME DANISH.\nOWN POWER.',
-    'SAME PASTEL.\nOWN POWER.',
-    'SAME SERNIK.\nOWN POWER.'
-  ];
-
   // Lines for the bottom ticker — campaign manifesto fragments mixed with
   // classic postcard language. Rotates every ~3 seconds via instant swap.
   var TICKER_LINES = [
     'Greetings from the Electro Union',
-    'Same pasta, own power',
     'Wish you were here',
     'The good life deserves to be resilient',
     'From Lisbon to Tallinn',
@@ -73,10 +58,6 @@
     'Naciśnij na niespodziankę'
   ];
 
-  // Tagline state — drawn by drawPostcardTagline on every export.
-  // Auto-set on pastry pick, overridable via the input below the workspace.
-  var currentTagline = '';
-  var taglineUserOverridden = false;
 
   // ═══ ASSETS ═══
   // Indices 0-8 = pastries, 9-17 = EU stickers. data-sticker on each tile
@@ -140,7 +121,9 @@
   var bgColorEl  = document.getElementById('euPg2BgColor');
   var bgPicker   = document.getElementById('euPg2BgPicker');
   var bgSwatch   = document.getElementById('euPg2BgSwatch');
-  var sizeSlider = document.getElementById('euPg2Size');
+  var pastrySizeSlider  = document.getElementById('euPg2PastrySize');
+  var stickerSizeSlider = document.getElementById('euPg2StickerSize');
+  function sizeSliderValue(){ var sl = activeSticker >= EU_STICKER_OFFSET ? stickerSizeSlider : pastrySizeSlider; return sl ? parseFloat(sl.value) : 44; }
   var switchInput = document.getElementById('euPg2Switch');
   var pencilBtn  = document.getElementById('euPg2Pencil');
   var grabBtn    = document.getElementById('euPg2Grab');
@@ -155,20 +138,14 @@
   var bootLabel  = document.getElementById('euOsBootLabel');
   var menubarEl  = document.getElementById('euOsMenubar');
   var windowEl   = document.getElementById('euOsWindow');
-  var osInfoEl   = document.getElementById('euOsInfo');
   var clockEl    = document.getElementById('euOsClock');
   var dateEl     = document.getElementById('euOsDate');
   var soundBtn   = document.getElementById('euOsSound');
   var soundIcon  = document.getElementById('euOsSoundIcon');
   // Postcard generator chrome refs
-  var tagInput   = document.getElementById('euPg2TaglineInput');
-  var tagOverlay = document.getElementById('euPg2TaglineOverlay');
   var switchLbl  = document.getElementById('euPg2SwitchLabel');
   var tickerEl   = document.getElementById('euPg2TickerLine');
   var counterEl  = document.getElementById('euPg2CounterNum');
-  var approveBox = document.getElementById('euPg2ApproveBox');
-  var approveLbl = document.getElementById('euPg2Approve');
-  var approveMark= approveLbl ? approveLbl.querySelector('.eu-pg2__chip-mark') : null;
   var closeBtn   = document.querySelector('.eu-os__window-close');
 
   // ═══ STATE ═══
@@ -257,7 +234,7 @@
     var rect = photo.getBoundingClientRect();
     var xPct = ((clientX - rect.left) / rect.width)  * 100;
     var yPct = ((clientY - rect.top)  / rect.height) * 100;
-    addPlacement(activeSticker, xPct, yPct, parseFloat(sizeSlider.value), 0, currentStrokeId);
+    addPlacement(activeSticker, xPct, yPct, sizeSliderValue(), 0, currentStrokeId);
   }
 
   photo.addEventListener('pointerdown', function(e){
@@ -514,48 +491,7 @@
       c.drawImage(img, -dw/2, -dh/2, dw, dh);
       c.restore();
     }
-    drawPostcardTagline(c, ew, eh);
     drawCampaignFooter(c, ew, eh);
-  }
-
-  // ═══ POSTCARD TAGLINE ═══
-  // Renders the active tagline as a Times Eighteen Bold overlay near the
-  // bottom of the postcard. Auto-set by pastry pick, overridable by the
-  // user input. Two-line max ("SAME BAGUETTE.\nOWN POWER."). White with a
-  // text-shadow drop so it stays legible over any background.
-  function drawPostcardTagline(c, ew, eh){
-    var line = (currentTagline || '').toString().trim();
-    if (!line) return;
-    c.save();
-    c.fillStyle = '#fff';
-    c.textBaseline = 'middle';
-    c.textAlign = 'center';
-    c.shadowColor = 'rgba(0,0,0,.55)';
-    c.shadowBlur = Math.max(2, Math.round(ew * 0.005));
-    c.shadowOffsetY = Math.max(1, Math.round(ew * 0.001));
-    var lines = line.toUpperCase().split('\n');
-    // Auto-size to fit the longest line within 88% of card width.
-    var maxLineWidth = ew * 0.88;
-    var fs = Math.round(eh * 0.075);
-    while (fs > 14){
-      c.font = 'bold ' + fs + 'px "Times Eighteen", Georgia, serif';
-      var w = 0;
-      for (var i=0; i<lines.length; i++){
-        var lw = c.measureText(lines[i]).width;
-        if (lw > w) w = lw;
-      }
-      if (w <= maxLineWidth) break;
-      fs -= 2;
-    }
-    var lh = fs * 1.02;
-    var blockH = lh * lines.length;
-    // Sit ~10% up from the bottom edge of the card (above the campaign strip).
-    var bottomMargin = Math.round(eh * 0.10);
-    var startY = eh - bottomMargin - blockH/2 + lh/2;
-    for (var j=0; j<lines.length; j++){
-      c.fillText(lines[j], ew/2, startY + lh*j - lh/2);
-    }
-    c.restore();
   }
 
   // ═══ CAMPAIGN FOOTER ═══
@@ -861,9 +797,7 @@
       // a caption when the target supports it (iOS Messages, WhatsApp,
       // some browsers' LinkedIn share). Many platforms ignore it.
       try {
-        var line = (currentTagline || '').replace(/\n/g, ' ').trim();
         shareData.text = 'Greetings from the Electro Union. 🇪🇺' +
-                         (line ? ' ' + line : '') +
                          '\nnorrsken.org/goodnews/make-europe-the-electro-union';
       } catch(_){}
       if (navigator.canShare && navigator.canShare({ files:[file] })){
@@ -895,58 +829,28 @@
     }, 30);
   });
 
-  // Pre-select the baguette pastry and seed its tagline.
+  // Pre-select the baguette pastry.
   setActiveTile(0);
-  setTagline(PASTRY_TAGLINES[0]);
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // BOOT — fake-OS startup splash.
-  // Animates the segmented progress bar from 0→98% over ~3s while
-  // rotating a stage label ("Requesting postcard.psf" → "Connecting to
-  // continental relay" → "Decoding postal manifest"). Hard-cuts to the
-  // desktop, revealing menubar + window + os-info strip.
-  // ═══════════════════════════════════════════════════════════════════════
-  var BOOT_LABELS = [
-    'Requesting postcard.psf',
-    'Connecting to continental relay',
-    'Verifying member credentials',
-    'Decoding postal manifest',
-    'Loading rack imagery',
-    'Establishing FM channel'
-  ];
-  (function bootSplash(){
-    if (!bootEl || !bootFill || !bootPct) return;
-    var BOOT_DURATION = 3200;
-    var TARGET = 98; // % to settle at, like a real fake-OS splash
-    var start = performance.now();
-    var lastLabelIdx = -1;
-    function tick(now){
-      var t = Math.min(1, (now - start) / BOOT_DURATION);
-      // Mild ease-out so the bar fills fast then slows — feels like a
-      // real connection establishing, not a uniform timer.
-      var eased = 1 - Math.pow(1 - t, 1.6);
-      var pct = Math.round(eased * TARGET);
-      bootFill.style.width = pct + '%';
-      bootPct.textContent = pct + '%';
-      // Rotate the stage label every ~600ms.
-      var labelIdx = Math.min(BOOT_LABELS.length - 1, Math.floor((now - start) / 600));
-      if (labelIdx !== lastLabelIdx){
-        lastLabelIdx = labelIdx;
-        if (bootLabel) bootLabel.textContent = BOOT_LABELS[labelIdx];
-      }
-      if (t < 1){
-        requestAnimationFrame(tick);
-      } else {
-        // Hold a beat at 98%, then dismiss instantly. No transitions.
-        setTimeout(function(){
-          if (bootEl) bootEl.hidden = true;
-          if (menubarEl) menubarEl.hidden = false;
-          if (windowEl)  windowEl.hidden  = false;
-          if (osInfoEl)  osInfoEl.hidden  = false;
-        }, 320);
-      }
+
+  // ─── BANNER TICKER SCROLL ─────────────────────────────────────────────
+  (function bannerTickerScroll(){
+    var track = document.getElementById('euPg2BannerTickerTrack');
+    if (!track) return;
+    var pos = 0;
+    var segW = 0;
+    function getSegW(){
+      var seg = track.firstElementChild;
+      return seg ? seg.offsetWidth : 0;
     }
-    requestAnimationFrame(tick);
+    function step(){
+      if (!segW) segW = getSegW();
+      pos += 1;
+      if (segW > 0 && pos >= segW) pos -= segW;
+      track.style.transform = 'translateX(-' + pos + 'px)';
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
   })();
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -1005,7 +909,6 @@
     'Aperitivo hour · 18:00 to 20:00 CET',
     'Negroni, sbagliato, with prosecco in it',
     'Olives, taralli, the day winding down',
-    'Same spritz, own power',
     'Italo disco from now until the streetlights come on',
     'Greetings from the Electro Union'
   ];
@@ -1151,62 +1054,6 @@
   })();
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAGLINE — auto-set from active pastry, override via input.
-  // The DOM overlay shows it live on the postcard; the canvas export
-  // draws it on every PNG/GIF/MP4 via drawPostcardTagline().
-  // ═══════════════════════════════════════════════════════════════════════
-  function setTagline(text){
-    currentTagline = (text || '').toString();
-    if (tagOverlay) tagOverlay.textContent = currentTagline.toUpperCase();
-  }
-  // Wrap setActiveTile so picking a pastry seeds its tagline (unless the
-  // user has already typed a custom one).
-  var origSetActiveTile = setActiveTile;
-  setActiveTile = function(idx){
-    origSetActiveTile(idx);
-    if (idx >= 0 && idx < EU_STICKER_OFFSET && !taglineUserOverridden){
-      setTagline(PASTRY_TAGLINES[idx]);
-      if (tagInput) tagInput.value = PASTRY_TAGLINES[idx].replace(/\n/g, ' ');
-    }
-  };
-  // Re-bind tile click handlers to the wrapped fn (the originals were
-  // bound earlier, so we attach again — duplicate listener is fine, both
-  // call setActiveTile and the wrapped version handles tagline).
-  document.querySelectorAll('[data-sticker]').forEach(function(tile){
-    var idx = parseInt(tile.getAttribute('data-sticker'),10) || 0;
-    tile.addEventListener('click', function(){ setActiveTile(idx); });
-  });
-  // Custom override
-  if (tagInput){
-    tagInput.value = PASTRY_TAGLINES[0].replace(/\n/g, ' ');
-    tagInput.addEventListener('input', function(){
-      taglineUserOverridden = tagInput.value.trim().length > 0 &&
-                              tagInput.value.trim() !== PASTRY_TAGLINES[activeSticker].replace(/\n/g, ' ');
-      // Treat user input as one or two lines: split on " . " or full stop
-      // followed by space, otherwise show as one line.
-      var v = tagInput.value;
-      var parts = v.split(/\.\s+/);
-      if (parts.length === 2 && parts[0] && parts[1]){
-        setTagline(parts[0].trim() + '.\n' + parts[1].trim());
-      } else {
-        setTagline(v);
-      }
-    });
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // I APPROVE checkbox — visual checkmark only. The brief leaves the
-  // counter increment on actual export, not on this checkbox.
-  // ═══════════════════════════════════════════════════════════════════════
-  if (approveBox && approveLbl && approveMark){
-    approveBox.addEventListener('change', function(){
-      var on = approveBox.checked;
-      approveLbl.classList.toggle('is-checked', on);
-      approveMark.textContent = on ? '☑' : '☐';
-    });
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════
   // POSTCARD COUNTER — pulls count from Supabase on load and increments
   // on every successful export. Reuses the same `get_approval_count` /
   // `increment_and_get_count` RPCs the gate module uses, so a postcard
@@ -1296,34 +1143,24 @@
   })();
 
   // ─── FM TRACK TITLE SYNC ─────────────────────────────────────────────
-  // Mirrors the postcard tagline into the FM track-title element.
-  (function trackTitleSync(){
-    var trackTitleEl = document.getElementById('euFmTrackTitle');
-    if (!trackTitleEl) return;
-    var origSetTagline = setTagline;
-    setTagline = function(text){
-      origSetTagline(text);
-      var display = (text || '').toUpperCase().replace(/\n/g, ' ');
-      trackTitleEl.textContent = display || 'GREETINGS FROM THE ELECTRO UNION';
-    };
-    // Seed on init
-    var t = (currentTagline || '').toUpperCase().replace(/\n/g, ' · ');
-    if (t) trackTitleEl.textContent = t;
-  })();
 
-  // ─── SIZE SLIDER — halftone fill + readout ────────────────────────────
+  // ─── SIZE SLIDERS — halftone fill + readout (pastry + stickers) ──────
   (function sizeSliderUI(){
-    var slider  = document.getElementById('euPg2Size');
-    var fill    = document.getElementById('euPg2SizeFill');
-    var readout = document.getElementById('euPg2SizeReadout');
-    if (!slider) return;
-    function update(){
-      var pct = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-      if (fill)    fill.style.width = pct + '%';
-      if (readout) readout.textContent = slider.value;
+    function wire(sliderId, fillId, readoutId){
+      var slider  = document.getElementById(sliderId);
+      var fill    = document.getElementById(fillId);
+      var readout = document.getElementById(readoutId);
+      if (!slider) return;
+      function update(){
+        var pct = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+        if (fill)    fill.style.width = pct + '%';
+        if (readout) readout.textContent = slider.value;
+      }
+      update();
+      slider.addEventListener('input', update);
     }
-    update();
-    slider.addEventListener('input', update);
+    wire('euPg2PastrySize',  'euPg2PastrySizeFill',  'euPg2PastrySizeReadout');
+    wire('euPg2StickerSize', 'euPg2StickerSizeFill', 'euPg2StickerSizeReadout');
   })();
 
   // ─── FORMAT TOGGLE ────────────────────────────────────────────────────
