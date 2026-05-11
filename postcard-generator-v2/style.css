@@ -1738,19 +1738,22 @@ input[type=color]{
 }
 
 @media (max-width:640px){
-  /* Compact intro: keep marquee, hide everything else above canvas */
-  .eu-pg2__intro{ display:none; }
+  /* Compact intro on mobile */
+  .eu-pg2__intro{ padding:16px 20px 8px; }
+  .eu-pg2__intro-gif{ margin:8px auto 14px; max-width:88%; }
+  .eu-pg2__intro-subhead{ font-size:14px; line-height:1.45; margin:12px auto 0; max-width:100%; }
   .eu-pg2__banner-ticker-seg{ font-size:13px; }
-  .eu-pg2__banner-ticker-pastry{ height:20px; }
+  .eu-pg2__banner-ticker-pastry{ height:28px; }
+  .eu-pg2__desk{ margin-top:0; padding-top:8px; }
 
   /* CSS Grid: switch spans 2 rows on the left, 8 buttons fill 2x4 grid */
   .eu-pg2__desk{
     display:grid;
-    grid-template-columns:50px 72px 50px 50px 50px 50px 1fr;
+    grid-template-columns:50px 52px 50px 50px 50px 50px 1fr;
     grid-template-rows:50px 50px auto auto auto auto;
     grid-auto-rows:auto;
     grid-auto-flow:row;
-    padding:12px 10px 24px;
+    padding:12px 10px 24px 20px;
     column-gap:6px;
     row-gap:10px;
     align-items:stretch;
@@ -1825,7 +1828,8 @@ input[type=color]{
   #euPg2Clear{ grid-column:6; grid-row:2; }
 
   /* Full-width grid items below the toolbar */
-  .eu-pg2__desk-center{ grid-column:1 / -1; grid-row:3; }
+  .eu-pg2__desk-center{ grid-column:1 / -1; grid-row:3; margin-top:10px; }
+  .eu-pg2__desk-center .eu-pg2__stage{ max-width:90%; margin:0 auto; }
   .eu-pg2__panel--pencil{ grid-column:1 / -1; grid-row:4; height:auto; }
   .eu-pg2__panel--motion{ grid-column:1 / -1; grid-row:5; height:auto; }
   .eu-pg2__panel--send{ grid-column:1 / -1; grid-row:6; height:auto; }
@@ -1929,8 +1933,8 @@ input[type=color]{
     max-width:100%;
     align-items:center;
     scrollbar-width:none;
-    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%);
-    mask-image:linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 48px), transparent 100%);
+    mask-image:linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 48px), transparent 100%);
   }
   .eu-pg2__panel--pencil .eu-pg2__cell-grid--stamps::-webkit-scrollbar,
   .eu-pg2__panel--motion .eu-pg2__cell-grid--motion::-webkit-scrollbar{ display:none; }
