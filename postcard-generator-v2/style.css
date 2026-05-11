@@ -43,10 +43,35 @@
 .eu-os{
   position:relative;
   min-height:100vh;
-  padding:0 0 300px;
+  padding:0 0 80px;
   display:flex;
   flex-direction:column;
   align-items:stretch;
+}
+
+/* ─── OPEN LETTER LINK ─── */
+.eu-pg2__letter-link{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:64px 24px;
+  margin:0 0 80px;
+  text-decoration:none;
+}
+.eu-pg2__letter-gif{
+  display:block;
+  max-width:100%;
+  height:auto;
+  transition:transform 200ms ease;
+}
+.eu-pg2__letter-link:hover .eu-pg2__letter-gif{ transform:scale(1.02); }
+
+/* Intro GIF replacing the tagline */
+.eu-pg2__intro-gif{
+  display:block;
+  max-width:100%;
+  height:auto;
+  margin:30px auto 28px;
 }
 /* Time-based desktop accents */
 .eu-os-body.is-golden{ background:#f7f5f0; }
@@ -287,7 +312,7 @@
   background:#fff;
   min-height:100vh;
   max-width:1280px;
-  margin:0 auto;
+  margin:40px auto 0;
 }
 .eu-pg2__desk[hidden]{display:none}
 
@@ -1117,9 +1142,9 @@ input[type=color]{
   border-bottom:none;
 }
 .eu-pg2__banner-ticker-track{
-  gap:32px;
+  gap:6px;
   padding-left:32px;
-  animation:euMarqueeScroll 38s linear infinite;
+  animation:euMarqueeScroll 50s linear infinite;
 }
 .eu-pg2__banner-ticker-seg{
   font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
@@ -1131,7 +1156,7 @@ input[type=color]{
   color:#111;
 }
 .eu-pg2__banner-ticker-pastry{
-  height:30px;
+  height:44px;
   width:auto;
   flex-shrink:0;
   object-fit:contain;
@@ -1152,7 +1177,7 @@ input[type=color]{
   margin:0 auto;
 }
 .eu-pg2__intro-tagline{
-  font-family:'ABC Schengen Mono','Courier New',ui-monospace,monospace;
+  font-family:'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif;
   font-weight:900;
   font-size:18px;
   letter-spacing:-.02em;
@@ -1190,7 +1215,7 @@ input[type=color]{
   font-size:20px;
   line-height:1.4;
   color:#1a1a1a;
-  max-width:640px;
+  max-width:760px;
   margin:32px auto 0;
 }
 
@@ -1199,9 +1224,9 @@ input[type=color]{
   background:transparent;
   width:100%;
   max-width:1280px;
-  margin:0 auto;
+  margin:60px auto 0;
   padding:24px 28px 80px;
-  gap:32px;
+  gap:92px;
   align-items:flex-start;
   box-sizing:border-box;
   min-height:0;
@@ -1660,8 +1685,8 @@ input[type=color]{
   height:56px;
   border:none;
   padding:0 20px;
-  font-family:'Times Eighteen',Georgia,'Times New Roman',serif;
-  font-size:17px;
+  font-family:'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-size:14px;
   font-weight:900;
   letter-spacing:.04em;
   text-transform:uppercase;
