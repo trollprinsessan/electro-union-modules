@@ -802,7 +802,10 @@
           if (err && err.name === 'AbortError') return;
         });
       } else {
+        // Desktop fallback: download the file AND open LinkedIn compose in a
+        // new tab so the user can drag-drop the just-saved file into the post.
         downloadBlob(file, file.name);
+        try { window.open('https://www.linkedin.com/feed/?shareActive=true', '_blank', 'noopener'); } catch(_){}
         incrementCounter();
       }
     }
@@ -1043,14 +1046,8 @@
   // ═══════════════════════════════════════════════════════════════════════
   // MULTILINGUAL SWITCH LABEL — instant translation swap every 5 seconds.
   // ═══════════════════════════════════════════════════════════════════════
-  (function switchLabelRotation(){
-    if (!switchLbl) return;
-    var i = 0;
-    setInterval(function(){
-      i = (i + 1) % SWITCH_LABELS.length;
-      switchLbl.textContent = SWITCH_LABELS[i];
-    }, 5000);
-  })();
+  // Switch is now a static SHUFFLE control — translation rotator disabled.
+  (function switchLabelRotation(){ return; })();
 
   // ═══════════════════════════════════════════════════════════════════════
   // POSTCARD COUNTER — pulls count from Supabase on load and increments

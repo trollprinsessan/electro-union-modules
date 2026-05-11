@@ -56,7 +56,7 @@
         <span class="eu-pg2__intro-title-sm">Greetings from the</span>
         <span class="eu-pg2__intro-title-lg">Electro Union</span>
       </h1>
-      <p class="eu-pg2__intro-subhead">Share on LinkedIn opens your phone's share sheet with an animated GIF. Download for Instagram saves an MP4 to your device, upload it from there to Stories.</p>
+      <p class="eu-pg2__intro-subhead">Flick the switch, pick a scene and pastry of your choice. Make it dance. Share on LinkedIn opens your phone's share sheet with an animated GIF, or save the MP4 for Instagram Stories. Thank you for spread the message,. Make Europe the first Electro Continent!</p>
     </div>
   </div>
 
@@ -92,7 +92,7 @@
               <div class="screw bottom"><div class="screw__slot"></div></div>
             </div>
           </label>
-          <span class="eu-pg2__switch-label" id="euPg2SwitchLabel">Press for one surprise</span>
+          <span class="eu-pg2__switch-label" id="euPg2SwitchLabel">SHUFFLE</span>
         </div>
       </div>
 
@@ -108,15 +108,6 @@
           <span class="eu-pg2__panel-name">Pick a pencil</span>
         </div>
         <div class="eu-pg2__panel-body">
-          <!-- SIZE SLIDER — above the pastry grid -->
-          <div class="eu-pg2__size">
-            <input type="range" id="euPg2PastrySize" class="eu-pg2__size-input" min="22" max="65" step="1" value="44" aria-label="Stamp size">
-            <input type="range" id="euPg2StickerSize" class="eu-pg2__size-input-mirror" min="22" max="65" step="1" value="44" hidden aria-hidden="true">
-            <div class="eu-pg2__size-track" aria-hidden="true">
-              <div class="eu-pg2__size-thumb" id="euPg2SizeThumb"></div>
-            </div>
-          </div>
-
           <div id="euPg2PastryGrid">
             <div class="eu-pg2__cell-grid eu-pg2__cell-grid--stamps">
               <button type="button" class="eu-pg2__cell eu-pg2__cell--sticker is-active" data-sticker="0"><span class="eu-pg2__cell-img"><img src="../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp" alt="Baguette" loading="lazy"></span></button>
@@ -142,6 +133,15 @@
 
           <!-- empty container so script that targets euPg2StickerGrid still finds it -->
           <div id="euPg2StickerGrid" hidden></div>
+
+          <!-- SIZE SLIDER — below the pastry grid, inside the same plate -->
+          <div class="eu-pg2__size">
+            <input type="range" id="euPg2PastrySize" class="eu-pg2__size-input" min="22" max="65" step="1" value="44" aria-label="Stamp size">
+            <input type="range" id="euPg2StickerSize" class="eu-pg2__size-input-mirror" min="22" max="65" step="1" value="44" hidden aria-hidden="true">
+            <div class="eu-pg2__size-track" aria-hidden="true">
+              <div class="eu-pg2__size-thumb" id="euPg2SizeThumb"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -200,7 +200,7 @@
             <label class="eu-pg2__cell eu-pg2__cell--front is-active" id="euPg2BgColor" title="Pick a colour">
               <span class="eu-pg2__cell-img eu-pg2__cell-img--swatch">
                 <span class="eu-pg2__bg-swatch" id="euPg2BgSwatch"></span>
-                <input type="color" id="euPg2BgPicker" value="#003399">
+                <input type="color" id="euPg2BgPicker" value="#2835D0">
               </span>
               <span class="eu-pg2__cell-label">Colour</span>
             </label>
@@ -249,8 +249,8 @@
             <span class="eu-pg2__window-counter-num" id="euPg2CounterNum">—</span>
             <span class="eu-pg2__window-counter-label">SENT</span>
           </span>
-          <button class="eu-pg2__action-btn eu-pg2__action-btn--send is-disabled" id="euPg2Share">Send postcard</button>
-          <button class="eu-pg2__action-btn eu-pg2__action-btn--save is-disabled" id="euPg2Download">Save postcard</button>
+          <button class="eu-pg2__action-btn eu-pg2__action-btn--send is-disabled" id="euPg2Share">Share postcard</button>
+          <button class="eu-pg2__action-btn eu-pg2__action-btn--save is-disabled" id="euPg2Download">Download postcard</button>
         </div>
       </div>
 
