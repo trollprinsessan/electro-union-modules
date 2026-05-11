@@ -162,7 +162,7 @@
   var strokeCounter = 0;
   var lastStrokeId = null;
   var bgMode = 'color';
-  var bgColor = '#ffffff';
+  var bgColor = '#2835D0';
   var bgPhotoSrc = '';
   var bgPhotoImg = new Image();
 
@@ -1212,6 +1212,41 @@
         } catch(_){}
       });
     });
+  })();
+
+  // ─── BANNER TICKER PASTRY CYCLE ──────────────────────────────────────
+  // Pad the marquee so the seamless loop has enough content to fill the
+  // viewport (avoids visible gap on the wrap-around), then every 7 seconds
+  // swap all ticker pastry images to a single new type.
+  (function tickerPastryCycle(){
+    var track = document.getElementById('euPg2BannerTickerTrack');
+    if (!track) return;
+    var existing = track.querySelectorAll('.eu-pg2__banner-ticker-pastry');
+    if (!existing.length) return;
+    // Duplicate the existing imgs once more so half the track > viewport width.
+    existing.forEach(function(img){
+      track.appendChild(img.cloneNode(false));
+    });
+    var imgs = track.querySelectorAll('.eu-pg2__banner-ticker-pastry');
+    var PASTRIES = [
+      '../drawing/Updated Imagery/ai-generated-baguette-on-transparent-background-image-png.webp',
+      '../drawing/Updated Imagery/045.png',
+      '../drawing/Updated Imagery/pngimg.com - croissant_PNG46722.png',
+      '../drawing/Updated Imagery/pastelnata.webp',
+      '../drawing/Updated Imagery/DSC_0410-a.png',
+      '../drawing/Updated Imagery/baklava_udate.png',
+      '../drawing/Updated Imagery/kürtőskalács.png'
+    ];
+    var idx = 0;
+    function apply(){
+      var src = PASTRIES[idx];
+      imgs.forEach(function(img){ img.src = src; });
+    }
+    apply();
+    setInterval(function(){
+      idx = (idx + 1) % PASTRIES.length;
+      apply();
+    }, 7000);
   })();
 
 })();
