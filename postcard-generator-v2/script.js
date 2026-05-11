@@ -162,7 +162,7 @@
   var strokeCounter = 0;
   var lastStrokeId = null;
   var bgMode = 'color';
-  var bgColor = '#ffffff';
+  var bgColor = '#2835D0';
   var bgPhotoSrc = '';
   var bgPhotoImg = new Image();
 
