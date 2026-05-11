@@ -795,16 +795,12 @@
   shareBtn.addEventListener('click', function(){
     if (shareBtn.classList.contains('is-disabled') || shareBtn.classList.contains('is-busy')) return;
     function share(file){
-      var shareData = { files:[file] };
-      // Best-effort: include a text payload so the share sheet pre-fills
-      // a caption when the target supports it (iOS Messages, WhatsApp,
-      // some browsers' LinkedIn share). Many platforms ignore it.
-      try {
-        shareData.text = 'Greetings from the Electro Union. 🇪🇺' +
-                         '\nnorrsken.org/goodnews/make-europe-the-electro-union';
-      } catch(_){}
+      // Image-only payload — matches toolkit module so apps like Telegram
+      // can't pull out a text/link field instead of the image itself.
       if (navigator.canShare && navigator.canShare({ files:[file] })){
-        navigator.share(shareData).then(incrementCounter).catch(function(){});
+        navigator.share({ files:[file] }).then(incrementCounter).catch(function(err){
+          if (err && err.name === 'AbortError') return;
+        });
       } else {
         downloadBlob(file, file.name);
         incrementCounter();
