@@ -441,7 +441,7 @@
 
   // ═══ EXPORT ═══
   function getExportDims(){
-    return currentFormat === 'story' ? { w:1080, h:1920 } : { w:1080, h:1350 };
+    return currentFormat === 'story' ? { w:1440, h:2560 } : { w:1440, h:1800 };
   }
 
   function renderExportFrame(c, mode, t, ew, eh){
@@ -501,19 +501,7 @@
   // A single non-removable line at the bottom edge — turns every export
   // into a campaign asset. No band, no microprint, no postmark; the brief
   // is explicit: one line, mono, white at 70% opacity.
-  function drawCampaignFooter(c, ew, eh){
-    c.save();
-    var fs = Math.max(13, Math.round(eh * 0.013));
-    c.fillStyle = 'rgba(255,255,255,.78)';
-    c.shadowColor = 'rgba(0,0,0,.45)';
-    c.shadowBlur = Math.max(2, Math.round(ew * 0.004));
-    c.font = '500 ' + fs + 'px "ABC Schengen Mono", "Courier New", monospace';
-    c.textBaseline = 'bottom';
-    c.textAlign = 'center';
-    var pad = Math.round(eh * 0.022);
-    c.fillText(CAMPAIGN_FOOTER, ew/2, eh - pad);
-    c.restore();
-  }
+  function drawCampaignFooter(c, ew, eh){ /* footer removed from exports */ }
 
   // Animation period in seconds — must match the CSS animation durations
   // above so the exported MP4/GIF loops the same as the live preview.
@@ -719,7 +707,7 @@
   // wide so encoding stays inside iOS's user-gesture window during share.
   function renderToGifBlob(mode){
     var d = getExportDims();
-    var ew = Math.min(720, d.w);
+    var ew = Math.min(900, d.w);
     var eh = Math.round(ew * d.h / d.w);
     var tmp = document.createElement('canvas');
     tmp.width = ew; tmp.height = eh;
@@ -1175,7 +1163,7 @@
       btns.forEach(function(b){
         b.classList.toggle('is-active', b.getAttribute('data-format') === fmt);
       });
-      if (fileDimsEl)  fileDimsEl.textContent  = fmt === 'story' ? '1080 × 1920' : '1080 × 1350';
+      if (fileDimsEl)  fileDimsEl.textContent  = fmt === 'story' ? '1440 × 2560' : '1440 × 1800';
       if (fileRatioEl) fileRatioEl.textContent = fmt === 'story' ? '9:16' : '4:5';
       if (framedEl)    framedEl.style.aspectRatio = fmt === 'story' ? '1063/1742' : '';
       if (frameImg)    frameImg.src = fmt === 'story' ? FRAME_STORY : FRAME_FEED;

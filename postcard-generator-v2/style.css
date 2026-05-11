@@ -1739,7 +1739,7 @@ input[type=color]{
   }
   .eu-pg2__desk-left,
   .eu-pg2__desk-right{ display:contents; }
-  .eu-pg2__desk-center{ order:2; flex:0 0 100%; max-width:100%; width:100%; }
+  .eu-pg2__desk-center{ order:3; flex:0 0 100%; max-width:100%; width:100%; }
 
   /* TOP TOOLBAR — flatten the push/bg/draw panels so every button becomes
      a direct flex sibling of .eu-pg2__desk on row 1. */
@@ -1758,17 +1758,21 @@ input[type=color]{
   .eu-pg2__panel--draw .eu-pg2__cell-grid--tools{
     display:contents;
   }
-  /* Every toolbar button — uniform 56px height, flex:1 to share row width */
+  /* Toolbar button — uniform 56px height. Min-width forces a wrap so
+     the 9 buttons split across two rows: shuffle / image / colour /
+     feed / story on row 1, draw / grab / undo / clear on row 2. */
   .eu-pg2__switch-wrap,
   .eu-pg2__panel--bg .eu-pg2__cell--front,
   .eu-pg2__format-btn,
   .eu-pg2__cell--tool{
-    flex:1 0 0;
+    flex:1 0 60px;
     order:1;
     height:56px;
-    min-width:0;
+    min-width:60px;
     padding:0;
   }
+  /* Force the tool icons onto row 2 */
+  .eu-pg2__cell--tool{ order:2; }
   /* Shuffle / lightswitch — compact form */
   .eu-pg2__switch-wrap{
     width:auto;
@@ -1781,20 +1785,39 @@ input[type=color]{
     position:absolute; top:50%; left:50%;
     margin:-210px 0 0 -135px;
   }
-  /* Image + colour swatches */
-  .eu-pg2__panel--bg .eu-pg2__cell--front .eu-pg2__cell-img{
-    width:100%; height:100%; aspect-ratio:auto;
+  /* Image + colour swatches — fill the entire key with the photo/swatch */
+  .eu-pg2__panel--bg .eu-pg2__cell--front{
+    position:relative;
+    overflow:hidden;
+    padding:0;
+    gap:0;
   }
-  /* Format buttons */
-  .eu-pg2__format-btn{ font-size:12px; padding:0 4px; }
+  .eu-pg2__panel--bg .eu-pg2__cell--front .eu-pg2__cell-img{
+    position:absolute;
+    inset:0;
+    width:100%; height:100%;
+    aspect-ratio:auto;
+    border-radius:0;
+  }
+  .eu-pg2__panel--bg .eu-pg2__cell--front .eu-pg2__cell-img img{
+    width:100%; height:100%; object-fit:cover;
+  }
+  /* Re-anchor the rainbow dot for the colour cell */
+  .eu-pg2__panel--bg .eu-pg2__cell--front .eu-pg2__cell-img--swatch::after{
+    top:50%; left:50%;
+  }
+  /* Format buttons — drop the "Feed ·" / "Story ·" prefix on mobile so
+     the buttons read "4:5" / "9:16" and fit cleanly. */
+  .eu-pg2__format-btn{ font-size:14px; padding:0 4px; }
+  .eu-pg2__format-name{ display:none; }
   /* Tools */
   .eu-pg2__cell--tool .eu-pg2__cell-label{ display:none; }
   .eu-pg2__cell--tool .eu-pg2__cell-img{ width:22px; height:22px; }
 
   /* Full-width rows beneath the toolbar */
-  .eu-pg2__panel--pencil{ order:3; flex:0 0 100%; margin-top:0; }
-  .eu-pg2__panel--motion{ order:4; flex:0 0 100%; margin-top:0; }
-  .eu-pg2__panel--send{ order:5; flex:0 0 100%; margin-top:0; }
+  .eu-pg2__panel--pencil{ order:4; flex:0 0 100%; margin-top:0; }
+  .eu-pg2__panel--motion{ order:5; flex:0 0 100%; margin-top:0; }
+  .eu-pg2__panel--send{ order:6; flex:0 0 100%; margin-top:0; }
 
   /* Uniform cell height across every control row on mobile */
   .eu-pg2__panel--bg .eu-pg2__cell--front,
@@ -1822,19 +1845,26 @@ input[type=color]{
 
   /* Pencil pile: horizontal scroll row */
   .eu-pg2__panel--pencil{ padding:6px; }
-  .eu-pg2__panel--pencil .eu-pg2__cell-grid--stamps{
-    display:flex;
-    flex-wrap:nowrap;
-    overflow-x:auto;
+  #euPg2PastryGrid{ overflow:hidden; max-width:100%; }
+  .eu-pg2__panel--pencil .eu-pg2__cell-grid--stamps,
+  #euPg2PastryGrid .eu-pg2__cell-grid--stamps{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
     overflow-y:hidden;
     -webkit-overflow-scrolling:touch;
-    grid-template-columns:none;
+    grid-template-columns:none !important;
+    grid-template-rows:none;
     gap:6px;
     padding-bottom:2px;
+    max-height:none;
+    max-width:100%;
   }
-  .eu-pg2__panel--pencil .eu-pg2__cell{
+  .eu-pg2__panel--pencil .eu-pg2__cell-grid--stamps .eu-pg2__cell{
     flex:0 0 56px;
     width:56px;
+    height:56px;
+    aspect-ratio:1/1;
     padding:6px;
   }
   /* Hide size slider on mobile to save space */
