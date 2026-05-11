@@ -795,18 +795,17 @@
   shareBtn.addEventListener('click', function(){
     if (shareBtn.classList.contains('is-disabled') || shareBtn.classList.contains('is-busy')) return;
     function share(file){
-      var shareData = { files:[file] };
-      // Best-effort: include a text payload so the share sheet pre-fills
-      // a caption when the target supports it (iOS Messages, WhatsApp,
-      // some browsers' LinkedIn share). Many platforms ignore it.
-      try {
-        shareData.text = 'Greetings from the Electro Union. 🇪🇺' +
-                         '\nnorrsken.org/goodnews/make-europe-the-electro-union';
-      } catch(_){}
+      // Image-only payload — matches toolkit module so apps like Telegram
+      // can't pull out a text/link field instead of the image itself.
       if (navigator.canShare && navigator.canShare({ files:[file] })){
-        navigator.share(shareData).then(incrementCounter).catch(function(){});
+        navigator.share({ files:[file] }).then(incrementCounter).catch(function(err){
+          if (err && err.name === 'AbortError') return;
+        });
       } else {
+        // Desktop fallback: download the file AND open LinkedIn compose in a
+        // new tab so the user can drag-drop the just-saved file into the post.
         downloadBlob(file, file.name);
+        try { window.open('https://www.linkedin.com/feed/?shareActive=true', '_blank', 'noopener'); } catch(_){}
         incrementCounter();
       }
     }
@@ -1047,14 +1046,8 @@
   // ═══════════════════════════════════════════════════════════════════════
   // MULTILINGUAL SWITCH LABEL — instant translation swap every 5 seconds.
   // ═══════════════════════════════════════════════════════════════════════
-  (function switchLabelRotation(){
-    if (!switchLbl) return;
-    var i = 0;
-    setInterval(function(){
-      i = (i + 1) % SWITCH_LABELS.length;
-      switchLbl.textContent = SWITCH_LABELS[i];
-    }, 5000);
-  })();
+  // Switch is now a static SHUFFLE control — translation rotator disabled.
+  (function switchLabelRotation(){ return; })();
 
   // ═══════════════════════════════════════════════════════════════════════
   // POSTCARD COUNTER — pulls count from Supabase on load and increments
