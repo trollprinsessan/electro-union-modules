@@ -173,88 +173,91 @@
     catch (e) { return false; }
   }
 
-  // ── 1. Share button — Web Share, LinkedIn-format (4:5) ───────────────────
+  // Kopiera PNG till clipboard från URL. Returnerar Promise.
+  function copyBlobToClipboard(absUrl) {
+    return fetch(absUrl)
+      .then(function (r) { return r.blob(); })
+      .then(ensurePngBlob)
+      .then(function (pngBlob) {
+        return navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+      });
+  }
+
+  // Gemensam feedback-flash med SVG-bevarande innerHTML
+  function flashCopyFeedback(btn, successHtml, failHtml) {
+    var orig = btn.innerHTML;
+    btn.innerHTML = '…';
+    return function (ok) {
+      btn.innerHTML = ok ? successHtml : failHtml;
+      setTimeout(function () { btn.innerHTML = orig; }, 2400);
+    };
+  }
+
+  // Gemensam "share med file"-funktion.
+  // Viktigt: INGEN URL-fallback — då delas bara länktexten istället för bilden.
+  // Om file-share inte stöds → kopiera bilden till clipboard.
+  function shareFileOrCopy(btn, src) {
+    if (!src) return;
+    var absUrl = new URL(src, window.location.href).href;
+    var origText = btn.textContent;
+
+    fetch(absUrl)
+      .then(function (r) { return r.blob(); })
+      .then(function (blob) {
+        var fname = filenameFromUrl(absUrl, blob.type);
+        var file = new File([blob], fname, { type: blob.type });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({ files: [file], title: 'Electro Union' }).catch(function (err) {
+            // User cancel → tyst. Annat → clipboard fallback.
+            if (err && err.name === 'AbortError') return;
+            return copyBlobToClipboard(absUrl).then(function () {
+              btn.textContent = 'copied ✓';
+              setTimeout(function () { btn.textContent = origText; }, 2400);
+            });
+          });
+        }
+        // Ingen file-share → clipboard direkt (INGEN URL-share, INGEN download)
+        return copyBlobToClipboard(absUrl).then(function () {
+          btn.textContent = 'copied ✓';
+          setTimeout(function () { btn.textContent = origText; }, 2400);
+        }).catch(function () {
+          btn.textContent = 'needs https or mobile';
+          setTimeout(function () { btn.textContent = origText; }, 2800);
+        });
+      })
+      .catch(function () {});
+  }
+
+  // ── 1. Share button — LinkedIn-format (4:5) ──────────────────────────────
   function shareAsset(btn) {
     var src = btn.getAttribute('data-src-share') || btn.getAttribute('data-src');
-    if (!src) return;
-    var absUrl = new URL(src, window.location.href).href;
-    fetch(absUrl)
-      .then(function (r) { return r.blob(); })
-      .then(function (blob) {
-        var fname = filenameFromUrl(absUrl, blob.type);
-        var file = new File([blob], fname, { type: blob.type });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          return navigator.share({ files: [file], title: 'Electro Union' });
-        } else if (navigator.share) {
-          return navigator.share({ url: window.location.href, title: 'Electro Union — Join the movement' });
-        } else {
-          // Desktop fallback: ladda ner
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url; a.download = fname;
-          document.body.appendChild(a); a.click(); document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }
-      })
-      .catch(function () {});
+    shareFileOrCopy(btn, src);
   }
 
-  // ── 2. Instagram button — Web Share, Instagram-format (9:16) ─────────────
+  // ── 2. Instagram button — Instagram-format (9:16) ────────────────────────
   function shareToInstagram(btn) {
     var src = btn.getAttribute('data-src');
-    if (!src) return;
-    var absUrl = new URL(src, window.location.href).href;
-    fetch(absUrl)
-      .then(function (r) { return r.blob(); })
-      .then(function (blob) {
-        var fname = filenameFromUrl(absUrl, blob.type);
-        var file = new File([blob], fname, { type: blob.type });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          return navigator.share({ files: [file], title: 'Electro Union' });
-        } else if (navigator.share) {
-          return navigator.share({ url: window.location.href, title: 'Electro Union — Join the movement' });
-        } else {
-          // Desktop fallback: ladda ner + hint
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url; a.download = fname;
-          document.body.appendChild(a); a.click(); document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          var orig = btn.textContent;
-          btn.textContent = 'saved — share via app';
-          setTimeout(function () { btn.textContent = orig; }, 3000);
-        }
-      })
-      .catch(function () {});
+    shareFileOrCopy(btn, src);
   }
 
-  // ── 3+4. Copy buttons — Clipboard, checkmark-ikon vid succé ──────────────
+  // ── 3+4. Copy buttons — Clipboard, checkmark vid succé, ALDRIG download ──
   function copyImageOnly(btn) {
     var src = btn.getAttribute('data-src-copy') || btn.getAttribute('data-src-li') || btn.getAttribute('data-src');
     if (!src) return;
     var orig = btn.innerHTML;  // spara SVG + eventuell "4:5"/"9:16"-text
     var absUrl = new URL(src, window.location.href).href;
     btn.innerHTML = '…';
-    fetch(absUrl)
-      .then(function (r) { return r.blob(); })
-      .then(ensurePngBlob)
-      .then(function (pngBlob) {
-        return navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
-      })
+
+    copyBlobToClipboard(absUrl)
       .then(function () {
-        // Visa checkmark-ikon, återställ copy-ikon efter 2.4s
         btn.innerHTML = CHECKMARK_SVG;
         setTimeout(function () { btn.innerHTML = orig; }, 2400);
       })
-      .catch(function () {
-        // Fallback: ladda ner om clipboard verkligen inte stöds
-        fetch(absUrl).then(function (r) { return r.blob(); }).then(function (blob) {
-          downloadBlob(blob, filenameFromUrl(absUrl, blob.type));
-          btn.innerHTML = '↓';
-          setTimeout(function () { btn.innerHTML = orig; }, 2400);
-        }).catch(function () {
-          btn.innerHTML = orig;
-        });
+      .catch(function (err) {
+        // INGEN download-fallback — bara visuell feedback på miss
+        console.warn('Copy failed (requires secure context: HTTPS or localhost):', err);
+        btn.innerHTML = '✕';
+        setTimeout(function () { btn.innerHTML = orig; }, 1800);
       });
   }
 
@@ -266,19 +269,11 @@
     window.open(LINKEDIN_COMPOSER, '_blank', 'noopener,noreferrer');
     flashBtn(btn, 'opening LinkedIn…');
     // Kopiera bild till clipboard i bakgrunden
-    fetch(absUrl)
-      .then(function (r) { return r.blob(); })
-      .then(ensurePngBlob)
-      .then(function (pngBlob) {
-        return navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
-      })
+    copyBlobToClipboard(absUrl)
       .then(function () { flashBtn(btn, 'copied — paste ⌘V in LinkedIn'); })
       .catch(function () {
-        // Clipboard blockerat → ladda ner, user bifogar manuellt
-        fetch(absUrl).then(function (r) { return r.blob(); }).then(function (blob) {
-          downloadBlob(blob, filenameFromUrl(absUrl, blob.type));
-          flashBtn(btn, 'saved — attach in LinkedIn');
-        });
+        // INGEN download-fallback — be användaren hämta bilden från download-fliken
+        flashBtn(btn, 'clipboard blocked — use download tab');
       });
   }
 
@@ -287,18 +282,34 @@
     if (!src) return;
     var absUrl = new URL(src, window.location.href).href;
 
-    // Mobil: Web Share med fil → OS native sheet → LinkedIn-appen tar emot bilden
-    if (isMobileDevice() && navigator.canShare) {
+    if (isMobileDevice()) {
+      // Mobil: prova Web Share med fil → user väljer LinkedIn från OS share sheet.
+      // Om det misslyckas (NotAllowedError, canShare false) → kopiera bild till
+      // clipboard och be user öppna LinkedIn-appen manuellt. ALDRIG desktopLinkedIn
+      // på mobil — window.open öppnar bara LinkedIn-startsidan utan composer.
       fetch(absUrl).then(function (r) { return r.blob(); }).then(function (blob) {
         var file = new File([blob], filenameFromUrl(absUrl, blob.type), { type: blob.type });
-        if (navigator.canShare({ files: [file] })) {
-          navigator.share({ files: [file], title: 'Electro Union' }).catch(function () {});
-          return;
+        var canShareFile = navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
+        if (canShareFile) {
+          return navigator.share({ files: [file], title: 'Electro Union' }).catch(function (err) {
+            if (err && err.name === 'AbortError') return; // user cancel — tyst
+            // Share misslyckades → fallback: clipboard + manuell LinkedIn
+            return copyBlobToClipboard(absUrl).then(function () {
+              flashBtn(btn, 'copied — paste in LinkedIn app');
+            });
+          });
         }
-        desktopLinkedIn(absUrl, btn);
+        // Web Share stöds inte på denna mobil → clipboard + manuell LinkedIn
+        return copyBlobToClipboard(absUrl).then(function () {
+          flashBtn(btn, 'copied — paste in LinkedIn app');
+        }).catch(function () {
+          flashBtn(btn, 'needs https');
+        });
       }).catch(function () {});
       return;
     }
+
+    // Desktop: öppna LinkedIn composer + kopiera bild till clipboard
     desktopLinkedIn(absUrl, btn);
   }
 
